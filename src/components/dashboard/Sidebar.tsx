@@ -21,15 +21,15 @@ import {
 
 const primaryNav = [
   { label: "Dashboard", icon: IconDashboard, href: "/dashboard" },
-  { label: "Analytics", icon: IconAnalytics, href: "#" },
-  { label: "Calendar", icon: IconCalendar, href: "#" },
+  { label: "Analytics", icon: IconAnalytics, href: "/analytics" },
+  { label: "Calendar", icon: IconCalendar, href: "/calendar" },
 ];
 
 const moneyNav = [
-  { label: "Business Wallet", icon: IconWallet, href: "#" },
+  { label: "Business Wallet", icon: IconWallet, href: "/wallet" },
   { label: "Payments", icon: IconPayments, href: "/payments" },
-  { label: "Invoices", icon: IconInvoices, href: "#" },
-  { label: "Payroll", icon: IconPayroll, href: "#" },
+  { label: "Invoices", icon: IconInvoices, href: "/invoices" },
+  { label: "Payroll", icon: IconPayroll, href: "/payroll" },
 ];
 
 const workNav = [
