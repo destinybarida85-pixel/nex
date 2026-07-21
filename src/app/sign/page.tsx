@@ -1,0 +1,48 @@
+"use client";
+
+import { useState } from "react";
+import { IconLogoMark } from "@/components/icons";
+import SignStepper from "@/components/sign/SignStepper";
+import ReviewStep from "@/components/sign/ReviewStep";
+import VerifyStep from "@/components/sign/VerifyStep";
+import SignStep from "@/components/sign/SignStep";
+import CompleteStep from "@/components/sign/CompleteStep";
+
+export default function SignPage() {
+  const [step, setStep] = useState(1);
+  const [signature, setSignature] = useState("");
+
+  return (
+    <div className="min-h-screen bg-[var(--color-neutral-900)] flex flex-col items-center py-12 px-4">
+      <div className="flex items-center gap-2.5 mb-8">
+        <IconLogoMark size={26} />
+        <span className="font-medium text-[16px] text-[var(--color-text)]">Nex</span>
+        <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">e-signature</span>
+      </div>
+
+      <SignStepper current={step} />
+
+      <div
+        className="w-full max-w-[440px] mt-8 p-8 rounded-2xl bg-[var(--color-bg)] text-[var(--color-text)]"
+        style={{ boxShadow: "var(--shadow-lg)" }}
+      >
+        {step === 1 && <ReviewStep onContinue={() => setStep(2)} />}
+        {step === 2 && <VerifyStep onContinue={() => setStep(3)} onBack={() => setStep(1)} />}
+        {step === 3 && (
+          <SignStep
+            onContinue={(sig) => {
+              setSignature(sig);
+              setStep(4);
+            }}
+            onBack={() => setStep(2)}
+          />
+        )}
+        {step === 4 && <CompleteStep signature={signature} />}
+      </div>
+
+      <div className="text-[11px] text-[var(--color-neutral-600)] mt-6 flex items-center gap-2">
+        Protected by two-factor authentication · Audit trail retained for 7 years
+      </div>
+    </div>
+  );
+}
