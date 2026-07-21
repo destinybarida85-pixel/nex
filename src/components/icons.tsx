@@ -351,6 +351,16 @@ export function IconMenu({ size, className }: IconProps) {
     </svg>
   );
 }
+export function IconGoogle({ size = 16, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" className={className}>
+      <path fill="#EA4335" d="M24 9.5c3.4 0 6.4 1.17 8.8 3.46l6.55-6.55C35.3 2.65 30.05 0.5 24 0.5 14.85 0.5 6.95 5.73 3.1 13.34l7.62 5.92C12.5 13.5 17.8 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.5 24.5c0-1.64-.15-3.22-.42-4.74H24v9.02h12.65c-.55 2.9-2.2 5.36-4.68 7.02l7.28 5.65C43.5 37.5 46.5 31.5 46.5 24.5z" />
+      <path fill="#FBBC05" d="M10.72 19.26A14.5 14.5 0 0 0 9.5 24c0 1.66.28 3.26.78 4.74l-7.62 5.92A23.94 23.94 0 0 1 0.5 24c0-3.87.93-7.53 2.6-10.66l7.62 5.92z" />
+      <path fill="#34A853" d="M24 47.5c6.05 0 11.13-2 14.84-5.42l-7.28-5.65c-2.02 1.36-4.6 2.17-7.56 2.17-6.2 0-11.5-4-13.28-9.76l-7.62 5.92C6.95 41.77 14.85 47.5 24 47.5z" />
+    </svg>
+  );
+}
 export function IconLogoMark({ size = 26, className }: IconProps) {
   return (
     <div

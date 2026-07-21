@@ -35,7 +35,7 @@ export default function Hero() {
             Money, documents, people and clients — run your entire organization from one platform, under your own brand.
           </p>
           <div className="flex gap-2.5 mt-[26px] flex-wrap">
-            <button className="btn btn-primary text-sm px-[22px] py-[11px]">Start free</button>
+            <a href="/signup" className="btn btn-primary text-sm px-[22px] py-[11px]">Start free</a>
             <button className="btn btn-secondary text-sm px-[22px] py-[11px]">Book a demo</button>
           </div>
           <div className="text-[11.5px] text-[var(--color-neutral-600)] mt-3">

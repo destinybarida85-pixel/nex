@@ -39,7 +39,7 @@ export default function Pricing() {
             <span>· 5 e-signatures / month</span>
             <span>· Core dashboard &amp; invoicing</span>
           </div>
-          <button className="btn btn-secondary btn-block text-[13px] mt-auto">Start free</button>
+          <a href="/signup" className="btn btn-secondary btn-block text-[13px] mt-auto">Start free</a>
         </div>
 
         <div
@@ -61,7 +61,7 @@ export default function Pricing() {
             <span>· White-label branding + custom domain</span>
             <span>· API access &amp; webhooks</span>
           </div>
-          <button className="btn btn-primary btn-block text-[13px] mt-auto">Start 14-day trial</button>
+          <a href="/signup" className="btn btn-primary btn-block text-[13px] mt-auto">Start 14-day trial</a>
         </div>
 
         <div className="card elev-sm p-[22px] gap-2.5">

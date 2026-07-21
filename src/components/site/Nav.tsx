@@ -39,8 +39,8 @@ export default function Nav() {
           ))}
         </nav>
         <div className="hidden md:flex items-center gap-6">
-          <button className="btn btn-secondary text-[13px]">Sign in</button>
-          <button className="btn btn-primary text-[13px]">Get started</button>
+          <a href="/signin" className="btn btn-secondary text-[13px]">Sign in</a>
+          <a href="/signup" className="btn btn-primary text-[13px]">Get started</a>
         </div>
 
         <button
@@ -65,8 +65,8 @@ export default function Nav() {
             </a>
           ))}
           <div className="flex gap-2.5 pt-2">
-            <button className="btn btn-secondary text-[13px] flex-1">Sign in</button>
-            <button className="btn btn-primary text-[13px] flex-1">Get started</button>
+            <a href="/signin" className="btn btn-secondary text-[13px] flex-1">Sign in</a>
+            <a href="/signup" className="btn btn-primary text-[13px] flex-1">Get started</a>
           </div>
         </div>
       )}
