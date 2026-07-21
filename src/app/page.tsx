@@ -1,5 +1,6 @@
 import Nav from "@/components/site/Nav";
 import Hero from "@/components/site/Hero";
+import Overview3D from "@/components/site/Overview3D";
 import StatBand from "@/components/site/StatBand";
 import FeatureRows from "@/components/site/FeatureRows";
 import ModulesGrid from "@/components/site/ModulesGrid";
@@ -11,6 +12,7 @@ export default function Home() {
     <>
       <Nav />
       <Hero />
+      <Overview3D />
       <StatBand />
       <FeatureRows />
       <ModulesGrid />
