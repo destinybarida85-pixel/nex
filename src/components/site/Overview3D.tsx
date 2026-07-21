@@ -123,11 +123,29 @@ export default function Overview3D() {
         </p>
       </div>
 
+      {/* Mobile fallback: static grid, no absolute 3D positioning (avoids off-screen overflow on narrow viewports) */}
+      <div className="md:hidden mt-10 flex flex-col items-center gap-6">
+        <div className="nx-hub-glow rounded-xl">
+          <IconLogoMark size={48} />
+        </div>
+        <div className="grid grid-cols-2 gap-3 w-full">
+          {cards.map((card) => (
+            <div key={card.key} className="card elev-md gap-0" style={{ padding: "12px 14px" }}>
+              <div className="flex items-center gap-1.5 mb-2">
+                <card.icon size={13} className="text-[var(--color-accent)]" />
+                <span className="text-[10.5px] font-medium">{card.label}</span>
+              </div>
+              {card.content}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div
         ref={sceneRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-        className="relative mt-10 mx-auto select-none"
+        className="hidden md:block relative mt-10 mx-auto select-none"
         style={{ height: 420, maxWidth: 720, perspective: 1400 }}
       >
         <div

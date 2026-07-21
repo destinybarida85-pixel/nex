@@ -344,6 +344,13 @@ export function IconRepeat({ size, className }: IconProps) {
     </svg>
   );
 }
+export function IconMenu({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
 export function IconLogoMark({ size = 26, className }: IconProps) {
   return (
     <div

@@ -57,7 +57,7 @@ export default function Hero() {
             </span>
           </div>
           <div className="flex bg-[var(--color-bg)]">
-            <div className="w-[180px] flex-none p-4 px-3 border-r border-[var(--color-divider)] flex flex-col gap-[7px]">
+            <div className="hidden sm:flex w-[180px] flex-none p-4 px-3 border-r border-[var(--color-divider)] flex-col gap-[7px]">
               {sidebarItems.map((item) => (
                 <div
                   key={item.label}
@@ -76,7 +76,7 @@ export default function Hero() {
               ))}
             </div>
             <div className="flex-1 min-w-0 p-[18px] flex flex-col gap-3">
-              <div className="grid gap-2.5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {kpis.map((kpi) => (
                   <div key={kpi.label} className="p-3 rounded-lg bg-[var(--color-surface)]">
                     <div className="text-[9.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">
