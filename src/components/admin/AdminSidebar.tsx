@@ -1,4 +1,7 @@
-import { IconLogoMark, IconGrid, IconPayments, IconWallet, IconMessages, IconToggles, IconSettings } from "@/components/icons";
+"use client";
+
+import { useState } from "react";
+import { IconLogoMark, IconGrid, IconPayments, IconWallet, IconMessages, IconToggles, IconSettings, IconMenu, IconX } from "@/components/icons";
 
 const navItems = [
   { label: "Tenants", icon: IconGrid, href: "/admin" },
@@ -9,9 +12,9 @@ const navItems = [
   { label: "System", icon: IconSettings, href: "#" },
 ];
 
-export default function AdminSidebar({ active }: { active: string }) {
+function AdminSidebarContent({ active }: { active: string }) {
   return (
-    <aside className="w-[200px] flex-none flex flex-col gap-0.5 p-[18px_12px] border-r border-[var(--color-divider)] min-h-screen">
+    <>
       <div className="flex items-center gap-2.5 px-2 pb-1.5">
         <IconLogoMark size={26} />
         <div>
@@ -35,6 +38,41 @@ export default function AdminSidebar({ active }: { active: string }) {
           {item.label}
         </a>
       ))}
-    </aside>
+    </>
+  );
+}
+
+export default function AdminSidebar({ active }: { active: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        className="btn btn-icon btn-secondary md:hidden fixed top-3 left-3 z-30"
+        aria-label="Open menu"
+        onClick={() => setOpen(true)}
+      >
+        <IconMenu size={18} />
+      </button>
+
+      <aside className="hidden md:flex w-[200px] flex-none flex-col gap-0.5 p-[18px_12px] border-r border-[var(--color-divider)] min-h-screen">
+        <AdminSidebarContent active={active} />
+      </aside>
+
+      {open && (
+        <div className="md:hidden fixed inset-0 z-40 flex">
+          <div
+            className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-neutral-900)_60%,transparent)]"
+            onClick={() => setOpen(false)}
+          />
+          <div className="relative w-[240px] flex-none flex flex-col gap-0.5 p-[18px_12px] bg-[var(--color-bg)] border-r border-[var(--color-divider)] h-full overflow-y-auto">
+            <button className="btn btn-icon btn-secondary self-end mb-2" aria-label="Close menu" onClick={() => setOpen(false)}>
+              <IconX size={16} />
+            </button>
+            <AdminSidebarContent active={active} />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

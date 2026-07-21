@@ -58,20 +58,20 @@ export default function WalletPage() {
       <Sidebar active="Business Wallet" />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
-        <main className="p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
-          <div className="flex items-end gap-3">
+        <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
+          <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Business Wallet</h3>
               <div className="text-muted text-[12.5px] mt-[3px]">Virtual account backed by Column Bank N.A.</div>
             </div>
-            <div className="flex-1" />
+            <div className="flex-1 hidden sm:block" />
             <button className="btn btn-secondary text-[13px]" onClick={downloadStatement}>
               <IconDownload size={14} />
               Download statement
             </button>
           </div>
 
-          <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.4fr 1fr" }}>
+          <div className="grid gap-3.5 grid-cols-1 lg:grid-cols-[1.4fr_1fr]">
             <div
               className="rounded-xl p-7 flex flex-col gap-5"
               style={{
@@ -122,10 +122,10 @@ export default function WalletPage() {
             </div>
           </div>
 
-          <div className="grid gap-3.5 items-start" style={{ gridTemplateColumns: "2fr 1fr" }}>
-            <div className="card elev-sm p-[16px_18px] gap-2.5">
+          <div className="grid gap-3.5 items-start grid-cols-1 lg:grid-cols-[2fr_1fr]">
+            <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
               <div className="card-title text-sm">Transaction history</div>
-              <table className="table text-[13px]">
+              <table className="table text-[13px] min-w-[480px]">
                 <thead>
                   <tr>
                     <th>Counterparty</th>

@@ -28,20 +28,20 @@ export default function PayrollPage() {
       <Sidebar active="Payroll" />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
-        <main className="p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
-          <div className="flex items-end gap-3">
+        <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
+          <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Payroll</h3>
               <div className="text-muted text-[12.5px] mt-[3px]">August run · Meridian Studio</div>
             </div>
-            <div className="flex-1" />
+            <div className="flex-1 hidden sm:block" />
             <button className="btn btn-primary text-[13px]" onClick={runPayroll} disabled={allPaid || processing}>
               <IconPayroll size={14} />
               {processing ? "Processing…" : allPaid ? "Run complete" : "Run payroll"}
             </button>
           </div>
 
-          <div className="grid grid-cols-4 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <div className="card elev-sm gap-1 p-[14px_16px]">
               <div className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Next payroll date</div>
               <div className="font-medium text-[23px]">Aug 1</div>
@@ -64,9 +64,9 @@ export default function PayrollPage() {
             </div>
           </div>
 
-          <div className="card elev-sm p-[16px_18px] gap-2.5">
+          <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
             <div className="card-title text-sm">This run</div>
-            <table className="table text-[12.5px]">
+            <table className="table text-[12.5px] min-w-[560px]">
               <thead>
                 <tr>
                   <th>Employee</th>
@@ -98,9 +98,9 @@ export default function PayrollPage() {
             </div>
           </div>
 
-          <div className="card elev-sm p-[16px_18px] gap-2.5">
+          <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
             <div className="card-title text-sm">Payslip history</div>
-            <table className="table text-[12.5px]">
+            <table className="table text-[12.5px] min-w-[420px]">
               <thead>
                 <tr>
                   <th>Period</th>

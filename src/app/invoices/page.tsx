@@ -24,13 +24,13 @@ export default function InvoicesPage() {
       <Sidebar active="Invoices" />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
-        <main className="p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
-          <div className="flex items-end gap-3">
+        <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
+          <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Invoices</h3>
               <div className="text-muted text-[12.5px] mt-[3px]">Meridian Studio · billed in USD</div>
             </div>
-            <div className="flex-1" />
+            <div className="flex-1 hidden sm:block" />
             <a href="/assistant" className="btn btn-secondary text-[13px]">
               <IconSparkle size={14} />
               Generate with AI
@@ -41,7 +41,7 @@ export default function InvoicesPage() {
             </a>
           </div>
 
-          <div className="grid grid-cols-4 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {kpis.map((kpi) => (
               <div key={kpi.label} className="card elev-sm gap-1 p-[14px_16px]">
                 <div className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">{kpi.label}</div>
@@ -54,9 +54,9 @@ export default function InvoicesPage() {
             ))}
           </div>
 
-          <div className="card elev-sm p-[16px_18px] gap-2.5">
+          <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
             <div className="card-title text-sm">All invoices</div>
-            <table className="table text-[12.5px]">
+            <table className="table text-[12.5px] min-w-[480px]">
               <thead>
                 <tr>
                   <th>Invoice</th>

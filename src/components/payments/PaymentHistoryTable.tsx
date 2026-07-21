@@ -7,7 +7,8 @@ export default function PaymentHistoryTable() {
         <div className="card-title text-sm">Payment history</div>
         <a href="#" className="btn btn-ghost text-[12.5px] ml-auto">View all</a>
       </div>
-      <table className="table text-[13px]">
+      <div className="overflow-x-auto">
+      <table className="table text-[13px] min-w-[480px]">
         <thead>
           <tr>
             <th>Counterparty</th>
@@ -31,6 +32,7 @@ export default function PaymentHistoryTable() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

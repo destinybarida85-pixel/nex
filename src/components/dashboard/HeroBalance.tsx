@@ -6,7 +6,7 @@ const stats = [
 
 export default function HeroBalance() {
   return (
-    <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+    <div className="grid gap-3.5 grid-cols-1 lg:grid-cols-[1.6fr_1fr]">
       <div
         className="rounded-xl p-7 flex flex-col justify-between gap-6"
         style={{

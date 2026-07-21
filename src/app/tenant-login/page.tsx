@@ -4,13 +4,13 @@ export default function TenantLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--color-neutral-900)] p-6">
       <div
-        className="w-full max-w-[1000px] h-[640px] flex bg-[var(--color-bg)] text-[var(--color-text)] rounded-2xl overflow-hidden"
+        className="w-full max-w-[1000px] lg:h-[640px] flex flex-col lg:flex-row bg-[var(--color-bg)] text-[var(--color-text)] rounded-2xl overflow-hidden"
         style={{ boxShadow: "var(--shadow-lg)" }}
       >
         <div
-          className="relative overflow-hidden"
+          className="relative overflow-hidden lg:flex-none"
           style={{
-            flex: 1.1,
+            flex: "1.1",
             background: `linear-gradient(160deg, color-mix(in srgb, ${tenantAccent} 10%, var(--color-bg)), var(--color-bg) 70%)`,
           }}
         >
@@ -20,7 +20,7 @@ export default function TenantLoginPage() {
               background: `radial-gradient(420px 320px at 20% 25%, color-mix(in srgb, ${tenantAccent} 16%, transparent), transparent)`,
             }}
           />
-          <div className="relative p-11 flex flex-col h-full box-border">
+          <div className="relative p-6 lg:p-11 flex flex-col h-full box-border min-h-[220px] lg:min-h-0">
             <div className="flex items-center gap-2.5">
               <span
                 className="w-[34px] h-[34px] rounded-[9px] grid place-items-center font-medium text-[16px]"
@@ -43,8 +43,8 @@ export default function TenantLoginPage() {
           </div>
         </div>
 
-        <div className="flex-1 flex items-center justify-center p-10 border-l border-[var(--color-divider)]">
-          <div className="w-[320px] flex flex-col gap-3.5">
+        <div className="flex-1 flex items-center justify-center p-6 lg:p-10 border-t lg:border-t-0 lg:border-l border-[var(--color-divider)]">
+          <div className="w-full max-w-[320px] flex flex-col gap-3.5">
             <div>
               <h4 className="m-0 text-[20px]">Sign in</h4>
               <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-[3px]">

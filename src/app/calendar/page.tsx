@@ -29,20 +29,20 @@ export default function CalendarPage() {
       <Sidebar active="Calendar" />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
-        <main className="p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
-          <div className="flex items-end gap-3">
+        <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
+          <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Calendar</h3>
               <div className="text-muted text-[12.5px] mt-[3px]">{monthLabel}</div>
             </div>
-            <div className="flex-1" />
+            <div className="flex-1 hidden sm:block" />
             <button className="btn btn-primary text-[13px]">
               <IconPlus size={14} />
               New event
             </button>
           </div>
 
-          <div className="grid gap-3.5" style={{ gridTemplateColumns: "1fr 320px" }}>
+          <div className="grid gap-3.5 grid-cols-1 lg:grid-cols-[1fr_320px]">
             <div className="card elev-sm p-5 gap-3">
               <div className="grid grid-cols-7 gap-1 text-center text-[10.5px] tracking-[.06em] uppercase text-[var(--color-neutral-500)] pb-1">
                 {weekdayLabels.map((d) => (

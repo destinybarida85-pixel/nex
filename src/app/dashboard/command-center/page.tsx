@@ -14,11 +14,11 @@ export default function CommandCenterPage() {
       <Sidebar active="Dashboard" />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
-        <main className="p-[24px_28px_28px] flex flex-col gap-5">
+        <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
           <LayoutSwitcher current="command" />
           <DashboardHeader />
           <HeroBalance />
-          <div className="grid gap-3.5 items-start" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+          <div className="grid gap-3.5 items-start grid-cols-1 lg:grid-cols-3">
             <TransactionsCompact />
             <CashFlowChart />
             <SideStack />

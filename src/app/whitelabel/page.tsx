@@ -10,7 +10,7 @@ export default function WhiteLabelPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
-      <div className="max-w-[1240px] mx-auto p-[22px_26px] flex flex-col gap-4">
+      <div className="max-w-[1240px] mx-auto p-4 sm:p-[22px_26px] flex flex-col gap-4">
         <div>
           <h4 className="m-0 text-[19px]">White-label</h4>
           <div className="text-muted text-xs mt-0.5">
@@ -18,7 +18,7 @@ export default function WhiteLabelPage() {
           </div>
         </div>
 
-        <div className="grid gap-5 items-start" style={{ gridTemplateColumns: "380px 1fr" }}>
+        <div className="grid gap-5 items-start grid-cols-1 lg:grid-cols-[380px_1fr]">
           <div className="flex flex-col gap-3.5">
             <div className="field">
               <label>Company name</label>
