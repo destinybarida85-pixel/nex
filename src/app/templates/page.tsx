@@ -75,7 +75,7 @@ export default function TemplatesPage() {
         </div>
 
         <div
-          className="rounded-2xl p-8"
+          className="rounded-2xl p-4 sm:p-8 overflow-x-auto"
           style={{ background: "var(--color-neutral-900)", boxShadow: "var(--shadow-sm)" }}
         >
           {mode === "invoice" ? (

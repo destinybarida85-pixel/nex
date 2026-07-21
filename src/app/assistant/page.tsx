@@ -110,11 +110,11 @@ export default function AssistantPage() {
   }
 
   return (
-    <div className="flex h-screen bg-[var(--color-bg)] overflow-hidden">
+    <div className="flex min-h-screen md:h-screen bg-[var(--color-bg)] md:overflow-hidden">
       <Sidebar active="AI Assistant" />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
-        <div className="flex-1 flex min-h-0">
+        <div className="flex-1 flex flex-col md:flex-row min-h-0">
           <ChatPanel messages={messages} thinking={thinking} onSend={handleSend} />
           <DocumentPanel document={documents[docKey]} />
         </div>

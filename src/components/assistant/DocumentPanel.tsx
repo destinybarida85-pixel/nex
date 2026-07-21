@@ -13,7 +13,7 @@ export type DocumentData = {
 export default function DocumentPanel({ document }: { document: DocumentData }) {
   return (
     <div className="flex-1 min-w-0 flex flex-col">
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-[var(--color-divider)]">
+      <div className="flex items-center gap-3 px-4 md:px-6 py-4 border-b border-[var(--color-divider)] flex-wrap">
         <IconDocuments size={16} className="text-[var(--color-accent)]" />
         <div>
           <div className="card-title text-[15px]">{document.title}</div>
@@ -25,9 +25,9 @@ export default function DocumentPanel({ document }: { document: DocumentData }) 
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-6 flex gap-6">
+      <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 flex flex-col md:flex-row gap-6">
         <div
-          className="flex-1 min-w-0 max-w-[620px] rounded-xl p-8 flex flex-col gap-5"
+          className="flex-1 min-w-0 max-w-[620px] rounded-xl p-5 md:p-8 flex flex-col gap-5"
           style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-sm)" }}
         >
           <div>
@@ -45,7 +45,7 @@ export default function DocumentPanel({ document }: { document: DocumentData }) 
           ))}
         </div>
 
-        <div className="w-[220px] flex-none flex flex-col gap-4">
+        <div className="w-full md:w-[220px] flex-none flex flex-col gap-4">
           <div className="card elev-sm gap-2.5 p-4">
             <div className="card-title text-[13px]">Signing status</div>
             <div className="flex flex-col gap-2.5 mt-1">

@@ -7,8 +7,8 @@ const lineItems = [
 export default function InvoiceTemplate({ tenantName, tenantAccent, poweredBy }: { tenantName: string; tenantAccent: string; poweredBy: boolean }) {
   return (
     <div
-      className="rounded-xl overflow-hidden mx-auto"
-      style={{ background: "#f5f5f7", color: "#1a1a1f", maxWidth: 620, boxShadow: "var(--shadow-md)" }}
+      className="rounded-xl overflow-hidden mx-auto flex-none"
+      style={{ background: "#f5f5f7", color: "#1a1a1f", width: 560, boxShadow: "var(--shadow-md)" }}
     >
       <div className="p-10 flex flex-col gap-8">
         <div className="flex items-start justify-between">

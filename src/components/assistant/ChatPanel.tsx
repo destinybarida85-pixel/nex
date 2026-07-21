@@ -26,7 +26,7 @@ export default function ChatPanel({
   }
 
   return (
-    <div className="w-[380px] flex-none flex flex-col border-r border-[var(--color-divider)] min-h-0">
+    <div className="w-full h-[70vh] md:h-auto md:w-[380px] flex-none flex flex-col border-b md:border-b-0 md:border-r border-[var(--color-divider)] min-h-0">
       <div className="flex items-center gap-2 px-5 py-4 border-b border-[var(--color-divider)]">
         <IconSparkle size={16} className="text-[var(--color-accent)]" />
         <div className="card-title text-[15px]">Nex AI</div>

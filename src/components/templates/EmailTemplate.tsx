@@ -1,8 +1,8 @@
 export default function EmailTemplate({ tenantName, tenantAccent, poweredBy }: { tenantName: string; tenantAccent: string; poweredBy: boolean }) {
   return (
     <div
-      className="rounded-xl overflow-hidden mx-auto border border-[var(--color-divider)]"
-      style={{ maxWidth: 620 }}
+      className="rounded-xl overflow-hidden mx-auto border border-[var(--color-divider)] flex-none"
+      style={{ width: 560 }}
     >
       <div className="p-4 flex flex-col gap-2 text-[12px]" style={{ background: "var(--color-surface)" }}>
         <div className="flex gap-2">
