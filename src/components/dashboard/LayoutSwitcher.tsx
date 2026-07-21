@@ -6,7 +6,7 @@ const variants = [
 
 export default function LayoutSwitcher({ current }: { current: string }) {
   return (
-    <div className="flex items-center gap-2 mb-1">
+    <div className="hidden sm:flex items-center gap-2 mb-1 flex-wrap">
       <span className="text-[10.5px] tracking-[.06em] uppercase text-[var(--color-neutral-600)]">
         Layout exploration
       </span>

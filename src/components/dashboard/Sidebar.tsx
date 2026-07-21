@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
   IconLogoMark,
   IconChevronUpDown,
@@ -17,6 +20,8 @@ import {
   IconSettings,
   IconGlobe,
   IconApi,
+  IconMenu,
+  IconX,
 } from "@/components/icons";
 
 const primaryNav = [
@@ -51,15 +56,18 @@ function NavLink({
   icon: Icon,
   href,
   active,
+  onNavigate,
 }: {
   label: string;
   icon: React.ComponentType<{ size?: number }>;
   href: string;
   active: boolean;
+  onNavigate?: () => void;
 }) {
   return (
     <a
       href={href}
+      onClick={onNavigate}
       className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13.5px] no-underline transition-colors"
       style={
         active
@@ -73,9 +81,9 @@ function NavLink({
   );
 }
 
-export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
+function SidebarContent({ active, onNavigate }: { active: string; onNavigate?: () => void }) {
   return (
-    <aside className="w-[236px] flex-none flex flex-col p-[18px_14px_14px] border-r border-[var(--color-divider)] min-h-screen">
+    <>
       <div className="flex items-center gap-2.5 px-2 pb-4">
         <IconLogoMark size={26} />
         <div className="font-medium text-[16px] tracking-[-0.01em]">Nex</div>
@@ -91,22 +99,23 @@ export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
 
       <nav className="flex flex-col gap-0.5 flex-1">
         {primaryNav.map((item) => (
-          <NavLink key={item.label} {...item} active={item.label === active} />
+          <NavLink key={item.label} {...item} active={item.label === active} onNavigate={onNavigate} />
         ))}
         <div className="text-[10px] tracking-[.1em] uppercase text-[var(--color-neutral-600)] px-2.5 pt-3.5 pb-[5px]">
           Money
         </div>
         {moneyNav.map((item) => (
-          <NavLink key={item.label} {...item} active={item.label === active} />
+          <NavLink key={item.label} {...item} active={item.label === active} onNavigate={onNavigate} />
         ))}
         <div className="text-[10px] tracking-[.1em] uppercase text-[var(--color-neutral-600)] px-2.5 pt-3.5 pb-[5px]">
           Work
         </div>
         {workNav.map((item) => (
-          <NavLink key={item.label} {...item} active={item.label === active} />
+          <NavLink key={item.label} {...item} active={item.label === active} onNavigate={onNavigate} />
         ))}
         <a
           href="/assistant"
+          onClick={onNavigate}
           className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13.5px] no-underline mt-3 transition-colors"
           style={
             active === "AI Assistant"
@@ -122,9 +131,45 @@ export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
 
       <div className="flex flex-col gap-0.5 pt-3 border-t border-[var(--color-divider)]">
         {bottomNav.map((item) => (
-          <NavLink key={item.label} {...item} active={item.label === active} />
+          <NavLink key={item.label} {...item} active={item.label === active} onNavigate={onNavigate} />
         ))}
       </div>
-    </aside>
+    </>
+  );
+}
+
+export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        className="btn btn-icon btn-secondary md:hidden fixed top-3 left-3 z-30"
+        aria-label="Open menu"
+        onClick={() => setOpen(true)}
+      >
+        <IconMenu size={18} />
+      </button>
+
+      <aside className="hidden md:flex w-[236px] flex-none flex-col p-[18px_14px_14px] border-r border-[var(--color-divider)] min-h-screen">
+        <SidebarContent active={active} />
+      </aside>
+
+      {open && (
+        <div className="md:hidden fixed inset-0 z-40 flex">
+          <div className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-neutral-900)_60%,transparent)]" onClick={() => setOpen(false)} />
+          <div className="relative w-[260px] flex-none flex flex-col p-[18px_14px_14px] bg-[var(--color-bg)] border-r border-[var(--color-divider)] h-full overflow-y-auto">
+            <button
+              className="btn btn-icon btn-secondary self-end mb-2"
+              aria-label="Close menu"
+              onClick={() => setOpen(false)}
+            >
+              <IconX size={16} />
+            </button>
+            <SidebarContent active={active} onNavigate={() => setOpen(false)} />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -14,30 +14,32 @@ export default function TransactionsTable() {
         <div className="flex-1" />
         <a href="#" className="btn btn-ghost text-[12.5px]">View all</a>
       </div>
-      <table className="table text-[13px]">
-        <thead>
-          <tr>
-            <th>Counterparty</th>
-            <th>Type</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th className="text-right">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.party + r.date}>
-              <td>{r.party}</td>
-              <td>{r.type}</td>
-              <td>{r.date}</td>
-              <td>
-                <span className={`tag ${r.tag}`}>{r.status}</span>
-              </td>
-              <td className="text-right">{r.amount}</td>
+      <div className="overflow-x-auto -mx-1">
+        <table className="table text-[13px] min-w-[520px] px-1">
+          <thead>
+            <tr>
+              <th>Counterparty</th>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th className="text-right">Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.party + r.date}>
+                <td>{r.party}</td>
+                <td>{r.type}</td>
+                <td>{r.date}</td>
+                <td>
+                  <span className={`tag ${r.tag}`}>{r.status}</span>
+                </td>
+                <td className="text-right">{r.amount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

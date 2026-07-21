@@ -8,7 +8,7 @@ export default function KpiCards() {
   const filter = hideBalances ? { filter: "blur(7px)" } : undefined;
 
   return (
-    <div className="grid grid-cols-4 gap-3.5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
       <div className="card elev-sm gap-[7px] p-[16px_18px]">
         <div className="flex items-center gap-1.5 text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">
           Wallet balance
