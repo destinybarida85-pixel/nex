@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthShell from "@/components/auth/AuthShell";
 import { IconGoogle } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 import { isBackendConfigured } from "@/lib/backendStatus";
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams.get("redirect") || "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,7 +25,7 @@ export default function SignInPage() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/dashboard` },
+      options: { redirectTo: `${window.location.origin}${redirectTarget}` },
     });
     if (error) {
       setError(error.message);
@@ -50,7 +52,7 @@ export default function SignInPage() {
       setLoading(null);
       return;
     }
-    router.push("/dashboard");
+    router.push(redirectTarget);
   }
 
   return (
@@ -107,5 +109,13 @@ export default function SignInPage() {
         Don&rsquo;t have an account? <a href="/signup" style={{ color: "var(--color-accent-300)" }}>Sign up</a>
       </div>
     </AuthShell>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignInForm />
+    </Suspense>
   );
 }

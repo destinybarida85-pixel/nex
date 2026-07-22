@@ -1,6 +1,31 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Routes that hold real business data and require a signed-in Origin account.
+// Deliberately excludes /sign (external signers often have no Origin account
+// of their own — same reason real e-sign services work this way) and
+// /tenant-login (a white-label tenant's own branded portal, unrelated to
+// Origin's own auth).
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/wallet",
+  "/assistant",
+  "/admin",
+  "/profile",
+  "/analytics",
+  "/calendar",
+  "/crm",
+  "/employees",
+  "/payments",
+  "/payroll",
+  "/invoices",
+  "/templates",
+  "/whitelabel",
+  "/mobile",
+];
+
+const AUTH_PAGES = ["/signin", "/signup"];
+
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -25,7 +50,23 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { pathname } = request.nextUrl;
+  const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const isAuthPage = AUTH_PAGES.some((p) => pathname === p);
+
+  if (!user && isProtected) {
+    const redirectUrl = new URL("/signin", request.url);
+    redirectUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  if (user && isAuthPage) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
 
   return response;
 }
