@@ -57,37 +57,37 @@ function SignInForm() {
 
   return (
     <AuthShell>
-      <div className="flex items-center gap-2.5 mb-10">
-        <IconLogoMark size={30} />
-        <span className="text-[17px] font-medium">Origin</span>
+      <div className="flex items-center gap-3 mb-11">
+        <IconLogoMark size={34} />
+        <span style={{ fontSize: 19, fontWeight: 600 }}>Origin</span>
       </div>
-      <div className="mb-8">
-        <h4 className="m-0" style={{ fontSize: 34, lineHeight: 1.15 }}>Welcome back</h4>
-        <div className="text-[15px] text-[var(--color-neutral-500)] mt-2">Enter your details below.</div>
+      <div className="mb-9">
+        <h4 className="m-0" style={{ fontSize: 42, lineHeight: 1.1, fontWeight: 700 }}>Welcome back</h4>
+        <div className="text-[16px] text-[var(--color-neutral-500)] mt-2.5">Enter your details below.</div>
       </div>
 
       <button
         className="btn btn-secondary btn-block gap-3"
-        style={{ marginTop: 0, minHeight: 52, fontSize: 15 }}
+        style={{ marginTop: 0, minHeight: 56, fontSize: 16, fontWeight: 600 }}
         onClick={handleGoogle}
         disabled={!!loading}
       >
-        <IconGoogle size={19} />
+        <IconGoogle size={20} />
         {loading === "google" ? "Connecting to Google…" : "Continue with Google"}
       </button>
 
-      <div className="flex items-center gap-3 text-[13px] text-[var(--color-neutral-600)] my-6">
+      <div className="flex items-center gap-3 text-[14px] text-[var(--color-neutral-600)] my-7">
         <span className="flex-1 h-px bg-[var(--color-divider)]" />
         or
         <span className="flex-1 h-px bg-[var(--color-divider)]" />
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <div className="field">
-          <label style={{ fontSize: 14 }}>Email</label>
+          <label style={{ fontSize: 15, fontWeight: 600 }}>Email</label>
           <input
             className="input"
-            style={{ minHeight: 52, fontSize: 15, padding: "10px 14px" }}
+            style={{ minHeight: 56, fontSize: 16, padding: "12px 16px" }}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -95,28 +95,28 @@ function SignInForm() {
           />
         </div>
         <div className="field">
-          <label style={{ fontSize: 14 }}>Password</label>
+          <label style={{ fontSize: 15, fontWeight: 600 }}>Password</label>
           <input
             className="input"
-            style={{ minHeight: 52, fontSize: 15, padding: "10px 14px" }}
+            style={{ minHeight: 56, fontSize: 16, padding: "12px 16px" }}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••••"
           />
         </div>
-        {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+        {error && <div className="text-[14px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
         <button
           className="btn btn-primary btn-block"
-          style={{ marginTop: 6, minHeight: 52, fontSize: 15.5 }}
+          style={{ marginTop: 6, minHeight: 56, fontSize: 17, fontWeight: 700 }}
           disabled={!!loading}
         >
           {loading === "email" ? "Signing in…" : "Sign in"}
         </button>
       </form>
 
-      <div className="text-[14px] text-[var(--color-neutral-500)] text-center mt-7">
-        Don&rsquo;t have an account? <a href="/signup" style={{ color: "var(--color-accent-300)" }}>Sign up</a>
+      <div className="text-[15px] text-[var(--color-neutral-500)] text-center mt-8">
+        Don&rsquo;t have an account? <a href="/signup" style={{ color: "var(--color-accent-300)", fontWeight: 600 }}>Sign up</a>
       </div>
     </AuthShell>
   );

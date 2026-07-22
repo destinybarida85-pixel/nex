@@ -8,8 +8,8 @@ export default function AuthShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <div className="flex flex-col justify-center items-center p-8 sm:p-16 text-[var(--color-text)] min-h-screen">
-        <div className="w-full max-w-[460px]">{children}</div>
-        <div className="text-[13px] text-center max-w-[380px] text-[var(--color-neutral-600)] mt-10">
+        <div className="w-full max-w-[500px]">{children}</div>
+        <div className="text-[14px] text-center max-w-[400px] text-[var(--color-neutral-600)] mt-11">
           No card required · Funds held by licensed banking partners
         </div>
       </div>
