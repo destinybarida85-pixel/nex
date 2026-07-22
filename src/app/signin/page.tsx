@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthShell from "@/components/auth/AuthShell";
 import { IconGoogle } from "@/components/icons";
+import { createClient } from "@/lib/supabase/client";
+import { isBackendConfigured } from "@/lib/backendStatus";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -12,24 +14,43 @@ export default function SignInPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState<"google" | "email" | null>(null);
 
-  function goToDashboard() {
-    setTimeout(() => router.push("/dashboard"), 900);
-  }
-
-  function handleGoogle() {
+  async function handleGoogle() {
+    if (!isBackendConfigured) {
+      setError("Backend isn't connected yet, so Google sign-in isn't live. Ask your developer to add Supabase credentials.");
+      return;
+    }
     setLoading("google");
-    goToDashboard();
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/dashboard` },
+    });
+    if (error) {
+      setError(error.message);
+      setLoading(null);
+    }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
       setError("Enter both email and password.");
       return;
     }
+    if (!isBackendConfigured) {
+      setError("Backend isn't connected yet, so accounts can't sign in for real. Ask your developer to add Supabase credentials.");
+      return;
+    }
     setError("");
     setLoading("email");
-    goToDashboard();
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setError(error.message);
+      setLoading(null);
+      return;
+    }
+    router.push("/dashboard");
   }
 
   return (

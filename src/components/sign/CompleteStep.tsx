@@ -1,5 +1,6 @@
 import { IconCheckCircle, IconLock, IconDownload } from "@/components/icons";
 import Stamp from "./Stamp";
+import type { SignatureProof } from "@/app/sign/page";
 
 const audit = [
   { label: "Drafted", meta: "Jul 18, 2026 · 09:14" },
@@ -9,7 +10,15 @@ const audit = [
   { label: "Signed & sealed", meta: "Jul 21, 2026 · 08:45" },
 ];
 
-export default function CompleteStep({ signature }: { signature: string }) {
+export default function CompleteStep({
+  signature,
+  proof,
+  sealing,
+}: {
+  signature: string;
+  proof: SignatureProof | null;
+  sealing: boolean;
+}) {
   return (
     <div className="flex flex-col items-center gap-5 text-center">
       <span
@@ -32,7 +41,9 @@ export default function CompleteStep({ signature }: { signature: string }) {
               <div className="flex items-center gap-2">
                 <IconLock size={13} className="text-[var(--color-accent)]" />
                 <span className="text-[12px] font-mono text-[var(--color-neutral-400)]">
-                  Certificate ID: OG-CERT-8F21-40A9
+                  {sealing
+                    ? "Computing certificate…"
+                    : `Certificate ID: ${proof?.certificateId ?? "unavailable"}`}
                 </span>
               </div>
               {signature.startsWith("data:") ? (
@@ -40,11 +51,27 @@ export default function CompleteStep({ signature }: { signature: string }) {
               ) : (
                 <span style={{ fontFamily: "cursive", fontSize: 22 }}>{signature}</span>
               )}
+              {proof && (
+                <div className="text-[9.5px] font-mono text-[var(--color-neutral-600)] break-all">
+                  SHA-256: {proof.recordHash}
+                </div>
+              )}
             </div>
             <div className="flex-none -mt-2 -mr-1">
               <Stamp label="SEALED" sub="ORIGIN E-SIGN" />
             </div>
           </div>
+          {proof && (
+            <div
+              className="text-[10.5px] no-print flex items-center gap-1.5 pt-2 mt-1 border-t border-[var(--color-divider)]"
+              style={{ color: proof.persisted ? "#63c3b2" : "var(--color-neutral-500)" }}
+            >
+              <IconCheckCircle size={11} />
+              {proof.persisted
+                ? "Independently verifiable: stored server-side in the signatures ledger."
+                : "Computed live from the document and signature. Connect a database to make this independently verifiable."}
+            </div>
+          )}
         </div>
 
         <div className="card elev-sm w-full text-left gap-2.5 p-4">

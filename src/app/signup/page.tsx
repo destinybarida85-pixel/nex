@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthShell from "@/components/auth/AuthShell";
 import { IconGoogle } from "@/components/icons";
+import { createClient } from "@/lib/supabase/client";
+import { isBackendConfigured } from "@/lib/backendStatus";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -12,17 +14,26 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState<"google" | "email" | null>(null);
+  const [checkEmail, setCheckEmail] = useState(false);
 
-  function goToDashboard() {
-    setTimeout(() => router.push("/dashboard"), 900);
-  }
-
-  function handleGoogle() {
+  async function handleGoogle() {
+    if (!isBackendConfigured) {
+      setError("Backend isn't connected yet, so Google sign-in isn't live. Ask your developer to add Supabase credentials.");
+      return;
+    }
     setLoading("google");
-    goToDashboard();
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/dashboard` },
+    });
+    if (error) {
+      setError(error.message);
+      setLoading(null);
+    }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !password.trim()) {
       setError("Fill in your name, email and password.");
@@ -32,9 +43,45 @@ export default function SignUpPage() {
       setError("Password must be at least 8 characters.");
       return;
     }
+    if (!isBackendConfigured) {
+      setError("Backend isn't connected yet, so accounts can't be created for real. Ask your developer to add Supabase credentials.");
+      return;
+    }
     setError("");
     setLoading("email");
-    goToDashboard();
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name, company_name: `${name}'s Business` } },
+    });
+    if (error) {
+      setError(error.message);
+      setLoading(null);
+      return;
+    }
+    if (data.session) {
+      router.push("/dashboard");
+    } else {
+      // Email confirmation is on by default for new Supabase projects.
+      setCheckEmail(true);
+      setLoading(null);
+    }
+  }
+
+  if (checkEmail) {
+    return (
+      <AuthShell>
+        <div className="mb-2">
+          <h4 className="m-0 text-[20px]">Check your email</h4>
+          <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-2 leading-[1.6]">
+            We sent a confirmation link to <strong className="text-[var(--color-text)]">{email}</strong>. Click it to
+            activate your account, then come back and sign in.
+          </div>
+        </div>
+        <a href="/signin" className="btn btn-secondary btn-block mt-4">Back to sign in</a>
+      </AuthShell>
+    );
   }
 
   return (

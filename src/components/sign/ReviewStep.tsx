@@ -2,13 +2,9 @@
 
 import { useState } from "react";
 import { IconDocuments } from "@/components/icons";
+import { demoDocument } from "./document";
 
-const sections = [
-  { heading: "1. Parties", text: "This Master Services Agreement (“Agreement”) is entered into between Meridian Studio (“Provider”) and Halcyon Ventures (“Client”)." },
-  { heading: "2. Scope of Services", text: "Provider shall deliver brand strategy, product design, and quarterly design-ops support as detailed in the attached Statement of Work." },
-  { heading: "3. Fees & Payment", text: "Client agrees to pay $18,500 per milestone, net 15, via the connected business wallet or wire transfer." },
-  { heading: "4. Term & Termination", text: "This Agreement is effective upon signature and continues for 12 months, renewable by mutual written consent." },
-];
+const sections = demoDocument.sections;
 
 export default function ReviewStep({ onContinue }: { onContinue: () => void }) {
   const [reviewed, setReviewed] = useState(false);
