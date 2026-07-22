@@ -6,6 +6,7 @@ import TopBar from "@/components/dashboard/TopBar";
 import TransferModal from "@/components/wallet/TransferModal";
 import ReceiveModal from "@/components/wallet/ReceiveModal";
 import CardsTab from "@/components/wallet/CardsTab";
+import CryptoTab from "@/components/wallet/CryptoTab";
 import { initialTransactions, beneficiaries, type WalletTx } from "@/components/wallet/data";
 import { generateAccountNumber, generateRoutingNumber } from "@/lib/generateAccountNumber";
 import { IconDownload, IconSend, IconReceive, IconEye, IconEyeOff, IconPlus } from "@/components/icons";
@@ -13,7 +14,7 @@ import { IconDownload, IconSend, IconReceive, IconEye, IconEyeOff, IconPlus } fr
 type SubAccount = { label: string; number: string; routing: string };
 
 export default function WalletPage() {
-  const [view, setView] = useState<"overview" | "cards">("overview");
+  const [view, setView] = useState<"overview" | "cards" | "crypto">("overview");
   const [transactions, setTransactions] = useState<WalletTx[]>(initialTransactions);
   const [balance, setBalance] = useState(248610.44);
   const [showTransfer, setShowTransfer] = useState(false);
@@ -91,6 +92,10 @@ export default function WalletPage() {
                 <input type="radio" name="walletview" checked={view === "cards"} onChange={() => setView("cards")} />
                 <span>Cards</span>
               </label>
+              <label className="seg-opt">
+                <input type="radio" name="walletview" checked={view === "crypto"} onChange={() => setView("crypto")} />
+                <span>Crypto</span>
+              </label>
             </div>
             <button className="btn btn-secondary text-[13px]" onClick={downloadStatement}>
               <IconDownload size={14} />
@@ -99,6 +104,7 @@ export default function WalletPage() {
           </div>
 
           {view === "cards" && <CardsTab />}
+          {view === "crypto" && <CryptoTab />}
 
           {view === "overview" && (
           <>

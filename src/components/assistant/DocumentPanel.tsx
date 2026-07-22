@@ -1,4 +1,4 @@
-import { IconDocuments, IconDownload, IconESign } from "@/components/icons";
+import { IconDocuments, IconDownload, IconESign, IconLogoMark } from "@/components/icons";
 
 export type DocumentStep = { label: string; done: boolean };
 export type DocumentData = {
@@ -30,7 +30,11 @@ export default function DocumentPanel({ document }: { document: DocumentData }) 
           className="flex-1 min-w-0 max-w-[620px] rounded-xl p-5 md:p-8 flex flex-col gap-5 print-area"
           style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-sm)" }}
         >
-          <div>
+          <div className="flex items-center gap-2.5">
+            <IconLogoMark size={26} />
+            <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Nex Inc. · Document</div>
+          </div>
+          <div className="text-center pt-1">
             <h3 className="text-[19px] m-0">{document.title}</h3>
             <div className="text-[12px] text-[var(--color-neutral-500)] mt-1">{document.meta}</div>
           </div>
@@ -43,6 +47,21 @@ export default function DocumentPanel({ document }: { document: DocumentData }) 
               <p className="text-[13px] leading-[1.7] text-[var(--color-neutral-300)] m-0">{section.text}</p>
             </div>
           ))}
+          <div className="hr" />
+          <div>
+            <h5 className="text-[13px] tracking-[0.02em] mb-3" style={{ color: "var(--color-accent-300)" }}>
+              Signatures
+            </h5>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {["Party A", "Party B"].map((party) => (
+                <div key={party} className="flex flex-col gap-1">
+                  <div className="h-8 border-b border-[var(--color-divider)]" />
+                  <div className="text-[11px] text-[var(--color-neutral-500)]">{party} signature</div>
+                  <div className="text-[10px] text-[var(--color-neutral-600)] mt-2">Date: ______________</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="w-full md:w-[220px] flex-none flex flex-col gap-4">
