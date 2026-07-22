@@ -95,8 +95,7 @@ const initialMessages: ChatMessage[] = [
 
 export default function AssistantPage() {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
-  const [docKey, setDocKey] = useState("nda");
-  const [liveDocument, setLiveDocument] = useState<DocumentData | null>(null);
+  const [currentDocument, setCurrentDocument] = useState<DocumentData>(documents.nda);
   const [thinking, setThinking] = useState(false);
 
   async function handleSend(text: string) {
@@ -112,7 +111,7 @@ export default function AssistantPage() {
       const data = await res.json();
 
       if (data.configured) {
-        setLiveDocument({
+        setCurrentDocument({
           title: data.title,
           meta: data.meta,
           status: "Draft",
@@ -134,8 +133,7 @@ export default function AssistantPage() {
 
     const { key, aiReply } = pickDocument(text);
     setTimeout(() => {
-      setLiveDocument(null);
-      setDocKey(key);
+      setCurrentDocument(documents[key]);
       setMessages((prev) => [...prev, { role: "ai", text: aiReply }]);
       setThinking(false);
     }, 700);
@@ -148,7 +146,7 @@ export default function AssistantPage() {
         <TopBar />
         <div className="flex-1 flex flex-col md:flex-row min-h-0">
           <ChatPanel messages={messages} thinking={thinking} onSend={handleSend} />
-          <DocumentPanel document={liveDocument ?? documents[docKey]} />
+          <DocumentPanel document={currentDocument} onUpdate={setCurrentDocument} />
         </div>
       </div>
     </div>

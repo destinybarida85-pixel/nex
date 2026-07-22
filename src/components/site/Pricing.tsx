@@ -5,14 +5,15 @@ import ScrollReveal from "@/components/site/ScrollReveal";
 
 export default function Pricing() {
   const [annual, setAnnual] = useState(false);
-  const growthPrice = annual ? "$39" : "$49";
+  const starterPrice = annual ? "$20" : "$25";
+  const growthPrice = annual ? "$28" : "$35";
 
   return (
     <section id="pricing" className="max-w-[1160px] mx-auto px-6 pt-[80px]">
       <ScrollReveal className="flex items-end gap-4 flex-wrap">
         <div>
           <span className="card-kicker">Pricing</span>
-          <h3 className="text-[27px] mt-2.5 tracking-[-0.015em]">Start free. Scale when you do.</h3>
+          <h3 className="text-[27px] mt-2.5 tracking-[-0.015em]">Simple pricing. Scale when you do.</h3>
         </div>
         <div className="flex-1" />
         <div className="seg">
@@ -31,16 +32,18 @@ export default function Pricing() {
         <div className="card elev-sm p-[22px] gap-2.5 nx-price-card">
           <div className="card-title">Starter</div>
           <div className="font-medium text-[34px]">
-            $0<span className="text-[13px] text-[var(--color-neutral-500)]"> forever</span>
+            {starterPrice}
+            <span className="text-[13px] text-[var(--color-neutral-500)]"> / user / mo</span>
           </div>
           <div className="card-body text-[13px]">For a founder getting set up.</div>
           <div className="flex flex-col gap-[7px] text-[12.5px] text-[var(--color-neutral-300)] mt-1">
             <span>· Business wallet + 3 users</span>
             <span>· 20 AI documents / month</span>
-            <span>· 5 e-signatures / month</span>
+            <span>· E-signatures included</span>
+            <span className="text-[var(--color-neutral-600)]">· No digital stamps</span>
             <span>· Core dashboard &amp; invoicing</span>
           </div>
-          <a href="/signup" className="btn btn-secondary btn-block text-[13px] mt-auto">Start free</a>
+          <a href="/signup" className="btn btn-secondary btn-block text-[13px] mt-auto">Get started</a>
         </div>
 
         <div
@@ -58,6 +61,7 @@ export default function Pricing() {
           <div className="card-body text-[13px]">For teams running the whole business on Origin.</div>
           <div className="flex flex-col gap-[7px] text-[12.5px] text-[var(--color-neutral-300)] mt-1">
             <span>· Unlimited AI documents &amp; e-signatures</span>
+            <span>· E-signatures + official digital stamps</span>
             <span>· Payroll, CRM, projects, analytics</span>
             <span>· White-label branding + custom domain</span>
             <span>· API access &amp; webhooks</span>
