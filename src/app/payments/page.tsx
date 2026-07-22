@@ -1,10 +1,10 @@
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
-import PaymentLinksTable from "@/components/payments/PaymentLinksTable";
+import StripePaymentLinksSection from "@/components/payments/StripePaymentLinksSection";
 import Beneficiaries from "@/components/payments/Beneficiaries";
 import PaymentHistoryTable from "@/components/payments/PaymentHistoryTable";
 import WebhookLog from "@/components/payments/WebhookLog";
-import { IconLink, IconQrCode, IconRepeat } from "@/components/icons";
+import { IconQrCode, IconRepeat } from "@/components/icons";
 
 const kpis = [
   { label: "Processed · 30d", value: "$33,590.18", meta: "▲ 9.4%", metaLabel: "vs June" },
@@ -34,10 +34,6 @@ export default function PaymentsPage() {
               <IconRepeat size={14} />
               New recurring
             </button>
-            <button className="btn btn-primary text-[13px]">
-              <IconLink size={14} />
-              Create payment link
-            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -54,7 +50,7 @@ export default function PaymentsPage() {
           </div>
 
           <div className="grid gap-3.5 items-start grid-cols-1 lg:grid-cols-[2fr_1fr]">
-            <PaymentLinksTable />
+            <StripePaymentLinksSection />
             <Beneficiaries />
           </div>
 
