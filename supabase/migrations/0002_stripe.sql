@@ -1,15 +1,5 @@
--- Stripe Connect + payment links
+-- Payment links (billed directly through your own Stripe account)
 -- Run this once in the Supabase SQL editor, after 0001_init.sql.
-
-create table if not exists stripe_connect_accounts (
-  tenant_id uuid primary key references tenants(id) on delete cascade,
-  stripe_account_id text not null unique,
-  charges_enabled boolean not null default false,
-  payouts_enabled boolean not null default false,
-  details_submitted boolean not null default false,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
 
 create table if not exists payment_links (
   id uuid primary key default gen_random_uuid(),
@@ -45,12 +35,8 @@ as $$
   update payment_links set uses_count = uses_count + 1 where id = link_id;
 $$;
 
-alter table stripe_connect_accounts enable row level security;
 alter table payment_links enable row level security;
 alter table payment_link_events enable row level security;
-
-create policy "stripe_connect_accounts: tenant scoped" on stripe_connect_accounts
-  for all using (tenant_id = auth_tenant_id());
 
 create policy "payment_links: tenant scoped" on payment_links
   for all using (tenant_id = auth_tenant_id());

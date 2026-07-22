@@ -18,9 +18,9 @@ export async function GET() {
   return NextResponse.json({ configured: true, links });
 }
 
-// Creates a real, live Stripe Payment Link on the tenant's own connected account.
-// The returned url is a genuine stripe.com checkout page — money paid through it
-// settles to the tenant's own Stripe account, not Origin's.
+// Creates a real, live Stripe Payment Link on your own Stripe account.
+// The returned url is a genuine stripe.com checkout page — money paid through
+// it settles directly to your own Stripe balance/bank account.
 export async function POST(request: Request) {
   if (!isStripeConfigured) {
     return NextResponse.json({ error: "Stripe isn't connected yet." }, { status: 200 });
@@ -43,39 +43,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Pick a billing interval for a recurring link." }, { status: 400 });
   }
 
-  const { data: connectAccount } = await supabase!
-    .from("stripe_connect_accounts")
-    .select("stripe_account_id, charges_enabled")
-    .eq("tenant_id", tenantId)
-    .maybeSingle();
-
-  if (!connectAccount?.stripe_account_id) {
-    return NextResponse.json({ error: "Connect your Stripe account before creating payment links." }, { status: 400 });
-  }
-  if (!connectAccount.charges_enabled) {
-    return NextResponse.json(
-      { error: "Your Stripe account is still finishing onboarding. Charges aren't enabled yet." },
-      { status: 400 }
-    );
-  }
-
   const stripe = getStripe();
-  const stripeAccountId = connectAccount.stripe_account_id as string;
 
-  const price = await stripe.prices.create(
-    {
-      currency: "usd",
-      unit_amount: body.amountCents,
-      product_data: { name: body.title.trim() },
-      ...(body.kind === "recurring" ? { recurring: { interval: body.interval! } } : {}),
-    },
-    { stripeAccount: stripeAccountId }
-  );
+  const price = await stripe.prices.create({
+    currency: "usd",
+    unit_amount: body.amountCents,
+    product_data: { name: body.title.trim() },
+    ...(body.kind === "recurring" ? { recurring: { interval: body.interval! } } : {}),
+  });
 
-  const paymentLink = await stripe.paymentLinks.create(
-    { line_items: [{ price: price.id, quantity: 1 }] },
-    { stripeAccount: stripeAccountId }
-  );
+  const paymentLink = await stripe.paymentLinks.create({
+    line_items: [{ price: price.id, quantity: 1 }],
+  });
 
   const { data: saved, error: saveError } = await supabase!
     .from("payment_links")

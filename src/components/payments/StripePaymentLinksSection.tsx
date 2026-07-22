@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { paymentLinks as demoPaymentLinks } from "./data";
-import { IconLink, IconPlus, IconCheckCircle, IconArrowRight } from "@/components/icons";
+import { IconLink, IconPlus, IconCheckCircle } from "@/components/icons";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 
-type ConnectAccount = { stripe_account_id: string; charges_enabled: boolean; details_submitted: boolean } | null;
 type PaymentLink = {
   id: string;
   title: string;
@@ -27,9 +26,7 @@ export default function StripePaymentLinksSection() {
   const { hasSession, checked } = useHasSession();
   const [live, setLive] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [account, setAccount] = useState<ConnectAccount>(null);
   const [links, setLinks] = useState<PaymentLink[]>([]);
-  const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState("");
 
   const [creating, setCreating] = useState(false);
@@ -44,17 +41,12 @@ export default function StripePaymentLinksSection() {
       setLoading(false);
       return;
     }
-    Promise.all([
-      fetch("/api/stripe/connect").then((r) => r.json()),
-      fetch("/api/stripe/payment-links").then((r) => r.json()),
-    ])
-      .then(([connectData, linksData]) => {
-        if (connectData.configured) {
+    fetch("/api/stripe/payment-links")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured) {
           setLive(true);
-          setAccount(connectData.account ?? null);
-        }
-        if (linksData.configured && linksData.links) {
-          setLinks(linksData.links);
+          setLinks(data.links ?? []);
         }
       })
       .catch(() => {
@@ -62,23 +54,6 @@ export default function StripePaymentLinksSection() {
       })
       .finally(() => setLoading(false));
   }, [checked, hasSession]);
-
-  async function connectStripe() {
-    setConnecting(true);
-    setError("");
-    try {
-      const res = await fetch("/api/stripe/connect", { method: "POST" });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-        return;
-      }
-      setError(data.error || "Couldn't start Stripe onboarding.");
-    } catch {
-      setError("Couldn't reach the server.");
-    }
-    setConnecting(false);
-  }
 
   async function createLink() {
     const cents = Math.round(Number(amount) * 100);
@@ -119,7 +94,7 @@ export default function StripePaymentLinksSection() {
     );
   }
 
-  // Not signed in, or backend not configured yet — show the original demo table untouched.
+  // Not signed in, backend not configured, or Stripe not connected — show the demo table untouched.
   if (!live) {
     return (
       <div className="card elev-sm p-[16px_18px] gap-2.5">
@@ -153,44 +128,6 @@ export default function StripePaymentLinksSection() {
             </tbody>
           </table>
         </div>
-      </div>
-    );
-  }
-
-  if (!account?.stripe_account_id) {
-    return (
-      <div className="card elev-sm p-[18px_20px] gap-3">
-        <div className="flex items-center gap-2">
-          <IconLink size={14} className="text-[var(--color-accent)]" />
-          <div className="card-title text-sm">Payment links</div>
-        </div>
-        <div className="text-[12.5px] text-[var(--color-neutral-500)] leading-[1.6]">
-          Connect a Stripe account to create real, live payment links. Money paid through them settles directly to
-          your own Stripe account — Origin never touches or holds it.
-        </div>
-        {error && <div className="text-[12px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
-        <button className="btn btn-primary text-[13px] gap-2" style={{ width: "fit-content" }} onClick={connectStripe} disabled={connecting}>
-          {connecting ? "Connecting…" : "Connect Stripe"}
-          <IconArrowRight size={14} />
-        </button>
-      </div>
-    );
-  }
-
-  if (!account.charges_enabled) {
-    return (
-      <div className="card elev-sm p-[18px_20px] gap-3">
-        <div className="flex items-center gap-2">
-          <IconLink size={14} className="text-[var(--color-accent)]" />
-          <div className="card-title text-sm">Payment links</div>
-        </div>
-        <div className="text-[12.5px] text-[var(--color-neutral-500)] leading-[1.6]">
-          Your Stripe account is connected but still finishing onboarding (identity/business verification with
-          Stripe directly). Once Stripe marks it complete, you can start creating payment links here.
-        </div>
-        <button className="btn btn-secondary text-[13px] gap-2" style={{ width: "fit-content" }} onClick={connectStripe} disabled={connecting}>
-          {connecting ? "Loading…" : "Continue onboarding"}
-        </button>
       </div>
     );
   }
@@ -249,7 +186,7 @@ export default function StripePaymentLinksSection() {
             {links.length === 0 && (
               <tr>
                 <td colSpan={6} className="text-[var(--color-neutral-500)] py-3">
-                  No payment links yet. Create one above — it'll be a real, live Stripe checkout page.
+                  No payment links yet. Create one above — it&rsquo;ll be a real, live Stripe checkout page.
                 </td>
               </tr>
             )}
@@ -278,7 +215,7 @@ export default function StripePaymentLinksSection() {
 
       <div className="flex items-center gap-1.5 text-[10.5px] text-[var(--color-neutral-500)]">
         <IconCheckCircle size={11} />
-        These are genuine Stripe checkout links. Payments settle directly to your connected Stripe account.
+        These are genuine Stripe checkout links. Payments settle directly to your Stripe account.
       </div>
     </div>
   );

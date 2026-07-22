@@ -5,9 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 // Stripe calls this directly (no user session), so it verifies the request via
 // the webhook signature instead, and uses the service-role client to write
-// across tenants. Configure this URL as a Connect webhook endpoint in the
-// Stripe dashboard so `account.updated` and connected-account checkout events
-// both arrive here.
+// across tenants. Configure this URL as a webhook endpoint in the Stripe
+// dashboard, listening for checkout.session.completed.
 export async function POST(request: Request) {
   if (!isStripeConfigured) return NextResponse.json({ received: false }, { status: 200 });
 
@@ -26,19 +25,6 @@ export async function POST(request: Request) {
   }
 
   const supabase = createAdminClient();
-
-  if (event.type === "account.updated") {
-    const account = event.data.object as Stripe.Account;
-    await supabase
-      .from("stripe_connect_accounts")
-      .update({
-        charges_enabled: account.charges_enabled,
-        payouts_enabled: account.payouts_enabled,
-        details_submitted: account.details_submitted,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("stripe_account_id", account.id);
-  }
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
