@@ -169,13 +169,6 @@ export function IconMessages({ size, className }: IconProps) {
     </svg>
   );
 }
-export function IconTheme({ size, className }: IconProps) {
-  return (
-    <svg {...base(size)} className={className}>
-      <path d="M20 13A8 8 0 1 1 11 4a6.5 6.5 0 0 0 9 9z" />
-    </svg>
-  );
-}
 export function IconDownload({ size, className }: IconProps) {
   return (
     <svg {...base(size)} className={className} strokeWidth={1.8}>
@@ -407,14 +400,6 @@ export function MobileLogoMark({ size = 30, initial = "N" }: { size?: number; in
         <circle cx="98" cy="50" r="3.2" fill="var(--color-accent-300)" />
       </svg>
     </div>
-  );
-}
-export function IconSun({ size, className }: IconProps) {
-  return (
-    <svg {...base(size)} className={className}>
-      <circle cx="12" cy="12" r="4.2" />
-      <path d="M12 2.5v3M12 18.5v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2.5 12h3M18.5 12h3M4.9 19.1L7 17M17 7l2.1-2.1" />
-    </svg>
   );
 }
 export function IconCamera({ size, className }: IconProps) {

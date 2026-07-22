@@ -18,34 +18,35 @@ const kpis = [
 export default function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
+      <div className="nx-grid-bg absolute inset-0 pointer-events-none" />
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(720px 420px at 30% 8%, color-mix(in srgb, var(--color-accent) 13%, transparent), transparent)",
+            "radial-gradient(820px 460px at 50% -6%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent)",
         }}
       />
-      <div className="relative max-w-[1160px] mx-auto px-6 pt-[88px] pb-16">
-        <div className="max-w-[660px]">
-          <span className="tag tag-accent text-[10.5px]">
-            AI-powered · Bank-backed wallets · True white-label
-          </span>
-          <h1 className="text-[clamp(38px,5.5vw,58px)] mt-[18px] tracking-[-0.02em] leading-[1.06] text-pretty">
-            The complete business operating system.
-          </h1>
-          <p className="text-[16.5px] text-[var(--color-neutral-400)] max-w-[540px] mt-4 leading-[1.6]">
-            Money, documents, people and clients — run your entire organization from one platform, under your own brand.
-          </p>
-          <div className="flex gap-2.5 mt-[26px] flex-wrap">
-            <a href="/signup" className="btn btn-primary text-sm px-[22px] py-[11px]">Start free</a>
-            <button className="btn btn-secondary text-sm px-[22px] py-[11px]">Book a demo</button>
-          </div>
-          <div className="text-[11.5px] text-[var(--color-neutral-600)] mt-3">
-            No card required · Funds held by licensed banking partners
-          </div>
+      <div className="relative max-w-[860px] mx-auto px-6 pt-[110px] pb-16 flex flex-col items-center text-center">
+        <span className="tag tag-accent text-[10.5px]">
+          AI-powered · Bank-backed wallets · True white-label
+        </span>
+        <h1 className="text-[clamp(40px,6.5vw,68px)] mt-5 tracking-[-0.03em] leading-[1.02] text-pretty">
+          The complete business operating system.
+        </h1>
+        <p className="text-[17px] text-[var(--color-neutral-400)] max-w-[520px] mt-5 leading-[1.6]">
+          Money, documents, people and clients — run your entire organization from one platform, under your own brand.
+        </p>
+        <div className="flex gap-2.5 mt-7 flex-wrap justify-center">
+          <a href="/signup" className="btn btn-primary text-sm px-[22px] py-[11px]">Start free</a>
+          <button className="btn btn-secondary text-sm px-[22px] py-[11px]">Book a demo</button>
         </div>
+        <div className="text-[11.5px] text-[var(--color-neutral-600)] mt-3">
+          No card required · Funds held by licensed banking partners
+        </div>
+      </div>
 
-        <TiltCard id="product" maxTilt={4} scale={1.008} className="relative mt-[52px]">
+      <div className="relative max-w-[1160px] mx-auto px-6 pb-20">
+        <TiltCard id="product" maxTilt={4} scale={1.008} className="relative">
           <div className="border border-[var(--color-divider)] rounded-2xl overflow-hidden">
             <div className="flex items-center gap-1.5 px-3.5 py-2.5 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">
               <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />

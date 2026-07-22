@@ -1,8 +1,10 @@
+import ScrollReveal from "@/components/site/ScrollReveal";
+
 export default function Footer() {
   return (
     <section className="max-w-[1160px] mx-auto px-6 pt-20 pb-16">
       <div className="border-t border-[var(--color-divider)] pt-14">
-        <div className="nx-footer-panel flex flex-wrap gap-8 items-end">
+        <ScrollReveal className="nx-footer-panel flex flex-wrap gap-8 items-end">
           <div className="max-w-[560px]">
             <h2 className="text-[clamp(28px,4vw,36px)] tracking-[-0.02em] m-0">Run everything. From one place.</h2>
             <p className="text-sm text-[var(--color-neutral-400)] mt-2.5">
@@ -13,7 +15,7 @@ export default function Footer() {
               <a href="/signup" className="btn btn-primary text-[13.5px] flex-none">Get started</a>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
       <div className="flex gap-[22px] mt-10 text-[11.5px] text-[var(--color-neutral-600)] flex-wrap">
         <span className="mr-auto">© 2026 Nex Inc.</span>

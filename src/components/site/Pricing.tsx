@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import ScrollReveal from "@/components/site/ScrollReveal";
 
 export default function Pricing() {
   const [annual, setAnnual] = useState(false);
   const growthPrice = annual ? "$39" : "$49";
 
   return (
-    <section id="pricing" className="max-w-[1160px] mx-auto px-6 pt-[72px]">
-      <div className="flex items-end gap-4 flex-wrap">
+    <section id="pricing" className="max-w-[1160px] mx-auto px-6 pt-[80px]">
+      <ScrollReveal className="flex items-end gap-4 flex-wrap">
         <div>
           <span className="card-kicker">Pricing</span>
           <h3 className="text-[27px] mt-2.5 tracking-[-0.015em]">Start free. Scale when you do.</h3>
@@ -24,7 +25,7 @@ export default function Pricing() {
             <span>Annual · save 20%</span>
           </label>
         </div>
-      </div>
+      </ScrollReveal>
 
       <div className="grid gap-3.5 mt-6 items-stretch" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
         <div className="card elev-sm p-[22px] gap-2.5 nx-price-card">

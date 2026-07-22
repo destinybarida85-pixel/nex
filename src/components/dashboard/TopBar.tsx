@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IconSearch, IconPlus, IconBell, IconMessages, IconTheme, IconSun } from "@/components/icons";
-import { useTheme } from "@/lib/useTheme";
+import { IconSearch, IconPlus, IconBell, IconMessages } from "@/components/icons";
 
 export default function TopBar() {
-  const { theme, toggle } = useTheme();
   const [avatar, setAvatar] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,13 +36,6 @@ export default function TopBar() {
       </button>
       <button className="btn btn-icon btn-secondary hidden sm:flex flex-none" aria-label="Messages">
         <IconMessages size={16} />
-      </button>
-      <button
-        className="btn btn-icon btn-secondary hidden sm:flex flex-none"
-        aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-        onClick={toggle}
-      >
-        {theme === "dark" ? <IconTheme size={16} /> : <IconSun size={16} />}
       </button>
       <a
         href="/profile"

@@ -3,11 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
-import { useTheme } from "@/lib/useTheme";
-import { IconCamera, IconTheme, IconSun } from "@/components/icons";
+import { IconCamera } from "@/components/icons";
 
 export default function ProfilePage() {
-  const { theme, toggle } = useTheme();
   const [avatar, setAvatar] = useState<string | null>(null);
   const [name, setName] = useState("Amara Osei");
   const [email, setEmail] = useState("amara@meridianstudio.com");
@@ -107,20 +105,6 @@ export default function ProfilePage() {
             <button className="btn btn-primary text-[12.5px] self-start" onClick={saveProfile}>
               {saved ? "Saved!" : "Save changes"}
             </button>
-          </div>
-
-          <div className="card elev-sm p-5 gap-3">
-            <div className="card-title text-sm">Appearance</div>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-[13px]">{theme === "dark" ? "Dark mode" : "Light mode"}</div>
-                <div className="text-[11.5px] text-[var(--color-neutral-500)]">Applies across Nex on this device</div>
-              </div>
-              <button className="btn btn-secondary text-[12.5px]" onClick={toggle}>
-                {theme === "dark" ? <IconSun size={14} /> : <IconTheme size={14} />}
-                Switch to {theme === "dark" ? "light" : "dark"}
-              </button>
-            </div>
           </div>
         </main>
       </div>
