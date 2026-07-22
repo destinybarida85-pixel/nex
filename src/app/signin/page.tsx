@@ -57,36 +57,37 @@ function SignInForm() {
 
   return (
     <AuthShell>
-      <div className="flex items-center gap-2 mb-8">
-        <IconLogoMark size={22} />
-        <span className="text-[14px] font-medium">Origin</span>
+      <div className="flex items-center gap-2.5 mb-10">
+        <IconLogoMark size={30} />
+        <span className="text-[17px] font-medium">Origin</span>
       </div>
-      <div className="mb-6">
-        <h4 className="m-0 text-[22px]">Welcome back</h4>
-        <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1">Enter your details below.</div>
+      <div className="mb-8">
+        <h4 className="m-0" style={{ fontSize: 34, lineHeight: 1.15 }}>Welcome back</h4>
+        <div className="text-[15px] text-[var(--color-neutral-500)] mt-2">Enter your details below.</div>
       </div>
 
       <button
-        className="btn btn-secondary btn-block text-[13px] gap-2.5"
-        style={{ marginTop: 0 }}
+        className="btn btn-secondary btn-block gap-3"
+        style={{ marginTop: 0, minHeight: 52, fontSize: 15 }}
         onClick={handleGoogle}
         disabled={!!loading}
       >
-        <IconGoogle size={16} />
+        <IconGoogle size={19} />
         {loading === "google" ? "Connecting to Google…" : "Continue with Google"}
       </button>
 
-      <div className="flex items-center gap-2.5 text-[11px] text-[var(--color-neutral-600)] my-4">
+      <div className="flex items-center gap-3 text-[13px] text-[var(--color-neutral-600)] my-6">
         <span className="flex-1 h-px bg-[var(--color-divider)]" />
         or
         <span className="flex-1 h-px bg-[var(--color-divider)]" />
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="field">
-          <label>Email</label>
+          <label style={{ fontSize: 14 }}>Email</label>
           <input
             className="input"
+            style={{ minHeight: 52, fontSize: 15, padding: "10px 14px" }}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -94,22 +95,27 @@ function SignInForm() {
           />
         </div>
         <div className="field">
-          <label>Password</label>
+          <label style={{ fontSize: 14 }}>Password</label>
           <input
             className="input"
+            style={{ minHeight: 52, fontSize: 15, padding: "10px 14px" }}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••••"
           />
         </div>
-        {error && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
-        <button className="btn btn-primary btn-block" style={{ marginTop: 4 }} disabled={!!loading}>
+        {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+        <button
+          className="btn btn-primary btn-block"
+          style={{ marginTop: 6, minHeight: 52, fontSize: 15.5 }}
+          disabled={!!loading}
+        >
           {loading === "email" ? "Signing in…" : "Sign in"}
         </button>
       </form>
 
-      <div className="text-[12px] text-[var(--color-neutral-500)] text-center mt-5">
+      <div className="text-[14px] text-[var(--color-neutral-500)] text-center mt-7">
         Don&rsquo;t have an account? <a href="/signup" style={{ color: "var(--color-accent-300)" }}>Sign up</a>
       </div>
     </AuthShell>

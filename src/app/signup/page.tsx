@@ -72,58 +72,67 @@ export default function SignUpPage() {
   if (checkEmail) {
     return (
       <AuthShell>
-        <div className="flex items-center gap-2 mb-8">
-          <IconLogoMark size={22} />
-          <span className="text-[14px] font-medium">Origin</span>
+        <div className="flex items-center gap-2.5 mb-10">
+          <IconLogoMark size={30} />
+          <span className="text-[17px] font-medium">Origin</span>
         </div>
-        <div className="mb-2">
-          <h4 className="m-0 text-[20px]">Check your email</h4>
-          <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-2 leading-[1.6]">
+        <div className="mb-3">
+          <h4 className="m-0" style={{ fontSize: 30, lineHeight: 1.15 }}>Check your email</h4>
+          <div className="text-[15px] text-[var(--color-neutral-500)] mt-3 leading-[1.6]">
             We sent a confirmation link to <strong className="text-[var(--color-text)]">{email}</strong>. Click it to
             activate your account, then come back and sign in.
           </div>
         </div>
-        <a href="/signin" className="btn btn-secondary btn-block mt-4">Back to sign in</a>
+        <a href="/signin" className="btn btn-secondary btn-block mt-6" style={{ minHeight: 52, fontSize: 15 }}>
+          Back to sign in
+        </a>
       </AuthShell>
     );
   }
 
   return (
     <AuthShell>
-      <div className="flex items-center gap-2 mb-8">
-        <IconLogoMark size={22} />
-        <span className="text-[14px] font-medium">Origin</span>
+      <div className="flex items-center gap-2.5 mb-10">
+        <IconLogoMark size={30} />
+        <span className="text-[17px] font-medium">Origin</span>
       </div>
-      <div className="mb-6">
-        <h4 className="m-0 text-[22px]">Create your account</h4>
-        <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1">Start free. No card required.</div>
+      <div className="mb-8">
+        <h4 className="m-0" style={{ fontSize: 34, lineHeight: 1.15 }}>Create your account</h4>
+        <div className="text-[15px] text-[var(--color-neutral-500)] mt-2">Start free. No card required.</div>
       </div>
 
       <button
-        className="btn btn-secondary btn-block text-[13px] gap-2.5"
-        style={{ marginTop: 0 }}
+        className="btn btn-secondary btn-block gap-3"
+        style={{ marginTop: 0, minHeight: 52, fontSize: 15 }}
         onClick={handleGoogle}
         disabled={!!loading}
       >
-        <IconGoogle size={16} />
+        <IconGoogle size={19} />
         {loading === "google" ? "Connecting to Google…" : "Continue with Google"}
       </button>
 
-      <div className="flex items-center gap-2.5 text-[11px] text-[var(--color-neutral-600)] my-4">
+      <div className="flex items-center gap-3 text-[13px] text-[var(--color-neutral-600)] my-6">
         <span className="flex-1 h-px bg-[var(--color-divider)]" />
         or
         <span className="flex-1 h-px bg-[var(--color-divider)]" />
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="field">
-          <label>Full name</label>
-          <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Amara Osei" />
-        </div>
-        <div className="field">
-          <label>Work email</label>
+          <label style={{ fontSize: 14 }}>Full name</label>
           <input
             className="input"
+            style={{ minHeight: 52, fontSize: 15, padding: "10px 14px" }}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Amara Osei"
+          />
+        </div>
+        <div className="field">
+          <label style={{ fontSize: 14 }}>Work email</label>
+          <input
+            className="input"
+            style={{ minHeight: 52, fontSize: 15, padding: "10px 14px" }}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -131,26 +140,31 @@ export default function SignUpPage() {
           />
         </div>
         <div className="field">
-          <label>Password</label>
+          <label style={{ fontSize: 14 }}>Password</label>
           <input
             className="input"
+            style={{ minHeight: 52, fontSize: 15, padding: "10px 14px" }}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="At least 8 characters"
           />
         </div>
-        {error && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
-        <button className="btn btn-primary btn-block" style={{ marginTop: 4 }} disabled={!!loading}>
+        {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+        <button
+          className="btn btn-primary btn-block"
+          style={{ marginTop: 6, minHeight: 52, fontSize: 15.5 }}
+          disabled={!!loading}
+        >
           {loading === "email" ? "Creating account…" : "Create account"}
         </button>
       </form>
 
-      <div className="text-[10.5px] leading-[1.5] text-[var(--color-neutral-600)] text-center mt-4">
+      <div className="text-[12.5px] leading-[1.5] text-[var(--color-neutral-600)] text-center mt-5">
         By continuing, you agree to Origin&rsquo;s Terms of Service and Privacy Policy.
       </div>
 
-      <div className="text-[12px] text-[var(--color-neutral-500)] text-center mt-4">
+      <div className="text-[14px] text-[var(--color-neutral-500)] text-center mt-5">
         Already have an account? <a href="/signin" style={{ color: "var(--color-accent-300)" }}>Sign in</a>
       </div>
     </AuthShell>
