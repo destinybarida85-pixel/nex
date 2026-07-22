@@ -46,7 +46,8 @@ export async function POST(request: Request) {
   }
 
   const data = await res.json();
-  const text = data.content?.[0]?.text ?? "";
+  const rawText = data.content?.[0]?.text ?? "";
+  const text = rawText.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
 
   let parsed: { title: string; meta: string; reply: string; body: { heading: string; text: string }[] };
   try {
