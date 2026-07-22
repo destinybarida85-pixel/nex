@@ -64,6 +64,19 @@
   --shadow-lg: 0 0 0 1px #9397ab, 0 16px 40px rgba(0, 0, 0, 0.65);
 }
 
+/* — light mode — */
+:root[data-theme="light"] {
+  --color-bg: #f4f4f7;
+  --color-surface: #ffffff;
+  --color-text: #17171c;
+  --color-accent: #5d5294;
+  --color-divider: color-mix(in srgb, #17171c 12%, transparent);
+  --color-neutral-900: #e7e7ec;
+  --shadow-sm: 0 0 0 1px #dcdce2;
+  --shadow-md: 0 0 0 1px #d2d2d9, 0 6px 18px rgba(23, 23, 28, 0.12);
+  --shadow-lg: 0 0 0 1px #c4c4cd, 0 16px 40px rgba(23, 23, 28, 0.18);
+}
+
 @theme inline {
   --color-bg: var(--color-bg);
   --color-surface: var(--color-surface);

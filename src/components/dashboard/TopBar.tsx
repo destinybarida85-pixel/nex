@@ -1,6 +1,20 @@
-import { IconSearch, IconPlus, IconBell, IconMessages, IconTheme } from "@/components/icons";
+"use client";
+
+import { useEffect, useState } from "react";
+import { IconSearch, IconPlus, IconBell, IconMessages, IconTheme, IconSun } from "@/components/icons";
+import { useTheme } from "@/lib/useTheme";
 
 export default function TopBar() {
+  const { theme, toggle } = useTheme();
+  const [avatar, setAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAvatar(localStorage.getItem("nex-avatar"));
+    const onUpdate = () => setAvatar(localStorage.getItem("nex-avatar"));
+    window.addEventListener("nex-avatar-updated", onUpdate);
+    return () => window.removeEventListener("nex-avatar-updated", onUpdate);
+  }, []);
+
   return (
     <header className="flex items-center gap-2 sm:gap-3.5 pl-16 pr-3 py-3 sm:px-7 border-b border-[var(--color-divider)]">
       <div className="flex items-center gap-2.5 flex-1 min-w-0 md:flex-none md:w-[340px] px-3 py-[7px] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-neutral-500)] text-[13px] cursor-text hover:border-[var(--color-neutral-600)] transition-colors">
@@ -25,18 +39,24 @@ export default function TopBar() {
       <button className="btn btn-icon btn-secondary hidden sm:flex flex-none" aria-label="Messages">
         <IconMessages size={16} />
       </button>
-      <button className="btn btn-icon btn-secondary hidden sm:flex flex-none" aria-label="Theme">
-        <IconTheme size={16} />
-      </button>
-      <div
-        className="w-8 h-8 rounded-full grid place-items-center text-xs font-medium cursor-pointer flex-none"
-        style={{
-          background: "linear-gradient(135deg, var(--color-accent-2-600), var(--color-accent-900))",
-          color: "var(--color-accent-100)",
-        }}
+      <button
+        className="btn btn-icon btn-secondary hidden sm:flex flex-none"
+        aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+        onClick={toggle}
       >
-        AO
-      </div>
+        {theme === "dark" ? <IconTheme size={16} /> : <IconSun size={16} />}
+      </button>
+      <a
+        href="/profile"
+        className="w-8 h-8 rounded-full grid place-items-center text-xs font-medium cursor-pointer flex-none overflow-hidden no-underline"
+        style={
+          avatar
+            ? { backgroundImage: `url(${avatar})`, backgroundSize: "cover", backgroundPosition: "center" }
+            : { background: "linear-gradient(135deg, var(--color-accent-2-600), var(--color-accent-900))", color: "var(--color-accent-100)" }
+        }
+      >
+        {!avatar && "AO"}
+      </a>
     </header>
   );
 }

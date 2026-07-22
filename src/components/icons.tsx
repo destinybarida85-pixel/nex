@@ -409,6 +409,22 @@ export function MobileLogoMark({ size = 30, initial = "N" }: { size?: number; in
     </div>
   );
 }
+export function IconSun({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M12 2.5v3M12 18.5v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2.5 12h3M18.5 12h3M4.9 19.1L7 17M17 7l2.1-2.1" />
+    </svg>
+  );
+}
+export function IconCamera({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
+      <circle cx="12" cy="13.5" r="3.5" />
+    </svg>
+  );
+}
 export function IconLogoMark({ size = 26, className }: IconProps) {
   return (
     <div
