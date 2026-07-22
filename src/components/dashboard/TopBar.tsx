@@ -7,10 +7,10 @@ export default function TopBar() {
   const [avatar, setAvatar] = useState<string | null>(null);
 
   useEffect(() => {
-    setAvatar(localStorage.getItem("nex-avatar"));
-    const onUpdate = () => setAvatar(localStorage.getItem("nex-avatar"));
-    window.addEventListener("nex-avatar-updated", onUpdate);
-    return () => window.removeEventListener("nex-avatar-updated", onUpdate);
+    setAvatar(localStorage.getItem("origin-avatar"));
+    const onUpdate = () => setAvatar(localStorage.getItem("origin-avatar"));
+    window.addEventListener("origin-avatar-updated", onUpdate);
+    return () => window.removeEventListener("origin-avatar-updated", onUpdate);
   }, []);
 
   return (

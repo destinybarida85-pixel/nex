@@ -15,7 +15,7 @@ type BizCard = {
 };
 
 const initialCards: BizCard[] = [
-  { label: "Meridian Studio — Primary", number: "4185 2093 6647 2210", expiry: "09/29", cvc: "482", frozen: false, limit: 25000, revealed: false },
+  { label: "Meridian Studio · Primary", number: "4185 2093 6647 2210", expiry: "09/29", cvc: "482", frozen: false, limit: 25000, revealed: false },
 ];
 
 export default function CardsTab() {

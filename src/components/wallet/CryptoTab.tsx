@@ -66,7 +66,7 @@ export default function CryptoTab() {
           ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
         <div className="text-[11px] text-[var(--color-neutral-500)] mt-1">
-          Demo balances only — not connected to a real blockchain network. No real cryptocurrency is held or transferred.
+          Demo balances only. Not connected to a real blockchain network, and no real cryptocurrency is held or transferred.
         </div>
       </div>
 

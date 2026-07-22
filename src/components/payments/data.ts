@@ -21,8 +21,8 @@ export const paymentHistory = [
 ];
 
 export const webhookEvents = [
-  { event: "payment.succeeded", endpoint: "api.meridian.app/webhooks/nex", code: 200, time: "Jul 21, 09:14" },
-  { event: "payment_link.created", endpoint: "api.meridian.app/webhooks/nex", code: 200, time: "Jul 19, 14:02" },
-  { event: "subscription.renewed", endpoint: "api.meridian.app/webhooks/nex", code: 200, time: "Jul 18, 08:00" },
-  { event: "payment.failed", endpoint: "api.meridian.app/webhooks/nex", code: 500, time: "Jul 16, 22:41" },
+  { event: "payment.succeeded", endpoint: "api.meridian.app/webhooks/origin", code: 200, time: "Jul 21, 09:14" },
+  { event: "payment_link.created", endpoint: "api.meridian.app/webhooks/origin", code: 200, time: "Jul 19, 14:02" },
+  { event: "subscription.renewed", endpoint: "api.meridian.app/webhooks/origin", code: 200, time: "Jul 18, 08:00" },
+  { event: "payment.failed", endpoint: "api.meridian.app/webhooks/origin", code: 500, time: "Jul 16, 22:41" },
 ];

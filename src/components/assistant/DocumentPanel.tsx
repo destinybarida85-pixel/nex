@@ -32,7 +32,7 @@ export default function DocumentPanel({ document }: { document: DocumentData }) 
         >
           <div className="flex items-center gap-2.5">
             <IconLogoMark size={26} />
-            <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Nex Inc. · Document</div>
+            <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Origin Inc. · Document</div>
           </div>
           <div className="text-center pt-1">
             <h3 className="text-[19px] m-0">{document.title}</h3>

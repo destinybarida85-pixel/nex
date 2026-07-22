@@ -21,7 +21,7 @@ export default function CompleteStep({ signature }: { signature: string }) {
       <div>
         <h4 className="m-0 text-[19px]">Document signed and sealed</h4>
         <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1.5 max-w-[320px]">
-          MSA — Halcyon Ventures has been signed by all parties and sealed with a tamper-evident certificate.
+          MSA · Halcyon Ventures has been signed by all parties and sealed with a tamper-evident certificate.
         </div>
       </div>
 
@@ -32,7 +32,7 @@ export default function CompleteStep({ signature }: { signature: string }) {
               <div className="flex items-center gap-2">
                 <IconLock size={13} className="text-[var(--color-accent)]" />
                 <span className="text-[12px] font-mono text-[var(--color-neutral-400)]">
-                  Certificate ID: NX-CERT-8F21-40A9
+                  Certificate ID: OG-CERT-8F21-40A9
                 </span>
               </div>
               {signature.startsWith("data:") ? (
@@ -42,7 +42,7 @@ export default function CompleteStep({ signature }: { signature: string }) {
               )}
             </div>
             <div className="flex-none -mt-2 -mr-1">
-              <Stamp label="SEALED" sub="NEX E-SIGN" />
+              <Stamp label="SEALED" sub="ORIGIN E-SIGN" />
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import ScrollReveal from "@/components/site/ScrollReveal";
 
 const stats = [
-  { value: "412", label: "organizations run on Nex" },
+  { value: "412", label: "organizations run on Origin" },
   { value: "$42.8M", label: "moved through wallets monthly" },
   { value: "96k", label: "documents signed and sealed" },
   { value: "99.99%", label: "uptime, enterprise SLA" },

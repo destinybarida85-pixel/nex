@@ -86,7 +86,7 @@ function SidebarContent({ active, onNavigate }: { active: string; onNavigate?: (
     <>
       <div className="flex items-center gap-2.5 px-2 pb-4">
         <IconLogoMark size={26} />
-        <div className="font-medium text-[16px] tracking-[-0.01em]">Nex</div>
+        <div className="font-medium text-[16px] tracking-[-0.01em]">Origin</div>
       </div>
 
       <button className="flex items-center gap-2 mx-1 mb-[18px] px-2.5 py-2 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-text)] text-[12.5px] cursor-pointer text-left hover:border-[var(--color-neutral-600)] transition-colors">

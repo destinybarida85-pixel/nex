@@ -18,7 +18,7 @@ export default function ReviewStep({ onContinue }: { onContinue: () => void }) {
       <div className="flex items-center gap-3">
         <IconDocuments size={18} className="text-[var(--color-accent)]" />
         <div>
-          <h4 className="m-0 text-[18px]">MSA — Halcyon Ventures</h4>
+          <h4 className="m-0 text-[18px]">MSA · Halcyon Ventures</h4>
           <div className="text-[12px] text-[var(--color-neutral-500)] mt-0.5">
             Sent by Meridian Studio · Requires your signature
           </div>

@@ -69,7 +69,7 @@ function VisualFrame({ children }: { children: React.ReactNode }) {
 
 const tenantBrands = [
   { initial: "A", color: "#63c3b2", name: "Atlas Chambers", domain: "portal.atlaschambers.com" },
-  { initial: "B", color: "#d9a05b", name: "Brightfield Academy", domain: "brightfield.nex.app" },
+  { initial: "B", color: "#d9a05b", name: "Brightfield Academy", domain: "brightfield.origin.io" },
   { initial: "C", color: "#7fa3e8", name: "Cascade Relief", domain: "give.cascaderelief.org" },
   { initial: "H", color: null as string | null, name: "Harbor City Council", domain: "services.harborcity.gov" },
 ];
@@ -85,9 +85,9 @@ export default function ProductStory() {
     <section className="max-w-[1160px] mx-auto px-6 pt-[64px] flex flex-col gap-[104px]">
       <ScrollReveal className="text-center max-w-[600px] mx-auto">
         <span className="card-kicker">Every module, one platform</span>
-        <h2 className="text-[34px] mt-2.5 tracking-[-0.02em]">Scroll through what Nex actually does.</h2>
+        <h2 className="text-[34px] mt-2.5 tracking-[-0.02em]">Scroll through what Origin actually does.</h2>
         <p className="text-sm text-[var(--color-neutral-400)] leading-[1.65] mt-2.5">
-          Not a slide deck — the real modules, the real interface, running under one brand.
+          Not a slide deck. The real modules, the real interface, running under one brand.
         </p>
       </ScrollReveal>
 
@@ -96,7 +96,7 @@ export default function ProductStory() {
         kicker="Business Wallet"
         icon={IconWallet}
         title="A real business account, inside your OS."
-        copy="Virtual accounts backed by licensed banking partners, generated in real time as new clients onboard. Receive, transfer, run payroll and pay vendors — funds stay with the bank, the interface stays yours."
+        copy="Virtual accounts backed by licensed banking partners, generated in real time as new clients onboard. Receive, transfer, run payroll and pay vendors: funds stay with the bank, the interface stays yours."
         cta="Explore the wallet"
         ctaHref="#pricing"
         visual={
@@ -122,7 +122,7 @@ export default function ProductStory() {
         kicker="AI Assistant"
         icon={IconSparkle}
         title="From prompt to finished document."
-        copy="Draft contracts, invoices, HR letters and reports in seconds. Nex AI understands your business context — clients, terms, prior documents — so drafts arrive nearly done."
+        copy="Draft contracts, invoices, HR letters and reports in seconds. Origin AI understands your business context (clients, terms, prior documents), so drafts arrive nearly done."
         cta="See the AI assistant"
         ctaHref="#modules"
         visual={
@@ -132,7 +132,7 @@ export default function ProductStory() {
           >
             <div className="flex items-center gap-2">
               <IconSparkle size={15} className="text-[var(--color-accent)]" />
-              <span className="text-[13px] font-medium">Nex AI</span>
+              <span className="text-[13px] font-medium">Origin AI</span>
             </div>
             <div
               className="text-[13px] leading-[1.55] text-[var(--color-neutral-300)] px-3.5 py-3 rounded-lg"
@@ -151,7 +151,7 @@ export default function ProductStory() {
         kicker="E-Signature"
         icon={IconESign}
         title="Legally binding, sealed in seconds."
-        copy="Route any document for signature with OTP identity checks, a full audit trail, and a tamper-evident certificate — no separate e-sign subscription required."
+        copy="Route any document for signature with OTP identity checks, a full audit trail, and a tamper-evident certificate. No separate e-sign subscription required."
         cta="How signing works"
         ctaHref="#modules"
         visual={
@@ -161,7 +161,7 @@ export default function ProductStory() {
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#63c3b2" }} />
               <span className="text-[13px] font-medium" style={{ color: "#63c3b2" }}>Signed &amp; sealed</span>
             </div>
-            <div className="text-[10.5px] font-mono text-[var(--color-neutral-500)]">Certificate NX-CERT-8F21</div>
+            <div className="text-[10.5px] font-mono text-[var(--color-neutral-500)]">Certificate OG-CERT-8F21</div>
             <div className="flex gap-1 mt-1">
               {[0, 1, 2].map((i) => (
                 <span key={i} className="flex-1 h-1 rounded-full" style={{ background: "#63c3b2", opacity: 0.35 + i * 0.25 }} />
@@ -176,7 +176,7 @@ export default function ProductStory() {
         kicker="Payments &amp; Invoices"
         icon={IconPayments}
         title="Get paid without the follow-up."
-        copy="Branded invoices, recurring billing, and shareable payment links — with automatic reminders so you're not the one chasing overdue clients."
+        copy="Branded invoices, recurring billing, and shareable payment links, with automatic reminders so you're not the one chasing overdue clients."
         cta="See payments"
         ctaHref="#modules"
         visual={
@@ -201,7 +201,7 @@ export default function ProductStory() {
         kicker="CRM &amp; Projects"
         icon={IconClients}
         title="Every client, every deal, in view."
-        copy="A pipeline built for services businesses — leads, proposals, signed deals — plus the project and task tracking to deliver on them."
+        copy="A pipeline built for services businesses (leads, proposals, signed deals), plus the project and task tracking to deliver on them."
         cta="See the pipeline"
         ctaHref="#modules"
         visual={
@@ -225,7 +225,7 @@ export default function ProductStory() {
         kicker="HR &amp; Payroll"
         icon={IconEmployees}
         title="Run payroll like it's nothing."
-        copy="Directory, attendance, leave, and salary runs — paid directly from the business wallet, with payslips generated automatically."
+        copy="Directory, attendance, leave, and salary runs, paid directly from the business wallet, with payslips generated automatically."
         cta="See HR &amp; payroll"
         ctaHref="#modules"
         visual={
@@ -244,7 +244,7 @@ export default function ProductStory() {
         kicker="Analytics"
         icon={IconAnalytics}
         title="Know where the business stands."
-        copy="Cash flow, growth trends, and a business health score — with AI-written summaries so a five-minute check tells you everything you need."
+        copy="Cash flow, growth trends, and a business health score, with AI-written summaries so a five-minute check tells you everything you need."
         cta="See analytics"
         ctaHref="#modules"
         visual={
@@ -273,7 +273,7 @@ export default function ProductStory() {
         kicker="True white-label"
         icon={IconGlobe}
         title="Your clients see your brand. Only yours."
-        copy="Logo, colors, domain, emails, PDFs, portal — every client-facing surface carries your identity. Nex runs invisibly behind the scenes, with a Super Admin console for the platform owner."
+        copy="Logo, colors, domain, emails, PDFs, portal: every client-facing surface carries your identity. Origin runs invisibly behind the scenes, with a Super Admin console for the platform owner."
         cta="How white-label works"
         ctaHref="#pricing"
         tilt={7}

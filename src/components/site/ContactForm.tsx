@@ -13,9 +13,9 @@ export default function ContactForm() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const subject = `[Nex contact] ${topic} — ${name || "Website visitor"}`;
-    const body = `${message}\n\n—\n${name}\n${email}`;
-    window.location.href = `mailto:hello@nex.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const subject = `[Origin contact] ${topic} from ${name || "Website visitor"}`;
+    const body = `${message}\n\nFrom: ${name}\n${email}`;
+    window.location.href = `mailto:hello@origin.io?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSent(true);
   }
 
@@ -24,9 +24,9 @@ export default function ContactForm() {
       <div className="card elev-sm p-6 gap-2">
         <div className="card-title text-[16px]">Your email client should be opening now.</div>
         <p className="card-body">
-          We prefilled a message to <strong className="text-[var(--color-text)] font-medium">hello@nex.com</strong> with what
+          We prefilled a message to <strong className="text-[var(--color-text)] font-medium">hello@origin.io</strong> with what
           you wrote. If nothing opened, email us directly at{" "}
-          <a href="mailto:hello@nex.com" className="text-[var(--color-accent-300)] no-underline">hello@nex.com</a>.
+          <a href="mailto:hello@origin.io" className="text-[var(--color-accent-300)] no-underline">hello@origin.io</a>.
         </p>
         <button className="btn btn-ghost text-[12.5px] self-start mt-1" onClick={() => setSent(false)}>
           ← Send another message
@@ -76,7 +76,7 @@ export default function ContactForm() {
       </div>
       <button type="submit" className="btn btn-primary text-[13.5px] self-start">Send message</button>
       <div className="text-[11px] text-[var(--color-neutral-500)]">
-        This opens your email client with the message ready to send — Nex has no backend to receive it directly.
+        This opens your email client with the message ready to send. Origin has no backend to receive it directly.
       </div>
     </form>
   );

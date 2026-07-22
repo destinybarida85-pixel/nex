@@ -22,9 +22,9 @@ export default function Nav() {
           className="flex items-center gap-2 mr-auto no-underline text-[var(--color-text)]"
         >
           <span className="w-[26px] h-[26px] rounded-lg bg-[linear-gradient(135deg,var(--color-accent-500),var(--color-accent-800))] grid place-items-center text-[var(--color-accent-100)] font-semibold text-sm">
-            N
+            O
           </span>
-          <span className="font-medium text-[17px]">Nex</span>
+          <span className="font-medium text-[17px]">Origin</span>
         </a>
 
         <nav className="hidden md:flex items-center gap-6">

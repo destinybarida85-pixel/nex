@@ -41,7 +41,7 @@ export default function SignUpPage() {
     <AuthShell>
       <div className="mb-6">
         <h4 className="m-0 text-[20px]">Create your account</h4>
-        <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1">Start free — no card required.</div>
+        <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1">Start free. No card required.</div>
       </div>
 
       <button
@@ -92,7 +92,7 @@ export default function SignUpPage() {
       </form>
 
       <div className="text-[10.5px] leading-[1.5] text-[var(--color-neutral-600)] text-center mt-4">
-        By continuing, you agree to Nex&rsquo;s Terms of Service and Privacy Policy.
+        By continuing, you agree to Origin&rsquo;s Terms of Service and Privacy Policy.
       </div>
 
       <div className="text-[12px] text-[var(--color-neutral-500)] text-center mt-4">

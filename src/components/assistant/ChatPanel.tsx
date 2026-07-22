@@ -29,7 +29,7 @@ export default function ChatPanel({
     <div className="w-full h-[70vh] md:h-auto md:w-[380px] flex-none flex flex-col border-b md:border-b-0 md:border-r border-[var(--color-divider)] min-h-0">
       <div className="flex items-center gap-2 px-5 py-4 border-b border-[var(--color-divider)]">
         <IconSparkle size={16} className="text-[var(--color-accent)]" />
-        <div className="card-title text-[15px]">Nex AI</div>
+        <div className="card-title text-[15px]">Origin AI</div>
         <span className="tag tag-accent ml-auto text-[9.5px]">Online</span>
       </div>
 
@@ -78,7 +78,7 @@ export default function ChatPanel({
       <div className="p-4 pt-0 flex gap-2">
         <input
           className="input flex-1"
-          placeholder="Ask Nex AI to draft, summarize, or analyze…"
+          placeholder="Ask Origin AI to draft, summarize, or analyze…"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && submit()}

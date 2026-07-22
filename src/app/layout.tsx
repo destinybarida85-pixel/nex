@@ -9,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Nex — The Intelligent Business Operating System",
+  title: "Origin: The Intelligent Business Operating System",
   description:
-    "AI-powered, white-label business OS — wallet, documents, e-signature, HR/payroll, CRM and analytics — for startups, schools, NGOs, agencies and government.",
+    "AI-powered, white-label business OS with wallet, documents, e-signature, HR/payroll, CRM and analytics, built for startups, schools, NGOs, agencies and government.",
 };
 
 export default function RootLayout({

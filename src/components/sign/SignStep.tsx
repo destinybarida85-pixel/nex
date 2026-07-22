@@ -74,7 +74,7 @@ export default function SignStep({
         <IconPen size={18} className="text-[var(--color-accent)]" />
         <div>
           <h4 className="m-0 text-[18px]">Adopt your signature</h4>
-          <div className="text-[12px] text-[var(--color-neutral-500)] mt-0.5">MSA — Halcyon Ventures</div>
+          <div className="text-[12px] text-[var(--color-neutral-500)] mt-0.5">MSA · Halcyon Ventures</div>
         </div>
       </div>
 

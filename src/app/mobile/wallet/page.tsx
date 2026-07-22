@@ -79,7 +79,7 @@ export default function MobileWalletPage() {
           <div
             className="text-[11px] leading-[1.5] text-[var(--color-neutral-500)] border-t border-[var(--color-divider)] pt-2"
           >
-            Funds are held by our licensed banking partner. Nex provides the business interface.
+            Funds are held by our licensed banking partner. Origin provides the business interface.
           </div>
         </div>
 

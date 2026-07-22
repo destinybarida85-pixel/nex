@@ -16,7 +16,7 @@ export default function SignPage() {
     <div className="min-h-screen bg-[var(--color-neutral-900)] flex flex-col items-center py-12 px-4">
       <div className="flex items-center gap-2.5 mb-8">
         <IconLogoMark size={26} />
-        <span className="font-medium text-[16px] text-[var(--color-text)]">Nex</span>
+        <span className="font-medium text-[16px] text-[var(--color-text)]">Origin</span>
         <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">e-signature</span>
       </div>
 

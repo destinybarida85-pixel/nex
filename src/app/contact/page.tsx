@@ -3,9 +3,9 @@ import Footer from "@/components/site/Footer";
 import ContactForm from "@/components/site/ContactForm";
 
 const channels = [
-  { label: "General & sales", value: "hello@nex.com" },
-  { label: "Support", value: "support@nex.com" },
-  { label: "Privacy & legal", value: "privacy@nex.com" },
+  { label: "General & sales", value: "hello@origin.io" },
+  { label: "Support", value: "support@origin.io" },
+  { label: "Privacy & legal", value: "privacy@origin.io" },
 ];
 
 export default function ContactPage() {
@@ -14,9 +14,9 @@ export default function ContactPage() {
       <Nav />
       <main className="max-w-[960px] mx-auto px-6 pt-[64px] pb-20">
         <span className="card-kicker">Contact</span>
-        <h1 className="text-[32px] mt-2.5 tracking-[-0.015em] max-w-[520px]">Talk to the Nex team.</h1>
+        <h1 className="text-[32px] mt-2.5 tracking-[-0.015em] max-w-[520px]">Talk to the Origin team.</h1>
         <p className="text-sm text-[var(--color-neutral-400)] leading-[1.65] mt-2.5 max-w-[460px]">
-          Questions about pricing, white-label setup, or a specific module — send a message and we&rsquo;ll get back to
+          Questions about pricing, white-label setup, or a specific module? Send a message and we&rsquo;ll get back to
           you within one business day.
         </p>
 
@@ -35,8 +35,8 @@ export default function ContactPage() {
               ))}
             </div>
             <div className="text-[12px] text-[var(--color-neutral-500)] leading-[1.6]">
-              Nex Inc. is a software platform. Business wallet accounts are issued by our licensed banking partner, not by
-              Nex directly.
+              Origin Inc. is a software platform. Business wallet accounts are issued by our licensed banking partner, not by
+              Origin directly.
             </div>
           </div>
         </div>

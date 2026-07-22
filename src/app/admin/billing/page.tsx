@@ -22,7 +22,7 @@ const invoices = [
   { org: "Brightfield Academy", plan: "Standard", planTag: "tag-neutral", amount: "$1,015.00", date: "Jul 15, 2026", status: "Paid", statusTag: "tag-neutral" },
   { org: "Meridian Studio", plan: "Growth", planTag: "tag-accent", amount: "$686.00", date: "Jul 18, 2026", status: "Paid", statusTag: "tag-neutral" },
   { org: "Fernbank Logistics", plan: "Growth", planTag: "tag-accent", amount: "$539.00", date: "Jul 9, 2026", status: "Failed", statusTag: "tag-outline" },
-  { org: "Cascade Relief (NGO)", plan: "Standard", planTag: "tag-neutral", amount: "—", date: "Trial · ends Aug 4", status: "Trial", statusTag: "tag-outline" },
+  { org: "Cascade Relief (NGO)", plan: "Standard", planTag: "tag-neutral", amount: "N/A", date: "Trial · ends Aug 4", status: "Trial", statusTag: "tag-outline" },
 ];
 
 export default function AdminBillingPage() {

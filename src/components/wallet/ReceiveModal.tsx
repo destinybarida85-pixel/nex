@@ -14,7 +14,7 @@ export default function ReceiveModal({ onClose }: { onClose: () => void }) {
     setTimeout(() => setCopied(null), 1800);
   }
 
-  const requestLink = `https://pay.nex.com/req/${amount ? Number(amount).toFixed(2).replace(".", "") : "0000"}-mstudio${note ? "?note=" + encodeURIComponent(note) : ""}`;
+  const requestLink = `https://pay.origin.io/req/${amount ? Number(amount).toFixed(2).replace(".", "") : "0000"}-mstudio${note ? "?note=" + encodeURIComponent(note) : ""}`;
 
   return (
     <div className="dialog-backdrop" onClick={onClose}>

@@ -354,7 +354,7 @@ export function IconGoogle({ size = 16, className }: IconProps) {
     </svg>
   );
 }
-export function MobileLogoMark({ size = 30, initial = "N" }: { size?: number; initial?: string }) {
+export function MobileLogoMark({ size = 30, initial = "O" }: { size?: number; initial?: string }) {
   return (
     <div
       style={{
@@ -434,7 +434,7 @@ export function IconLogoMark({ size = 26, className }: IconProps) {
         fontFamily: "var(--font-inter)",
       }}
     >
-      N
+      O
     </div>
   );
 }

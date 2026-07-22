@@ -39,7 +39,7 @@ export default function TransferModal({
             >
               {beneficiaries.map((b) => (
                 <option key={b.name} value={b.name}>
-                  {b.name} — {b.bank}
+                  {b.name} · {b.bank}
                 </option>
               ))}
             </select>

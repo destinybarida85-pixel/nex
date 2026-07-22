@@ -4,7 +4,7 @@ export default function PrivacyPage() {
   return (
     <LegalLayout kicker="Legal" title="Privacy Policy" updated="July 21, 2026">
       <p>
-        Nex Inc. (&ldquo;Nex,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) provides a white-label business
+        Origin Inc. (&ldquo;Origin,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) provides a white-label business
         operating system covering business wallets, AI-assisted documents, e-signature, HR &amp; payroll, CRM and analytics
         (the &ldquo;Service&rdquo;). This Privacy Policy explains what information we collect, how we use it, and the
         choices you have. It applies to visitors of our marketing site and to organizations and individuals who use the
@@ -14,24 +14,24 @@ export default function PrivacyPage() {
       <section>
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">1. Information we collect</h2>
         <p className="mt-2">
-          <strong className="text-[var(--color-text)] font-medium">Account &amp; profile data</strong> — name, work email,
+          <strong className="text-[var(--color-text)] font-medium">Account &amp; profile data</strong>: name, work email,
           company name, role, password (stored as a salted hash), and any profile photo you upload.
         </p>
         <p className="mt-2">
-          <strong className="text-[var(--color-text)] font-medium">Business &amp; financial data</strong> — transaction
+          <strong className="text-[var(--color-text)] font-medium">Business &amp; financial data</strong>: transaction
           records, virtual account and routing details, invoices, payroll runs, and documents you create or upload in the
-          Service. Funds movement and account issuance are handled by our licensed banking partner; Nex stores the
+          Service. Funds movement and account issuance are handled by our licensed banking partner, and Origin stores the
           associated records needed to display them back to you.
         </p>
         <p className="mt-2">
-          <strong className="text-[var(--color-text)] font-medium">Usage data</strong> — pages visited, features used,
+          <strong className="text-[var(--color-text)] font-medium">Usage data</strong>: pages visited, features used,
           device and browser type, IP address, and timestamps, collected automatically to keep the Service reliable and
           secure.
         </p>
         <p className="mt-2">
-          <strong className="text-[var(--color-text)] font-medium">Cookies &amp; local storage</strong> — small pieces of
-          data stored in your browser to keep you signed in, remember your theme preference, and understand aggregate
-          product usage. See our <a href="/cookies" className="text-[var(--color-accent-300)] no-underline">Cookie Policy</a> for
+          <strong className="text-[var(--color-text)] font-medium">Cookies &amp; local storage</strong>: small pieces of
+          data stored in your browser to keep you signed in and understand aggregate product usage. See our{" "}
+          <a href="/cookies" className="text-[var(--color-accent-300)] no-underline">Cookie Policy</a> for
           details.
         </p>
       </section>
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">10. Contact us</h2>
         <p className="mt-2">
           Questions about this policy or your data can be sent to{" "}
-          <a href="mailto:privacy@nex.com" className="text-[var(--color-accent-300)] no-underline">privacy@nex.com</a> or via
+          <a href="mailto:privacy@origin.io" className="text-[var(--color-accent-300)] no-underline">privacy@origin.io</a> or via
           our <a href="/contact" className="text-[var(--color-accent-300)] no-underline">contact page</a>.
         </p>
       </section>

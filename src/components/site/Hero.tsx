@@ -34,7 +34,7 @@ export default function Hero() {
           The complete business operating system.
         </h1>
         <p className="text-[17px] text-[var(--color-neutral-400)] max-w-[520px] mt-5 leading-[1.6]">
-          Money, documents, people and clients — run your entire organization from one platform, under your own brand.
+          Money, documents, people and clients: run your entire organization from one platform, under your own brand.
         </p>
         <div className="flex gap-2.5 mt-7 flex-wrap justify-center">
           <a href="/signup" className="btn btn-primary text-sm px-[22px] py-[11px]">Start free</a>
@@ -53,7 +53,7 @@ export default function Hero() {
               <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
               <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
               <span className="ml-2.5 font-mono text-[10.5px] text-[var(--color-neutral-500)]">
-                app.nex.com/dashboard
+                app.origin.io/dashboard
               </span>
             </div>
             <div className="flex bg-[var(--color-bg)]">

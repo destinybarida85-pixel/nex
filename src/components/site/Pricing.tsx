@@ -55,7 +55,7 @@ export default function Pricing() {
             {growthPrice}
             <span className="text-[13px] text-[var(--color-neutral-500)]"> / user / mo</span>
           </div>
-          <div className="card-body text-[13px]">For teams running the whole business on Nex.</div>
+          <div className="card-body text-[13px]">For teams running the whole business on Origin.</div>
           <div className="flex flex-col gap-[7px] text-[12.5px] text-[var(--color-neutral-300)] mt-1">
             <span>· Unlimited AI documents &amp; e-signatures</span>
             <span>· Payroll, CRM, projects, analytics</span>

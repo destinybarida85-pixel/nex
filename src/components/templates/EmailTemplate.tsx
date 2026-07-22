@@ -15,7 +15,7 @@ export default function EmailTemplate({ tenantName, tenantAccent, poweredBy }: {
         </div>
         <div className="flex gap-2">
           <span className="w-14 flex-none text-[var(--color-neutral-500)]">Subject</span>
-          <span className="font-medium">Please review and sign: MSA — Halcyon Ventures</span>
+          <span className="font-medium">Please review and sign: MSA · Halcyon Ventures</span>
         </div>
       </div>
 
@@ -34,7 +34,7 @@ export default function EmailTemplate({ tenantName, tenantAccent, poweredBy }: {
           <p className="m-0">Hi Jordan,</p>
           <p className="m-0">
             {tenantName} has sent you a Master Services Agreement for signature. Please review the document and
-            sign at your earliest convenience — this link expires in 7 days.
+            sign at your earliest convenience. This link expires in 7 days.
           </p>
         </div>
 
@@ -47,14 +47,14 @@ export default function EmailTemplate({ tenantName, tenantAccent, poweredBy }: {
         </a>
 
         <p className="m-0 text-[12px]" style={{ color: "#6b6b76" }}>
-          Or copy this link into your browser: <span style={{ color: tenantAccent }}>app.nex.com/sign/8f21-40a9</span>
+          Or copy this link into your browser: <span style={{ color: tenantAccent }}>app.origin.io/sign/8f21-40a9</span>
         </p>
 
         <div className="pt-5 flex flex-col gap-1 text-[11px]" style={{ borderTop: "1px solid #e4e4ea", color: "#9a9aa6" }}>
           <span>{tenantName} · 118 Harbor St, Suite 4B</span>
           <span>
             Sent via secure e-signature · protected by two-factor authentication
-            {poweredBy ? " · Powered by Nex" : ""}
+            {poweredBy ? " · Powered by Origin" : ""}
           </span>
         </div>
       </div>

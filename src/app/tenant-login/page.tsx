@@ -33,7 +33,7 @@ export default function TenantLoginPage() {
             <div className="flex-1" />
             <h3 className="m-0 text-[27px] max-w-[340px] leading-[1.2]">Your practice, in one place.</h3>
             <p className="text-[13px] text-[var(--color-neutral-400)] max-w-[340px] mt-2.5">
-              Matters, trust accounting, documents and signatures — the client portal of Atlas Chambers LLP.
+              Matters, trust accounting, documents and signatures: the client portal of Atlas Chambers LLP.
             </p>
             <div className="mt-[22px] flex gap-3.5 text-[11px] text-[var(--color-neutral-500)]">
               <span>© 2026 Atlas Chambers LLP</span>

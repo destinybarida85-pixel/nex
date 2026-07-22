@@ -18,7 +18,7 @@ function AdminSidebarContent({ active }: { active: string }) {
       <div className="flex items-center gap-2.5 px-2 pb-1.5">
         <IconLogoMark size={26} />
         <div>
-          <div className="font-medium text-[15px]">Nex</div>
+          <div className="font-medium text-[15px]">Origin</div>
           <div className="text-[9.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Master console</div>
         </div>
       </div>

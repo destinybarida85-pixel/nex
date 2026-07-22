@@ -49,7 +49,7 @@ function SitePreview() {
           Everything {name} clients need, in one place.
         </h1>
         <p className="text-[16px] leading-[1.6] max-w-[520px]" style={{ color: "#a3a3ad" }}>
-          Documents, payments, e-signatures, and support — a single branded portal, built and hosted for you.
+          Documents, payments, e-signatures, and support, all in a single branded portal built and hosted for you.
         </p>
         <a
           id="get-started"
@@ -87,7 +87,7 @@ function SitePreview() {
         <div className="flex-1" />
         {powered && (
           <span className="text-[11px]" style={{ color: "#6b6b76" }}>
-            Powered by <span style={{ color: "#a3a3ad" }}>Nex</span>
+            Powered by <span style={{ color: "#a3a3ad" }}>Origin</span>
           </span>
         )}
       </footer>

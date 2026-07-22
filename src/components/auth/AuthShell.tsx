@@ -5,7 +5,7 @@ export default function AuthShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-neutral-900)] px-4 py-12">
       <a href="/" className="flex items-center gap-2.5 mb-8 no-underline">
         <IconLogoMark size={30} />
-        <span className="font-medium text-[19px] text-[var(--color-text)]">Nex</span>
+        <span className="font-medium text-[19px] text-[var(--color-text)]">Origin</span>
       </a>
 
       <div

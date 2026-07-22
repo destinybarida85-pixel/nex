@@ -91,7 +91,7 @@ export default function AnalyticsPage() {
           >
             <IconSparkle size={16} className="text-[var(--color-accent)] flex-none" />
             <div className="text-[12.5px] text-[var(--color-neutral-300)]">
-              <strong className="text-[var(--color-text)]">Nex AI insight:</strong> revenue growth is outpacing expense growth by 4.3pt this {range.toLowerCase()} — margins are expanding. Software spend is the fastest-growing cost line; consider a vendor consolidation review.
+              <strong className="text-[var(--color-text)]">Origin AI insight:</strong> revenue growth is outpacing expense growth by 4.3pt this {range.toLowerCase()}, so margins are expanding. Software spend is the fastest-growing cost line; consider a vendor consolidation review.
             </div>
           </div>
         </main>

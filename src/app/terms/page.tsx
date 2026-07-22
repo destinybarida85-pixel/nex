@@ -4,9 +4,9 @@ export default function TermsPage() {
   return (
     <LegalLayout kicker="Legal" title="Terms of Service" updated="July 21, 2026">
       <p>
-        These Terms of Service (&ldquo;Terms&rdquo;) govern access to and use of Nex — a white-label business operating
+        These Terms of Service (&ldquo;Terms&rdquo;) govern access to and use of Origin, a white-label business operating
         system covering business wallets, AI-assisted documents, e-signature, HR &amp; payroll, CRM and analytics (the
-        &ldquo;Service&rdquo;), provided by Nex Inc. (&ldquo;Nex,&rdquo; &ldquo;we&rdquo;). By creating an account or using
+        &ldquo;Service&rdquo;), provided by Origin Inc. (&ldquo;Origin,&rdquo; &ldquo;we&rdquo;). By creating an account or using
         the Service, you agree to these Terms on behalf of yourself and, if applicable, the organization you represent.
       </p>
 
@@ -22,9 +22,9 @@ export default function TermsPage() {
       <section>
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">2. Banking &amp; payment services</h2>
         <p className="mt-2">
-          Nex is a software platform, not a bank. Virtual accounts, card issuance, and funds transfers made available in
+          Origin is a software platform, not a bank. Virtual accounts, card issuance, and funds transfers made available in
           the Service are provided by our licensed banking partner. Funds are held at the banking partner, subject to its
-          own terms and applicable regulation. Nex is not responsible for the acts or omissions of banking or payment
+          own terms and applicable regulation. Origin is not responsible for the acts or omissions of banking or payment
           partners, except as required by law.
         </p>
       </section>
@@ -60,9 +60,9 @@ export default function TermsPage() {
       <section>
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">6. White-label &amp; sub-tenants</h2>
         <p className="mt-2">
-          If you operate a white-label instance of Nex for your own clients (a &ldquo;Tenant Operator&rdquo;), you are
+          If you operate a white-label instance of Origin for your own clients (a &ldquo;Tenant Operator&rdquo;), you are
           responsible for your clients&rsquo; compliance with these Terms, for the accuracy of your own branding, and for
-          providing your clients with a privacy notice covering their use of your branded portal. Nex remains the
+          providing your clients with a privacy notice covering their use of your branded portal. Origin remains the
           underlying processor of the Service infrastructure.
         </p>
       </section>
@@ -79,7 +79,7 @@ export default function TermsPage() {
       <section>
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">8. Intellectual property</h2>
         <p className="mt-2">
-          Nex retains all rights to the Service, its software, and its branding. You retain all rights to the content and
+          Origin retains all rights to the Service, its software, and its branding. You retain all rights to the content and
           data you upload or generate through the Service (&ldquo;Customer Data&rdquo;) and grant us a limited license to
           host and process it solely to provide the Service to you.
         </p>
@@ -98,7 +98,7 @@ export default function TermsPage() {
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">10. Disclaimers &amp; limitation of liability</h2>
         <p className="mt-2">
           The Service is provided &ldquo;as is&rdquo; without warranties of any kind, express or implied. To the maximum
-          extent permitted by law, Nex will not be liable for indirect, incidental, or consequential damages, and our
+          extent permitted by law, Origin will not be liable for indirect, incidental, or consequential damages, and our
           total liability for any claim will not exceed the fees you paid in the 12 months preceding the claim.
         </p>
       </section>
@@ -123,7 +123,7 @@ export default function TermsPage() {
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">13. Contact us</h2>
         <p className="mt-2">
           Questions about these Terms can be sent to{" "}
-          <a href="mailto:legal@nex.com" className="text-[var(--color-accent-300)] no-underline">legal@nex.com</a> or via
+          <a href="mailto:legal@origin.io" className="text-[var(--color-accent-300)] no-underline">legal@origin.io</a> or via
           our <a href="/contact" className="text-[var(--color-accent-300)] no-underline">contact page</a>.
         </p>
       </section>

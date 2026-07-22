@@ -71,7 +71,7 @@ export const tenants: Tenant[] = [
     planTag: "tag-neutral",
     users: 203,
     volume: "$96k",
-    domain: "brightfield.nex.app",
+    domain: "brightfield.origin.io",
     status: "Active",
     statusTag: "tag-neutral",
     mrr: "$1,015/mo",

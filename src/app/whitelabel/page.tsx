@@ -19,7 +19,7 @@ export default function WhiteLabelPage() {
         <div>
           <h4 className="m-0 text-[19px]">White-label</h4>
           <div className="text-muted text-xs mt-0.5">
-            Your clients see only your brand — the platform runs behind the scenes.
+            Your clients see only your brand. The platform runs behind the scenes.
           </div>
         </div>
 
@@ -97,7 +97,7 @@ export default function WhiteLabelPage() {
 
           <div className="flex flex-col gap-2.5">
             <div className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">
-              Live preview — what your clients see
+              Live preview: what your clients see
             </div>
             <div className="border border-[var(--color-divider)] rounded-xl overflow-hidden">
               <div className="flex items-center gap-1.5 px-3 py-2 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">

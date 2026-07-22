@@ -13,7 +13,7 @@ export default function ProfilePage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setAvatar(localStorage.getItem("nex-avatar"));
+    setAvatar(localStorage.getItem("origin-avatar"));
   }, []);
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -24,16 +24,16 @@ export default function ProfilePage() {
     reader.onload = () => {
       const dataUrl = reader.result as string;
       setAvatar(dataUrl);
-      localStorage.setItem("nex-avatar", dataUrl);
-      window.dispatchEvent(new Event("nex-avatar-updated"));
+      localStorage.setItem("origin-avatar", dataUrl);
+      window.dispatchEvent(new Event("origin-avatar-updated"));
     };
     reader.readAsDataURL(file);
   }
 
   function removeAvatar() {
     setAvatar(null);
-    localStorage.removeItem("nex-avatar");
-    window.dispatchEvent(new Event("nex-avatar-updated"));
+    localStorage.removeItem("origin-avatar");
+    window.dispatchEvent(new Event("origin-avatar-updated"));
   }
 
   function saveProfile() {
