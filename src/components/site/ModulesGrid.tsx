@@ -86,7 +86,7 @@ export default function ModulesGrid() {
       <h3 className="text-[27px] mt-2.5 tracking-[-0.015em]">One platform. Eight modules.</h3>
       <div className="grid gap-3 mt-6" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
         {modules.map((m) => (
-          <div key={m.title} className="card elev-sm gap-1.5">
+          <div key={m.title} className="card elev-sm gap-1.5 nx-module-card">
             <div style={{ color: "var(--color-accent)" }}>{m.icon}</div>
             <div className="card-title text-[14.5px]">{m.title}</div>
             <div className="card-body">{m.body}</div>

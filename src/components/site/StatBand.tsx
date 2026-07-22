@@ -15,7 +15,7 @@ export default function StatBand() {
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}
       >
         {stats.map((s) => (
-          <div key={s.label}>
+          <div key={s.label} className="nx-stat-tile">
             <div className="font-medium text-[34px] tracking-[-0.01em]">{s.value}</div>
             <div className="text-[12.5px] text-[var(--color-neutral-300)] mt-1">{s.label}</div>
           </div>

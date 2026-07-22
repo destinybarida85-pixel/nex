@@ -376,3 +376,54 @@ textarea.input { min-height: 90px; resize: vertical; }
   .nx-orbit-card, .nx-hub-glow, .nx-hub-ring, .nx-orbit-line, .nx-particle { animation: none !important; }
   svg[style*="nx-orbit-spin"] { animation: none !important; }
 }
+
+/* — restrained 3D depth touches (marketing site sections) — */
+.nx-stat-tile {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--color-text) 5%, transparent), transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 10%, transparent);
+  transform: perspective(700px) rotateX(0deg) translateY(0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s;
+}
+.nx-stat-tile:hover {
+  transform: perspective(700px) rotateX(-4deg) translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 14%, transparent),
+    0 18px 32px -18px color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+.nx-module-card {
+  transform: perspective(800px) rotateX(0deg) translateY(0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s;
+}
+.nx-module-card:hover {
+  transform: perspective(800px) rotateX(-4deg) translateY(-4px);
+  box-shadow: 0 20px 34px -18px color-mix(in srgb, var(--color-accent) 32%, transparent), var(--shadow-md);
+}
+
+.nx-price-card {
+  transform: perspective(900px) rotateX(0deg) translateY(0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s;
+}
+.nx-price-card:hover {
+  transform: perspective(900px) rotateX(-3deg) translateY(-5px);
+  box-shadow: 0 24px 40px -20px color-mix(in srgb, var(--color-accent) 30%, transparent), var(--shadow-lg);
+}
+.nx-price-card-highlight { transform: perspective(900px) rotateX(0deg) translateY(-8px); }
+.nx-price-card-highlight:hover { transform: perspective(900px) rotateX(-3deg) translateY(-13px); }
+
+.nx-footer-panel {
+  position: relative;
+  border-radius: var(--radius-lg);
+  padding: 40px clamp(20px, 4vw, 44px);
+  background: linear-gradient(155deg, color-mix(in srgb, var(--color-text) 4%, transparent), transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 8%, transparent), var(--shadow-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-stat-tile, .nx-module-card, .nx-price-card, .nx-price-card-highlight { transition: none !important; }
+  .nx-stat-tile:hover, .nx-module-card:hover, .nx-price-card:hover { transform: none !important; }
+}

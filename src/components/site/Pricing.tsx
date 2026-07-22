@@ -27,7 +27,7 @@ export default function Pricing() {
       </div>
 
       <div className="grid gap-3.5 mt-6 items-stretch" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
-        <div className="card elev-sm p-[22px] gap-2.5">
+        <div className="card elev-sm p-[22px] gap-2.5 nx-price-card">
           <div className="card-title">Starter</div>
           <div className="font-medium text-[34px]">
             $0<span className="text-[13px] text-[var(--color-neutral-500)]"> forever</span>
@@ -43,7 +43,7 @@ export default function Pricing() {
         </div>
 
         <div
-          className="card elev-md p-[22px] gap-2.5 border"
+          className="card elev-md p-[22px] gap-2.5 border nx-price-card nx-price-card-highlight"
           style={{ borderColor: "color-mix(in srgb, var(--color-accent) 45%, transparent)" }}
         >
           <div className="flex items-center">
@@ -64,7 +64,7 @@ export default function Pricing() {
           <a href="/signup" className="btn btn-primary btn-block text-[13px] mt-auto">Start 14-day trial</a>
         </div>
 
-        <div className="card elev-sm p-[22px] gap-2.5">
+        <div className="card elev-sm p-[22px] gap-2.5 nx-price-card">
           <div className="card-title">Enterprise</div>
           <div className="font-medium text-[34px]">Custom</div>
           <div className="card-body text-[13px]">For institutions, NGOs and government.</div>

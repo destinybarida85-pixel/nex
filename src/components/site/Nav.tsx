@@ -4,11 +4,11 @@ import { useState } from "react";
 import { IconMenu, IconX } from "@/components/icons";
 
 const links = [
-  { href: "#product", label: "Product" },
-  { href: "#wallet", label: "Wallet" },
-  { href: "#whitelabel", label: "White-label" },
-  { href: "#modules", label: "Modules" },
-  { href: "#pricing", label: "Pricing" },
+  { href: "/#product", label: "Product" },
+  { href: "/#wallet", label: "Wallet" },
+  { href: "/#whitelabel", label: "White-label" },
+  { href: "/#modules", label: "Modules" },
+  { href: "/#pricing", label: "Pricing" },
 ];
 
 export default function Nav() {
@@ -18,7 +18,7 @@ export default function Nav() {
     <header className="sticky top-0 z-20 bg-[color-mix(in_srgb,var(--color-bg)_82%,transparent)] backdrop-blur-md border-b border-[var(--color-divider)]">
       <div className="max-w-[1160px] mx-auto flex items-center gap-6 px-6 py-3.5">
         <a
-          href="#top"
+          href="/"
           className="flex items-center gap-2 mr-auto no-underline text-[var(--color-text)]"
         >
           <span className="w-[26px] h-[26px] rounded-lg bg-[linear-gradient(135deg,var(--color-accent-500),var(--color-accent-800))] grid place-items-center text-[var(--color-accent-100)] font-semibold text-sm">
