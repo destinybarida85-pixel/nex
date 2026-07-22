@@ -143,13 +143,15 @@ export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
 
   return (
     <>
-      <button
-        className="btn btn-icon btn-secondary md:hidden fixed top-3 left-3 z-30"
-        aria-label="Open menu"
-        onClick={() => setOpen(true)}
-      >
-        <IconMenu size={18} />
-      </button>
+      <div className="md:hidden">
+        <button
+          className="btn btn-icon btn-secondary fixed top-3 left-3 z-30"
+          aria-label="Open menu"
+          onClick={() => setOpen(true)}
+        >
+          <IconMenu size={18} />
+        </button>
+      </div>
 
       <aside className="hidden md:flex w-[236px] flex-none flex-col p-[18px_14px_14px] border-r border-[var(--color-divider)] min-h-screen">
         <SidebarContent active={active} />

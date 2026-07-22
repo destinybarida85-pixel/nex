@@ -34,9 +34,11 @@ export default function TopBar() {
           style={{ background: "var(--color-accent)", boxShadow: "0 0 6px var(--color-accent)" }}
         />
       </button>
-      <button className="btn btn-icon btn-secondary hidden sm:flex flex-none" aria-label="Messages">
-        <IconMessages size={16} />
-      </button>
+      <div className="hidden sm:block flex-none">
+        <button className="btn btn-icon btn-secondary" aria-label="Messages">
+          <IconMessages size={16} />
+        </button>
+      </div>
       <a
         href="/profile"
         className="w-8 h-8 rounded-full grid place-items-center text-xs font-medium cursor-pointer flex-none overflow-hidden no-underline"

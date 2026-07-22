@@ -43,13 +43,15 @@ export default function Nav() {
           <a href="/signup" className="btn btn-primary text-[13px]">Get started</a>
         </div>
 
-        <button
-          className="btn btn-icon btn-secondary md:hidden"
-          aria-label={open ? "Close menu" : "Open menu"}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <IconX size={18} /> : <IconMenu size={18} />}
-        </button>
+        <div className="md:hidden">
+          <button
+            className="btn btn-icon btn-secondary"
+            aria-label={open ? "Close menu" : "Open menu"}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <IconX size={18} /> : <IconMenu size={18} />}
+          </button>
+        </div>
       </div>
 
       {open && (

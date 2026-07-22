@@ -47,13 +47,15 @@ export default function AdminSidebar({ active }: { active: string }) {
 
   return (
     <>
-      <button
-        className="btn btn-icon btn-secondary md:hidden fixed top-3 left-3 z-30"
-        aria-label="Open menu"
-        onClick={() => setOpen(true)}
-      >
-        <IconMenu size={18} />
-      </button>
+      <div className="md:hidden">
+        <button
+          className="btn btn-icon btn-secondary fixed top-3 left-3 z-30"
+          aria-label="Open menu"
+          onClick={() => setOpen(true)}
+        >
+          <IconMenu size={18} />
+        </button>
+      </div>
 
       <aside className="hidden md:flex w-[200px] flex-none flex-col gap-0.5 p-[18px_12px] border-r border-[var(--color-divider)] min-h-screen">
         <AdminSidebarContent active={active} />
