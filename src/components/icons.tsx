@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type IconProps = { size?: number; className?: string };
 
 const base = (size = 16) => ({
@@ -424,17 +426,14 @@ export function IconLogoMark({ size = 26, className }: IconProps) {
       style={{
         width: size,
         height: size,
-        borderRadius: 8,
-        background: "linear-gradient(135deg, var(--color-accent-500), var(--color-accent-800))",
+        borderRadius: size * 0.3,
+        overflow: "hidden",
         display: "grid",
         placeItems: "center",
-        color: "var(--color-accent-100)",
-        fontWeight: 600,
-        fontSize: size * 0.54,
-        fontFamily: "var(--font-inter)",
+        flexShrink: 0,
       }}
     >
-      O
+      <Image src="/logo.png" alt="Origin" width={size} height={size} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
     </div>
   );
 }

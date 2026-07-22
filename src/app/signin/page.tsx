@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthShell from "@/components/auth/AuthShell";
-import { IconGoogle } from "@/components/icons";
+import { IconGoogle, IconLogoMark } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 import { isBackendConfigured } from "@/lib/backendStatus";
 
@@ -57,9 +57,13 @@ function SignInForm() {
 
   return (
     <AuthShell>
+      <div className="flex items-center gap-2 mb-8">
+        <IconLogoMark size={22} />
+        <span className="text-[14px] font-medium">Origin</span>
+      </div>
       <div className="mb-6">
-        <h4 className="m-0 text-[20px]">Welcome back</h4>
-        <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1">Sign in to Meridian Studio.</div>
+        <h4 className="m-0 text-[22px]">Welcome back</h4>
+        <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1">Enter your details below.</div>
       </div>
 
       <button

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { IconMenu, IconX } from "@/components/icons";
+import { IconMenu, IconX, IconLogoMark } from "@/components/icons";
 
 const links = [
   { href: "/#product", label: "Product" },
@@ -21,9 +21,7 @@ export default function Nav() {
           href="/"
           className="flex items-center gap-2 mr-auto no-underline text-[var(--color-text)]"
         >
-          <span className="w-[26px] h-[26px] rounded-lg bg-[linear-gradient(135deg,var(--color-accent-500),var(--color-accent-800))] grid place-items-center text-[var(--color-accent-100)] font-semibold text-sm">
-            O
-          </span>
+          <IconLogoMark size={26} />
           <span className="font-medium text-[17px]">Origin</span>
         </a>
 
