@@ -118,8 +118,9 @@ returns uuid
 language sql
 security definer
 stable
+set search_path = public
 as $$
-  select tenant_id from profiles where id = auth.uid();
+  select tenant_id from public.profiles where id = auth.uid();
 $$;
 
 create policy "profiles: read own" on profiles
@@ -158,21 +159,22 @@ create or replace function handle_new_user()
 returns trigger
 language plpgsql
 security definer
+set search_path = public
 as $$
 declare
   new_tenant_id uuid;
 begin
-  insert into tenants (name, owner_id)
+  insert into public.tenants (name, owner_id)
   values (coalesce(new.raw_user_meta_data->>'company_name', 'My Business'), new.id)
   returning id into new_tenant_id;
 
-  insert into profiles (id, tenant_id, full_name, role)
+  insert into public.profiles (id, tenant_id, full_name, role)
   values (new.id, new_tenant_id, coalesce(new.raw_user_meta_data->>'full_name', ''), 'owner');
 
-  insert into wallet_accounts (tenant_id, label, account_number, routing_number)
+  insert into public.wallet_accounts (tenant_id, label, account_number, routing_number)
   values (new_tenant_id, 'Primary', lpad((floor(random() * 1000000000000))::text, 12, '0'), lpad((100000000 + floor(random() * 900000000))::text, 9, '0'));
 
-  insert into crypto_wallets (tenant_id, asset, address)
+  insert into public.crypto_wallets (tenant_id, asset, address)
   values
     (new_tenant_id, 'BTC', 'bc1q' || substr(md5(random()::text || clock_timestamp()::text), 1, 38)),
     (new_tenant_id, 'ETH', '0x' || substr(md5(random()::text || clock_timestamp()::text), 1, 40));
