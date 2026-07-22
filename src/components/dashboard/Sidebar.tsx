@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useHasSession } from "@/lib/useSession";
+import { isBackendConfigured } from "@/lib/backendStatus";
 import {
   IconLogoMark,
   IconChevronUpDown,
@@ -81,7 +83,7 @@ function NavLink({
   );
 }
 
-function SidebarContent({ active, onNavigate }: { active: string; onNavigate?: () => void }) {
+function SidebarContent({ active, onNavigate, tenantName }: { active: string; onNavigate?: () => void; tenantName: string }) {
   return (
     <>
       <div className="flex items-center gap-2.5 px-2 pb-4">
@@ -91,9 +93,9 @@ function SidebarContent({ active, onNavigate }: { active: string; onNavigate?: (
 
       <button className="flex items-center gap-2 mx-1 mb-[18px] px-2.5 py-2 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-text)] text-[12.5px] cursor-pointer text-left hover:border-[var(--color-neutral-600)] transition-colors">
         <span className="w-[18px] h-[18px] rounded-[5px] bg-[var(--color-accent-900)] text-[var(--color-accent-300)] grid place-items-center text-[10px] font-semibold">
-          M
+          {tenantName.charAt(0).toUpperCase()}
         </span>
-        <span className="flex-1">Meridian Studio</span>
+        <span className="flex-1 truncate">{tenantName}</span>
         <IconChevronUpDown size={12} className="opacity-50" />
       </button>
 
@@ -140,6 +142,20 @@ function SidebarContent({ active, onNavigate }: { active: string; onNavigate?: (
 
 export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
   const [open, setOpen] = useState(false);
+  const { hasSession, checked } = useHasSession();
+  const [tenantName, setTenantName] = useState("Meridian Studio");
+
+  useEffect(() => {
+    if (!checked || !isBackendConfigured || !hasSession) return;
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.tenantName) setTenantName(data.tenantName);
+      })
+      .catch(() => {
+        // Stay on the demo name on any failure.
+      });
+  }, [checked, hasSession]);
 
   return (
     <>
@@ -154,7 +170,7 @@ export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
       </div>
 
       <aside className="hidden md:flex w-[236px] flex-none flex-col p-[18px_14px_14px] border-r border-[var(--color-divider)] min-h-screen">
-        <SidebarContent active={active} />
+        <SidebarContent active={active} tenantName={tenantName} />
       </aside>
 
       {open && (
@@ -168,7 +184,7 @@ export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
             >
               <IconX size={16} />
             </button>
-            <SidebarContent active={active} onNavigate={() => setOpen(false)} />
+            <SidebarContent active={active} onNavigate={() => setOpen(false)} tenantName={tenantName} />
           </div>
         </div>
       )}
