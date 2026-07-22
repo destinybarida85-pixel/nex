@@ -96,13 +96,45 @@ const initialMessages: ChatMessage[] = [
 export default function AssistantPage() {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [docKey, setDocKey] = useState("nda");
+  const [liveDocument, setLiveDocument] = useState<DocumentData | null>(null);
   const [thinking, setThinking] = useState(false);
 
-  function handleSend(text: string) {
+  async function handleSend(text: string) {
     setMessages((prev) => [...prev, { role: "user", text }]);
     setThinking(true);
+
+    try {
+      const res = await fetch("/api/assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: text }),
+      });
+      const data = await res.json();
+
+      if (data.configured) {
+        setLiveDocument({
+          title: data.title,
+          meta: data.meta,
+          status: "Draft",
+          statusTag: "tag-outline",
+          body: data.body,
+          steps: [
+            { label: "Drafted", done: true },
+            { label: "Sent for signature", done: false },
+            { label: "Signed & sealed", done: false },
+          ],
+        });
+        setMessages((prev) => [...prev, { role: "ai", text: data.reply }]);
+        setThinking(false);
+        return;
+      }
+    } catch {
+      // Fall through to the canned demo response below.
+    }
+
     const { key, aiReply } = pickDocument(text);
     setTimeout(() => {
+      setLiveDocument(null);
       setDocKey(key);
       setMessages((prev) => [...prev, { role: "ai", text: aiReply }]);
       setThinking(false);
@@ -116,7 +148,7 @@ export default function AssistantPage() {
         <TopBar />
         <div className="flex-1 flex flex-col md:flex-row min-h-0">
           <ChatPanel messages={messages} thinking={thinking} onSend={handleSend} />
-          <DocumentPanel document={documents[docKey]} />
+          <DocumentPanel document={liveDocument ?? documents[docKey]} />
         </div>
       </div>
     </div>
