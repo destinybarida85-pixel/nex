@@ -1,5 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import MobileShell from "@/components/mobile/MobileShell";
 import BottomTabBar from "@/components/mobile/BottomTabBar";
+import TransferModal from "@/components/wallet/TransferModal";
+import ReceiveModal from "@/components/wallet/ReceiveModal";
 import {
   IconBell,
   IconSend,
@@ -12,20 +17,43 @@ import {
   MobileLogoMark,
 } from "@/components/icons";
 
-const quickActions = [
-  { label: "Send", icon: IconSend, bg: "#9184d9" },
-  { label: "Receive", icon: IconReceive, bg: "#63c3b2" },
-  { label: "Document", icon: IconDocuments, bg: "#d9a05b" },
-  { label: "Ask AI", icon: IconSparkle, bg: "#7fa3e8" },
-];
+type ActivityItem = {
+  name: string;
+  meta: string;
+  amount: string;
+  credit: boolean;
+  icon: typeof IconArrowUpCircle;
+  color: string;
+};
 
-const activity = [
+const initialActivity: ActivityItem[] = [
   { name: "Halcyon Ventures", meta: "Invoice · Jul 21", amount: "+$18,500", credit: true, icon: IconArrowUpCircle, color: "#63c3b2" },
   { name: "AWS", meta: "Vendor · Jul 20", amount: "−$2,340", credit: false, icon: IconArrowDownCircle, color: "#d9a05b" },
   { name: "Payroll · July", meta: "14 employees · Jul 18", amount: "−$41,200", credit: false, icon: IconPerson, color: "#7fa3e8" },
 ];
 
 export default function MobileHomePage() {
+  const [balance, setBalance] = useState(248610.44);
+  const [activity, setActivity] = useState<ActivityItem[]>(initialActivity);
+  const [showTransfer, setShowTransfer] = useState(false);
+  const [showReceive, setShowReceive] = useState(false);
+
+  function handleSend(party: string, amount: number) {
+    setBalance((prev) => prev - amount);
+    setActivity((prev) => [
+      { name: party, meta: "Transfer · just now", amount: `-$${amount.toLocaleString()}`, credit: false, icon: IconArrowDownCircle, color: "#d9a05b" },
+      ...prev,
+    ]);
+    setShowTransfer(false);
+  }
+
+  const quickActions = [
+    { label: "Send", icon: IconSend, bg: "#9184d9", onClick: () => setShowTransfer(true) },
+    { label: "Receive", icon: IconReceive, bg: "#63c3b2", onClick: () => setShowReceive(true) },
+    { label: "Document", icon: IconDocuments, bg: "#d9a05b", href: "/assistant" },
+    { label: "Ask AI", icon: IconSparkle, bg: "#7fa3e8", href: "/assistant" },
+  ];
+
   return (
     <MobileShell>
       <div className="flex items-center gap-2.5 pt-16 px-[18px] pb-1.5">
@@ -50,13 +78,15 @@ export default function MobileHomePage() {
           }}
         >
           <div className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Wallet balance</div>
-          <div className="font-medium text-[30px] tracking-[-0.01em]">$248,610.44</div>
+          <div className="font-medium text-[30px] tracking-[-0.01em]">
+            ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </div>
           <div className="text-[11px] text-[var(--color-neutral-500)]">•• 4417 · Column Bank N.A.</div>
         </div>
 
         <div className="grid grid-cols-4 gap-2 text-center">
-          {quickActions.map((a) => (
-            <div key={a.label} className="flex flex-col gap-1.5 items-center">
+          {quickActions.map((a) => {
+            const content = (
               <button
                 className="btn btn-icon"
                 style={{
@@ -68,12 +98,18 @@ export default function MobileHomePage() {
                   color: a.bg,
                 }}
                 aria-label={a.label}
+                onClick={a.onClick}
               >
                 <a.icon size={17} />
               </button>
-              <span className="text-[10.5px] text-[var(--color-neutral-400)]">{a.label}</span>
-            </div>
-          ))}
+            );
+            return (
+              <div key={a.label} className="flex flex-col gap-1.5 items-center">
+                {a.href ? <a href={a.href}>{content}</a> : content}
+                <span className="text-[10.5px] text-[var(--color-neutral-400)]">{a.label}</span>
+              </div>
+            );
+          })}
         </div>
 
         <div
@@ -93,8 +129,8 @@ export default function MobileHomePage() {
               See all
             </a>
           </div>
-          {activity.map((item) => (
-            <div key={item.name} className="flex items-center gap-2.5 py-2.5">
+          {activity.map((item, i) => (
+            <div key={item.name + i} className="flex items-center gap-2.5 py-2.5">
               <span
                 className="w-[34px] h-[34px] rounded-[10px] grid place-items-center flex-none"
                 style={{
@@ -132,6 +168,9 @@ export default function MobileHomePage() {
       </div>
 
       <BottomTabBar active="home" />
+
+      {showTransfer && <TransferModal onClose={() => setShowTransfer(false)} onSend={handleSend} />}
+      {showReceive && <ReceiveModal onClose={() => setShowReceive(false)} />}
     </MobileShell>
   );
 }

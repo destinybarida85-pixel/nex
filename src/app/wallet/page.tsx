@@ -4,6 +4,7 @@ import { useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 import TransferModal from "@/components/wallet/TransferModal";
+import ReceiveModal from "@/components/wallet/ReceiveModal";
 import CardsTab from "@/components/wallet/CardsTab";
 import { initialTransactions, beneficiaries, type WalletTx } from "@/components/wallet/data";
 import { generateAccountNumber, generateRoutingNumber } from "@/lib/generateAccountNumber";
@@ -16,6 +17,7 @@ export default function WalletPage() {
   const [transactions, setTransactions] = useState<WalletTx[]>(initialTransactions);
   const [balance, setBalance] = useState(248610.44);
   const [showTransfer, setShowTransfer] = useState(false);
+  const [showReceive, setShowReceive] = useState(false);
   const [copied, setCopied] = useState(false);
   const [hideBalances, setHideBalances] = useState(false);
   const [subAccounts, setSubAccounts] = useState<SubAccount[]>([]);
@@ -126,7 +128,7 @@ export default function WalletPage() {
                   <IconSend size={14} />
                   Transfer
                 </button>
-                <button className="btn btn-secondary text-[13px]">
+                <button className="btn btn-secondary text-[13px]" onClick={() => setShowReceive(true)}>
                   <IconReceive size={14} />
                   Receive
                 </button>
@@ -256,6 +258,7 @@ export default function WalletPage() {
       </div>
 
       {showTransfer && <TransferModal onClose={() => setShowTransfer(false)} onSend={handleSend} />}
+      {showReceive && <ReceiveModal onClose={() => setShowReceive(false)} />}
     </div>
   );
 }

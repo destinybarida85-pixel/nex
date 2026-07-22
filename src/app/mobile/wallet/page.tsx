@@ -1,8 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import MobileShell from "@/components/mobile/MobileShell";
 import BottomTabBar from "@/components/mobile/BottomTabBar";
+import TransferModal from "@/components/wallet/TransferModal";
+import ReceiveModal from "@/components/wallet/ReceiveModal";
 import { IconDownload, IconQrCode, IconArrowUpCircle, IconArrowDownCircle, IconPerson, MobileLogoMark } from "@/components/icons";
 
-const transactions = [
+type Tx = { name: string; meta: string; amount: string; credit: boolean; icon: typeof IconArrowUpCircle; color: string };
+
+const initialTransactions: Tx[] = [
   { name: "Halcyon Ventures", meta: "ACH · Jul 21", amount: "+$18,500.00", credit: true, icon: IconArrowUpCircle, color: "#63c3b2" },
   { name: "AWS", meta: "Card · Jul 20", amount: "−$2,340.18", credit: false, icon: IconArrowDownCircle, color: "#d9a05b" },
   { name: "Payroll · July run", meta: "Internal · Jul 18", amount: "−$41,200.00", credit: false, icon: IconPerson, color: "#7fa3e8" },
@@ -10,6 +17,27 @@ const transactions = [
 ];
 
 export default function MobileWalletPage() {
+  const [balance, setBalance] = useState(248610.44);
+  const [transactions, setTransactions] = useState<Tx[]>(initialTransactions);
+  const [showTransfer, setShowTransfer] = useState(false);
+  const [showReceive, setShowReceive] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  function handleSend(party: string, amount: number) {
+    setBalance((prev) => prev - amount);
+    setTransactions((prev) => [
+      { name: party, meta: "Transfer · just now", amount: `-$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, credit: false, icon: IconArrowDownCircle, color: "#d9a05b" },
+      ...prev,
+    ]);
+    setShowTransfer(false);
+  }
+
+  function copyAccount() {
+    navigator.clipboard.writeText("0219441788330");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  }
+
   return (
     <MobileShell>
       <div className="flex items-center gap-2.5 pt-16 px-[18px] pb-1.5">
@@ -24,11 +52,13 @@ export default function MobileWalletPage() {
       <div className="flex-1 overflow-hidden px-[18px] pt-2.5 flex flex-col gap-3.5">
         <div className="text-center py-2 pb-0.5">
           <div className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</div>
-          <div className="font-medium text-[36px] tracking-[-0.015em] mt-1">$248,610.44</div>
+          <div className="font-medium text-[36px] tracking-[-0.015em] mt-1">
+            ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </div>
           <div className="flex justify-center gap-2 mt-3">
-            <button className="btn btn-primary text-[12.5px]">Transfer</button>
-            <button className="btn btn-secondary text-[12.5px]">Deposit</button>
-            <button className="btn btn-secondary btn-icon" aria-label="QR code">
+            <button className="btn btn-primary text-[12.5px]" onClick={() => setShowTransfer(true)}>Transfer</button>
+            <button className="btn btn-secondary text-[12.5px]" onClick={() => setShowReceive(true)}>Deposit</button>
+            <button className="btn btn-secondary btn-icon" aria-label="QR code" onClick={() => setShowReceive(true)}>
               <IconQrCode size={15} />
             </button>
           </div>
@@ -41,7 +71,9 @@ export default function MobileWalletPage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-[16px] tracking-[.04em]">0219 4417 8830</span>
-            <button className="btn btn-ghost text-[11px] px-1.5 py-0.5">Copy</button>
+            <button className="btn btn-ghost text-[11px] px-1.5 py-0.5" onClick={copyAccount}>
+              {copied ? "Copied!" : "Copy"}
+            </button>
           </div>
           <div className="card-meta">Meridian Studio Inc. · Column Bank N.A. · ACH + Wire</div>
           <div
@@ -58,8 +90,8 @@ export default function MobileWalletPage() {
               Filter
             </a>
           </div>
-          {transactions.map((t) => (
-            <div key={t.name + t.meta} className="flex items-center gap-2.5 py-2">
+          {transactions.map((t, i) => (
+            <div key={t.name + i} className="flex items-center gap-2.5 py-2">
               <span
                 className="w-[34px] h-[34px] rounded-[10px] grid place-items-center flex-none"
                 style={{
@@ -82,6 +114,9 @@ export default function MobileWalletPage() {
       </div>
 
       <BottomTabBar active="wallet" />
+
+      {showTransfer && <TransferModal onClose={() => setShowTransfer(false)} onSend={handleSend} />}
+      {showReceive && <ReceiveModal onClose={() => setShowReceive(false)} />}
     </MobileShell>
   );
 }
