@@ -425,6 +425,13 @@ export function IconCamera({ size, className }: IconProps) {
     </svg>
   );
 }
+export function IconArrowRight({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  );
+}
 export function IconLogoMark({ size = 26, className }: IconProps) {
   return (
     <div

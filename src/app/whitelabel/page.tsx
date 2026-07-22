@@ -1,12 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { IconGlobe } from "@/components/icons";
 
 const swatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
 
 export default function WhiteLabelPage() {
   const [tenantAccent, setTenantAccent] = useState(swatches[0]);
   const [poweredBy, setPoweredBy] = useState(false);
+  const [companyName, setCompanyName] = useState("Atlas Chambers");
+  const [domain, setDomain] = useState("portal.atlaschambers.com");
+
+  const siteUrl = `/site-preview?name=${encodeURIComponent(companyName)}&color=${encodeURIComponent(tenantAccent)}&domain=${encodeURIComponent(domain)}&powered=${poweredBy ? "1" : "0"}`;
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -22,7 +27,7 @@ export default function WhiteLabelPage() {
           <div className="flex flex-col gap-3.5">
             <div className="field">
               <label>Company name</label>
-              <input className="input" defaultValue="Atlas Chambers" />
+              <input className="input" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
             </div>
             <div className="field">
               <label>Logo</label>
@@ -31,7 +36,7 @@ export default function WhiteLabelPage() {
                   className="w-9 h-9 rounded-[9px] grid place-items-center font-medium text-[15px]"
                   style={{ background: `color-mix(in srgb, ${tenantAccent} 18%, transparent)`, color: tenantAccent }}
                 >
-                  A
+                  {companyName.trim().charAt(0).toUpperCase() || "A"}
                 </span>
                 <div className="text-xs text-[var(--color-neutral-400)]">
                   atlas-mark.svg
@@ -62,7 +67,7 @@ export default function WhiteLabelPage() {
             </div>
             <div className="field">
               <label>Custom domain</label>
-              <input className="input font-mono text-[12.5px]" defaultValue="portal.atlaschambers.com" />
+              <input className="input font-mono text-[12.5px]" value={domain} onChange={(e) => setDomain(e.target.value)} />
             </div>
             <div className="field">
               <label>Applies to</label>
@@ -78,9 +83,12 @@ export default function WhiteLabelPage() {
               Show &ldquo;Powered by&rdquo; badge to clients
               <span className="tag tag-outline text-[9.5px] ml-auto">{poweredBy ? "On" : "Off"}</span>
             </label>
-            <div className="flex gap-2 mt-0.5">
+            <div className="flex gap-2 mt-0.5 flex-wrap">
               <button className="btn btn-primary text-[12.5px]">Publish branding</button>
-              <button className="btn btn-secondary text-[12.5px]">Preview as client</button>
+              <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary text-[12.5px]">
+                <IconGlobe size={13} />
+                Create mini website
+              </a>
             </div>
             <a href="/templates" className="btn btn-ghost text-[12.5px] self-start">
               View branded invoice &amp; email templates →
@@ -97,7 +105,7 @@ export default function WhiteLabelPage() {
                 <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
                 <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
                 <span className="ml-2.5 font-mono text-[10.5px] text-[var(--color-neutral-500)]">
-                  portal.atlaschambers.com
+                  {domain}
                 </span>
               </div>
               <div className="flex bg-[var(--color-bg)]">
@@ -107,9 +115,9 @@ export default function WhiteLabelPage() {
                       className="w-5 h-5 rounded-[6px] grid place-items-center text-[11px] font-medium"
                       style={{ background: `color-mix(in srgb, ${tenantAccent} 18%, transparent)`, color: tenantAccent }}
                     >
-                      A
+                      {companyName.trim().charAt(0).toUpperCase() || "A"}
                     </span>
-                    <span className="text-xs font-medium">Atlas Chambers</span>
+                    <span className="text-xs font-medium">{companyName}</span>
                   </div>
                   <div
                     className="px-2 py-[5px] rounded-md text-[11px]"
