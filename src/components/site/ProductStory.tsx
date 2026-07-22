@@ -1,5 +1,6 @@
 import TiltCard from "@/components/site/TiltCard";
 import ScrollReveal from "@/components/site/ScrollReveal";
+import LiveAccountFeed from "@/components/site/LiveAccountFeed";
 import {
   IconWallet,
   IconSparkle,
@@ -95,7 +96,7 @@ export default function ProductStory() {
         kicker="Business Wallet"
         icon={IconWallet}
         title="A real business account, inside your OS."
-        copy="Virtual accounts backed by licensed banking partners. Receive, transfer, run payroll and pay vendors — funds stay with the bank, the interface stays yours."
+        copy="Virtual accounts backed by licensed banking partners, generated in real time as new clients onboard. Receive, transfer, run payroll and pay vendors — funds stay with the bank, the interface stays yours."
         cta="Explore the wallet"
         ctaHref="#pricing"
         visual={
@@ -111,6 +112,7 @@ export default function ProductStory() {
               <button className="btn btn-secondary text-xs">Transfer</button>
               <button className="btn btn-secondary text-xs">Payment link</button>
             </div>
+            <LiveAccountFeed />
           </VisualFrame>
         }
       />
