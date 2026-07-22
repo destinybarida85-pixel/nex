@@ -399,31 +399,14 @@ textarea.input { min-height: 90px; resize: vertical; }
   .nx-stat-tile:hover, .nx-module-card:hover, .nx-price-card:hover { transform: none !important; }
 }
 
-/* — auth page blob illustration — */
-@keyframes nx-auth-blob-float {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-  50% { transform: translate3d(0, -16px, 0) rotate(3deg); }
+/* — auth page niche scene (floating product cards) — */
+@keyframes nx-auth-card-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--r, 0deg)); }
+  50% { transform: translate3d(0, -12px, 0) rotate(var(--r, 0deg)); }
 }
-.nx-auth-blob {
-  animation: nx-auth-blob-float ease-in-out infinite;
+.nx-auth-card {
+  animation: nx-auth-card-float 7s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .nx-auth-blob { animation: none !important; }
-}
-
-/* — scoped light palette for the auth card (rest of the app stays dark) — */
-.nx-auth-light {
-  color: var(--color-text);
-  --color-bg: #ffffff;
-  --color-surface: #f7f7f9;
-  --color-text: #17171c;
-  --color-accent: #5d5294;
-  --color-accent-300: #6f5fd0;
-  --color-divider: color-mix(in srgb, #17171c 12%, transparent);
-  --color-neutral-500: #6b6b76;
-  --color-neutral-600: #86868f;
-  --color-neutral-900: #e7e7ec;
-  --shadow-sm: 0 0 0 1px #dcdce2;
-  --shadow-md: 0 0 0 1px #d2d2d9, 0 6px 18px rgba(23, 23, 28, 0.12);
-  --shadow-lg: 0 0 0 1px #c4c4cd, 0 16px 40px rgba(23, 23, 28, 0.18);
+  .nx-auth-card { animation: none !important; }
 }
