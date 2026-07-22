@@ -68,14 +68,14 @@ export default function TemplatesPage() {
           </label>
 
           <div className="flex-1" />
-          <button className="btn btn-secondary text-[12.5px]">
+          <button className="btn btn-secondary text-[12.5px] no-print" onClick={() => window.print()}>
             <IconDownload size={13} />
-            Download {mode === "invoice" ? "PDF" : "HTML"}
+            Print / Save as PDF
           </button>
         </div>
 
         <div
-          className="rounded-2xl p-4 sm:p-8 overflow-x-auto"
+          className="rounded-2xl p-4 sm:p-8 overflow-x-auto print-area"
           style={{ background: "var(--color-neutral-900)", boxShadow: "var(--shadow-sm)" }}
         >
           {mode === "invoice" ? (

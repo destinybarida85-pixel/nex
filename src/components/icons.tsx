@@ -361,6 +361,54 @@ export function IconGoogle({ size = 16, className }: IconProps) {
     </svg>
   );
 }
+export function MobileLogoMark({ size = 30, initial = "N" }: { size?: number; initial?: string }) {
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: size,
+        height: size,
+        flex: "none",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: "50%",
+          background: "linear-gradient(140deg, var(--color-accent-400), var(--color-accent-800))",
+          display: "grid",
+          placeItems: "center",
+          color: "var(--color-accent-100)",
+          fontWeight: 600,
+          fontSize: size * 0.42,
+          fontFamily: "var(--font-inter)",
+          boxShadow: "0 0 0 1px color-mix(in srgb, var(--color-accent) 40%, transparent)",
+        }}
+      >
+        {initial}
+      </div>
+      <svg
+        width={size + 12}
+        height={size + 12}
+        viewBox="0 0 100 100"
+        style={{ position: "absolute", top: -6, left: -6, animation: "nx-orbit-spin 9s linear infinite" }}
+      >
+        <ellipse
+          cx="50"
+          cy="50"
+          rx="48"
+          ry="20"
+          fill="none"
+          stroke="var(--color-accent)"
+          strokeWidth="1.4"
+          opacity="0.55"
+        />
+        <circle cx="98" cy="50" r="3.2" fill="var(--color-accent-300)" />
+      </svg>
+    </div>
+  );
+}
 export function IconLogoMark({ size = 26, className }: IconProps) {
   return (
     <div

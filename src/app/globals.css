@@ -308,6 +308,17 @@ textarea.input { min-height: 90px; resize: vertical; }
 .dialog-body { font-size: 14px; opacity: 0.85; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
 
+/* — print — */
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area {
+    position: absolute; inset: 0; width: 100%; margin: 0; padding: 0;
+    background: #fff !important; color: #1a1a1f !important; box-shadow: none !important;
+  }
+  .no-print { display: none !important; }
+}
+
 /* — 3D overview scene (marketing homepage) — */
 @keyframes nx-orbit-float {
   0%, 100% { transform: translate3d(var(--tx), var(--ty), var(--tz)) rotateY(var(--ry)); }
@@ -319,6 +330,11 @@ textarea.input { min-height: 90px; resize: vertical; }
 }
 .nx-orbit-card { animation: nx-orbit-float 7s ease-in-out infinite; }
 .nx-hub-glow { animation: nx-hub-pulse 4s ease-in-out infinite; }
+@keyframes nx-orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 @media (prefers-reduced-motion: reduce) {
   .nx-orbit-card, .nx-hub-glow { animation: none !important; }
+  svg[style*="nx-orbit-spin"] { animation: none !important; }
 }

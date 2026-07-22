@@ -9,28 +9,27 @@ import {
   IconArrowUpCircle,
   IconArrowDownCircle,
   IconPerson,
+  MobileLogoMark,
 } from "@/components/icons";
 
 const quickActions = [
-  { label: "Send", icon: IconSend, primary: true },
-  { label: "Receive", icon: IconReceive },
-  { label: "Document", icon: IconDocuments },
-  { label: "Ask AI", icon: IconSparkle },
+  { label: "Send", icon: IconSend, bg: "#9184d9" },
+  { label: "Receive", icon: IconReceive, bg: "#63c3b2" },
+  { label: "Document", icon: IconDocuments, bg: "#d9a05b" },
+  { label: "Ask AI", icon: IconSparkle, bg: "#7fa3e8" },
 ];
 
 const activity = [
-  { name: "Halcyon Ventures", meta: "Invoice · Jul 21", amount: "+$18,500", credit: true, icon: IconArrowUpCircle },
-  { name: "AWS", meta: "Vendor · Jul 20", amount: "−$2,340", credit: false, icon: IconArrowDownCircle },
-  { name: "Payroll · July", meta: "14 employees · Jul 18", amount: "−$41,200", credit: false, icon: IconPerson },
+  { name: "Halcyon Ventures", meta: "Invoice · Jul 21", amount: "+$18,500", credit: true, icon: IconArrowUpCircle, color: "#63c3b2" },
+  { name: "AWS", meta: "Vendor · Jul 20", amount: "−$2,340", credit: false, icon: IconArrowDownCircle, color: "#d9a05b" },
+  { name: "Payroll · July", meta: "14 employees · Jul 18", amount: "−$41,200", credit: false, icon: IconPerson, color: "#7fa3e8" },
 ];
 
 export default function MobileHomePage() {
   return (
     <MobileShell>
       <div className="flex items-center gap-2.5 pt-16 px-[18px] pb-1.5">
-        <span className="w-[26px] h-[26px] rounded-lg bg-[var(--color-accent-900)] text-[var(--color-accent-300)] grid place-items-center text-[11px] font-semibold">
-          M
-        </span>
+        <MobileLogoMark size={28} initial="M" />
         <div>
           <div className="text-[13.5px] font-medium">Meridian Studio</div>
           <div className="text-[10.5px] text-[var(--color-neutral-500)]">Business account</div>
@@ -59,8 +58,15 @@ export default function MobileHomePage() {
           {quickActions.map((a) => (
             <div key={a.label} className="flex flex-col gap-1.5 items-center">
               <button
-                className={`btn btn-icon ${a.primary ? "btn-primary" : "btn-secondary"}`}
-                style={{ width: 46, height: 46, borderRadius: 14 }}
+                className="btn btn-icon"
+                style={{
+                  width: 46,
+                  height: 46,
+                  borderRadius: 14,
+                  background: `color-mix(in srgb, ${a.bg} 20%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${a.bg} 45%, transparent)`,
+                  color: a.bg,
+                }}
                 aria-label={a.label}
               >
                 <a.icon size={17} />
@@ -91,11 +97,10 @@ export default function MobileHomePage() {
             <div key={item.name} className="flex items-center gap-2.5 py-2.5">
               <span
                 className="w-[34px] h-[34px] rounded-[10px] grid place-items-center flex-none"
-                style={
-                  item.credit
-                    ? { background: "var(--color-accent-900)", color: "var(--color-accent-300)" }
-                    : { background: "var(--color-neutral-900)", color: "var(--color-neutral-400)" }
-                }
+                style={{
+                  background: `color-mix(in srgb, ${item.color} 18%, transparent)`,
+                  color: item.color,
+                }}
               >
                 <item.icon size={14} />
               </span>
@@ -103,7 +108,7 @@ export default function MobileHomePage() {
                 <div className="text-[13px]">{item.name}</div>
                 <div className="text-[10.5px] text-[var(--color-neutral-500)]">{item.meta}</div>
               </div>
-              <span className="text-[13px]" style={{ color: item.credit ? "var(--color-accent-300)" : "var(--color-neutral-400)" }}>
+              <span className="text-[13px]" style={{ color: item.credit ? item.color : "var(--color-neutral-400)" }}>
                 {item.amount}
               </span>
             </div>

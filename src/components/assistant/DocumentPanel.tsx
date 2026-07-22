@@ -20,14 +20,14 @@ export default function DocumentPanel({ document }: { document: DocumentData }) 
           <div className="card-meta">{document.meta}</div>
         </div>
         <span className={`tag ${document.statusTag} ml-auto`}>{document.status}</span>
-        <button className="btn btn-icon btn-secondary" aria-label="Download">
+        <button className="btn btn-icon btn-secondary" aria-label="Print document" onClick={() => window.print()}>
           <IconDownload size={14} />
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 flex flex-col md:flex-row gap-6">
         <div
-          className="flex-1 min-w-0 max-w-[620px] rounded-xl p-5 md:p-8 flex flex-col gap-5"
+          className="flex-1 min-w-0 max-w-[620px] rounded-xl p-5 md:p-8 flex flex-col gap-5 print-area"
           style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-sm)" }}
         >
           <div>

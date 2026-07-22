@@ -5,7 +5,10 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 import TransferModal from "@/components/wallet/TransferModal";
 import { initialTransactions, beneficiaries, type WalletTx } from "@/components/wallet/data";
-import { IconDownload, IconSend, IconReceive, IconEye, IconEyeOff } from "@/components/icons";
+import { generateAccountNumber, generateRoutingNumber } from "@/lib/generateAccountNumber";
+import { IconDownload, IconSend, IconReceive, IconEye, IconEyeOff, IconPlus } from "@/components/icons";
+
+type SubAccount = { label: string; number: string; routing: string };
 
 export default function WalletPage() {
   const [transactions, setTransactions] = useState<WalletTx[]>(initialTransactions);
@@ -13,6 +16,16 @@ export default function WalletPage() {
   const [showTransfer, setShowTransfer] = useState(false);
   const [copied, setCopied] = useState(false);
   const [hideBalances, setHideBalances] = useState(false);
+  const [subAccounts, setSubAccounts] = useState<SubAccount[]>([]);
+  const [newLabel, setNewLabel] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  function createSubAccount() {
+    const label = newLabel.trim() || `Sub-account ${subAccounts.length + 2}`;
+    setSubAccounts((prev) => [...prev, { label, number: generateAccountNumber(), routing: generateRoutingNumber() }]);
+    setNewLabel("");
+    setCreating(false);
+  }
 
   function handleSend(party: string, amount: number) {
     const tx: WalletTx = {
@@ -116,6 +129,55 @@ export default function WalletPage() {
                 </button>
               </div>
               <div className="text-[11.5px] text-[var(--color-neutral-500)]">Meridian Studio Inc. · Column Bank N.A. · ACH + Wire</div>
+
+              {subAccounts.length > 0 && (
+                <div className="flex flex-col gap-2 pt-2.5 mt-1 border-t border-[var(--color-divider)]">
+                  {subAccounts.map((acc, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[11px] text-[var(--color-neutral-400)]">{acc.label}</div>
+                        <div className="font-mono text-[13px] tracking-[.03em]" style={filter}>{acc.number}</div>
+                        <div className="font-mono text-[9.5px] text-[var(--color-neutral-600)]">Routing {acc.routing}</div>
+                      </div>
+                      <button
+                        className="btn btn-ghost text-[11px] px-1.5 py-0.5 flex-none"
+                        onClick={() => {
+                          navigator.clipboard.writeText(acc.number.replace(/\s/g, ""));
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1800);
+                        }}
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {creating ? (
+                <div className="flex gap-1.5 pt-2.5 mt-1 border-t border-[var(--color-divider)]">
+                  <input
+                    className="input text-[12px]"
+                    placeholder="e.g. Payroll account"
+                    value={newLabel}
+                    onChange={(e) => setNewLabel(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && createSubAccount()}
+                    autoFocus
+                  />
+                  <button className="btn btn-primary text-[12px] flex-none" onClick={createSubAccount}>
+                    Generate
+                  </button>
+                </div>
+              ) : (
+                <button
+                  className="btn btn-ghost text-[11.5px] self-start pt-2.5 mt-1 border-t border-[var(--color-divider)] rounded-none w-full justify-start"
+                  onClick={() => setCreating(true)}
+                >
+                  <IconPlus size={12} />
+                  New virtual account
+                </button>
+              )}
+
               <div className="text-[11px] leading-[1.5] text-[var(--color-neutral-500)] border-t border-[var(--color-divider)] pt-2.5 mt-1">
                 Funds are held by our licensed banking partner. Nex provides the business interface.
               </div>

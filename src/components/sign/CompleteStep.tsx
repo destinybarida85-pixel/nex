@@ -1,4 +1,5 @@
 import { IconCheckCircle, IconLock, IconDownload } from "@/components/icons";
+import Stamp from "./Stamp";
 
 const audit = [
   { label: "Drafted", meta: "Jul 18, 2026 · 09:14" },
@@ -24,36 +25,45 @@ export default function CompleteStep({ signature }: { signature: string }) {
         </div>
       </div>
 
-      <div className="card elev-sm w-full text-left gap-2.5 p-4">
-        <div className="flex items-center gap-2">
-          <IconLock size={13} className="text-[var(--color-accent)]" />
-          <span className="text-[12px] font-mono text-[var(--color-neutral-400)]">
-            Certificate ID: NX-CERT-8F21-40A9
-          </span>
-        </div>
-        {signature.startsWith("data:") ? (
-          <img src={signature} alt="Signature" className="h-10 self-start" />
-        ) : (
-          <span style={{ fontFamily: "cursive", fontSize: 22 }}>{signature}</span>
-        )}
-      </div>
-
-      <div className="card elev-sm w-full text-left gap-2.5 p-4">
-        <div className="card-title text-[13px]">Audit trail</div>
-        <div className="flex flex-col gap-2.5 mt-1">
-          {audit.map((a) => (
-            <div key={a.label} className="flex items-center gap-2.5 text-[12px]">
-              <span className="w-[7px] h-[7px] rounded-full flex-none" style={{ background: "var(--color-accent)" }} />
-              <span className="flex-1">{a.label}</span>
-              <span className="text-[var(--color-neutral-500)] font-mono text-[10.5px]">{a.meta}</span>
+      <div className="print-area w-full flex flex-col gap-5 items-center text-center" style={{ padding: 4 }}>
+        <div className="card elev-sm w-full text-left gap-2.5 p-4 relative overflow-visible">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col gap-2.5 flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <IconLock size={13} className="text-[var(--color-accent)]" />
+                <span className="text-[12px] font-mono text-[var(--color-neutral-400)]">
+                  Certificate ID: NX-CERT-8F21-40A9
+                </span>
+              </div>
+              {signature.startsWith("data:") ? (
+                <img src={signature} alt="Signature" className="h-10 self-start" />
+              ) : (
+                <span style={{ fontFamily: "cursive", fontSize: 22 }}>{signature}</span>
+              )}
             </div>
-          ))}
+            <div className="flex-none -mt-2 -mr-1">
+              <Stamp label="SEALED" sub="NEX E-SIGN" />
+            </div>
+          </div>
+        </div>
+
+        <div className="card elev-sm w-full text-left gap-2.5 p-4">
+          <div className="card-title text-[13px]">Audit trail</div>
+          <div className="flex flex-col gap-2.5 mt-1">
+            {audit.map((a) => (
+              <div key={a.label} className="flex items-center gap-2.5 text-[12px]">
+                <span className="w-[7px] h-[7px] rounded-full flex-none" style={{ background: "var(--color-accent)" }} />
+                <span className="flex-1">{a.label}</span>
+                <span className="text-[var(--color-neutral-500)] font-mono text-[10.5px]">{a.meta}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <button className="btn btn-primary btn-block">
+      <button className="btn btn-primary btn-block" onClick={() => window.print()}>
         <IconDownload size={14} />
-        Download signed PDF
+        Print / Save as PDF
       </button>
       <a href="/dashboard" className="btn btn-secondary btn-block" style={{ marginTop: 0 }}>
         Back to dashboard
