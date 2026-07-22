@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { generateBtcAddress, generateEthAddress, generateTxHash } from "@/lib/generateCryptoAddress";
 import { IconArrowUpCircle, IconArrowDownCircle, IconCheckCircle } from "@/components/icons";
+import { useHasSession } from "@/lib/useSession";
+import { isBackendConfigured } from "@/lib/backendStatus";
+
+const PRICES = { btc: 64920, eth: 3172 };
 
 type Asset = {
   key: "btc" | "eth";
@@ -12,15 +16,20 @@ type Asset = {
   balance: number;
   price: number;
   address: string;
+  dbId?: string;
 };
 
 type CryptoTx = { id: string; asset: "BTC" | "ETH"; type: "Sent" | "Received"; amount: number; hash: string };
 
+const initialAssets: Asset[] = [
+  { key: "btc", symbol: "₿", name: "Bitcoin", color: "#e8a33d", balance: 0.42891234, price: PRICES.btc, address: generateBtcAddress() },
+  { key: "eth", symbol: "Ξ", name: "Ethereum", color: "#7fa3e8", balance: 3.102481, price: PRICES.eth, address: generateEthAddress() },
+];
+
 export default function CryptoTab() {
-  const [assets, setAssets] = useState<Asset[]>([
-    { key: "btc", symbol: "₿", name: "Bitcoin", color: "#e8a33d", balance: 0.42891234, price: 64920, address: generateBtcAddress() },
-    { key: "eth", symbol: "Ξ", name: "Ethereum", color: "#7fa3e8", balance: 3.102481, price: 3172, address: generateEthAddress() },
-  ]);
+  const { hasSession, checked } = useHasSession();
+  const [live, setLive] = useState(false);
+  const [assets, setAssets] = useState<Asset[]>(initialAssets);
   const [activity, setActivity] = useState<CryptoTx[]>([
     { id: "t1", asset: "BTC", type: "Received", amount: 0.015, hash: generateTxHash() },
     { id: "t2", asset: "ETH", type: "Sent", amount: 0.42, hash: generateTxHash() },
@@ -31,20 +40,71 @@ export default function CryptoTab() {
   const [sendTo, setSendTo] = useState("");
   const [sendAmount, setSendAmount] = useState("");
 
+  useEffect(() => {
+    if (!checked || !isBackendConfigured || !hasSession) return;
+
+    fetch("/api/crypto")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.configured || !data.wallets?.length) return;
+        setAssets(
+          data.wallets.map((w: { id: string; asset: string; address: string; balance: string | number }) => {
+            const key = w.asset.toLowerCase() as "btc" | "eth";
+            const base = initialAssets.find((a) => a.key === key)!;
+            return { ...base, balance: Number(w.balance), address: w.address, dbId: w.id };
+          })
+        );
+        setActivity(
+          (data.transactions ?? []).map(
+            (tx: { id: string; direction: string; amount: string | number; tx_hash: string; wallet_id: string }) => {
+              const wallet = data.wallets.find((w: { id: string }) => w.id === tx.wallet_id);
+              return {
+                id: tx.id,
+                asset: (wallet?.asset ?? "BTC") as "BTC" | "ETH",
+                type: tx.direction === "credit" ? "Received" : "Sent",
+                amount: Number(tx.amount),
+                hash: tx.tx_hash,
+              };
+            }
+          )
+        );
+        setLive(true);
+      })
+      .catch(() => {
+        // Stay in local demo mode on any failure.
+      });
+  }, [checked, hasSession]);
+
   function copyAddress(address: string) {
     navigator.clipboard.writeText(address);
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   }
 
-  function submitSend(asset: Asset) {
+  async function submitSend(asset: Asset) {
     const amount = Number(sendAmount);
     if (!amount || amount <= 0 || amount > asset.balance) return;
-    setAssets((prev) => prev.map((a) => (a.key === asset.key ? { ...a, balance: a.balance - amount } : a)));
-    setActivity((prev) => [
-      { id: `t-${Date.now()}`, asset: asset.key.toUpperCase() as "BTC" | "ETH", type: "Sent", amount, hash: generateTxHash() },
-      ...prev,
-    ]);
+
+    if (live && asset.dbId) {
+      const res = await fetch("/api/crypto/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ walletId: asset.dbId, toAddress: sendTo, amount }),
+      });
+      const data = await res.json();
+      if (!res.ok) return;
+      setAssets((prev) => prev.map((a) => (a.key === asset.key ? { ...a, balance: Number(data.wallet.balance) } : a)));
+      setActivity((prev) => [
+        { id: `t-${Date.now()}`, asset: asset.key.toUpperCase() as "BTC" | "ETH", type: "Sent", amount, hash: data.txHash },
+        ...prev,
+      ]);
+    } else {
+      setAssets((prev) => prev.map((a) => (a.key === asset.key ? { ...a, balance: a.balance - amount } : a)));
+      setActivity((prev) => [
+        { id: `t-${Date.now()}`, asset: asset.key.toUpperCase() as "BTC" | "ETH", type: "Sent", amount, hash: generateTxHash() },
+        ...prev,
+      ]);
+    }
     setSendOpen(null);
     setSendTo("");
     setSendAmount("");
@@ -61,12 +121,17 @@ export default function CryptoTab() {
           boxShadow: "var(--shadow-sm)",
         }}
       >
-        <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Crypto portfolio value</div>
+        <div className="flex items-center gap-2">
+          <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Crypto portfolio value</div>
+          {live && <span className="tag tag-accent text-[9px]">Saved to your account</span>}
+        </div>
         <div className="font-medium text-[32px] tracking-[-0.015em]">
           ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
         <div className="text-[11px] text-[var(--color-neutral-500)] mt-1">
-          Demo balances only. Not connected to a real blockchain network, and no real cryptocurrency is held or transferred.
+          {live
+            ? "Persisted to your Origin account as an internal ledger, not a live blockchain. No real cryptocurrency is held or transferred."
+            : "Demo balances only. Not connected to a real blockchain network, and no real cryptocurrency is held or transferred."}
         </div>
       </div>
 
@@ -169,7 +234,9 @@ export default function CryptoTab() {
 
       <div className="flex items-center gap-1.5 text-[10.5px] text-[var(--color-neutral-500)]">
         <IconCheckCircle size={11} />
-        Addresses are freshly generated per session and are for demonstration only.
+        {live
+          ? "Balances and addresses are stored in your account and persist across sessions."
+          : "Addresses are freshly generated per session and are for demonstration only."}
       </div>
     </div>
   );

@@ -172,6 +172,11 @@ begin
   insert into wallet_accounts (tenant_id, label, account_number, routing_number)
   values (new_tenant_id, 'Primary', lpad((floor(random() * 1000000000000))::text, 12, '0'), lpad((100000000 + floor(random() * 900000000))::text, 9, '0'));
 
+  insert into crypto_wallets (tenant_id, asset, address)
+  values
+    (new_tenant_id, 'BTC', 'bc1q' || substr(md5(random()::text || clock_timestamp()::text), 1, 38)),
+    (new_tenant_id, 'ETH', '0x' || substr(md5(random()::text || clock_timestamp()::text), 1, 40));
+
   return new;
 end;
 $$;
