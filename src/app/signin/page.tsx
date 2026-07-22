@@ -6,6 +6,7 @@ import AuthShell from "@/components/auth/AuthShell";
 import { IconGoogle, IconLogoMark } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import { formatAuthError } from "@/lib/authError";
 
 function SignInForm() {
   const router = useRouter();
@@ -22,13 +23,18 @@ function SignInForm() {
       return;
     }
     setLoading("google");
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}${redirectTarget}` },
-    });
-    if (error) {
-      setError(error.message);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}${redirectTarget}` },
+      });
+      if (error) {
+        setError(formatAuthError(error, "Couldn't reach Google sign-in. Please try again in a moment."));
+        setLoading(null);
+      }
+    } catch {
+      setError("Couldn't reach the server. Check your connection and try again.");
       setLoading(null);
     }
   }
@@ -45,14 +51,19 @@ function SignInForm() {
     }
     setError("");
     setLoading("email");
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError(error.message);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setError(formatAuthError(error, "Couldn't sign you in. Please try again in a moment."));
+        setLoading(null);
+        return;
+      }
+      router.push(redirectTarget);
+    } catch {
+      setError("Couldn't reach the server. Check your connection and try again.");
       setLoading(null);
-      return;
     }
-    router.push(redirectTarget);
   }
 
   return (

@@ -6,6 +6,7 @@ import AuthShell from "@/components/auth/AuthShell";
 import { IconGoogle, IconLogoMark } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import { formatAuthError } from "@/lib/authError";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -22,13 +23,18 @@ export default function SignUpPage() {
       return;
     }
     setLoading("google");
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/dashboard` },
-    });
-    if (error) {
-      setError(error.message);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/dashboard` },
+      });
+      if (error) {
+        setError(formatAuthError(error, "Couldn't reach Google sign-in. Please try again in a moment."));
+        setLoading(null);
+      }
+    } catch {
+      setError("Couldn't reach the server. Check your connection and try again.");
       setLoading(null);
     }
   }
@@ -49,22 +55,27 @@ export default function SignUpPage() {
     }
     setError("");
     setLoading("email");
-    const supabase = createClient();
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: name, company_name: `${name}'s Business` } },
-    });
-    if (error) {
-      setError(error.message);
-      setLoading(null);
-      return;
-    }
-    if (data.session) {
-      router.push("/dashboard");
-    } else {
-      // Email confirmation is on by default for new Supabase projects.
-      setCheckEmail(true);
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: name, company_name: `${name}'s Business` } },
+      });
+      if (error) {
+        setError(formatAuthError(error, "Couldn't create your account. Please try again in a moment."));
+        setLoading(null);
+        return;
+      }
+      if (data.session) {
+        router.push("/dashboard");
+      } else {
+        // Email confirmation is on by default for new Supabase projects.
+        setCheckEmail(true);
+        setLoading(null);
+      }
+    } catch {
+      setError("Couldn't reach the server. Check your connection and try again.");
       setLoading(null);
     }
   }
