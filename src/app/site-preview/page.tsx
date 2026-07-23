@@ -18,6 +18,15 @@ function SitePreview() {
   const powered = params.get("powered") === "1";
   const initial = name.trim().charAt(0).toUpperCase() || "A";
 
+  const product = params.get("product");
+  const priceCents = params.get("price");
+  const currency = params.get("currency") || "usd";
+  const payUrl = params.get("payUrl");
+  const hasRealProduct = !!(product && priceCents && payUrl);
+  const priceLabel = priceCents
+    ? (Number(priceCents) / 100).toLocaleString(undefined, { style: "currency", currency: currency.toUpperCase() })
+    : "";
+
   return (
     <div className="min-h-screen" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
       <header className="flex items-center gap-2.5 px-6 py-5 max-w-[1080px] mx-auto">
@@ -30,11 +39,13 @@ function SitePreview() {
         <span className="text-[15px] font-medium">{name}</span>
         <div className="flex-1" />
         <a
-          href="#get-started"
+          href={hasRealProduct ? payUrl! : "#pay"}
+          target={hasRealProduct ? "_blank" : undefined}
+          rel={hasRealProduct ? "noreferrer" : undefined}
           className="text-[13px] px-4 py-2 rounded-lg no-underline font-medium"
           style={{ background: color, color: "#0c0c10" }}
         >
-          Get started
+          {hasRealProduct ? "Pay now" : "Get started"}
         </a>
       </header>
 
@@ -43,21 +54,28 @@ function SitePreview() {
           className="text-[11px] tracking-[.08em] uppercase px-3 py-1 rounded-full"
           style={{ background: `color-mix(in srgb, ${color} 16%, transparent)`, color }}
         >
-          {name} client portal
+          {hasRealProduct ? `${name} · ${product}` : `${name} client portal`}
         </span>
         <h1 className="text-[40px] sm:text-[52px] leading-[1.05] font-medium m-0 tracking-[-0.02em]">
-          Everything {name} clients need, in one place.
+          {hasRealProduct ? product : `Everything ${name} clients need, in one place.`}
         </h1>
         <p className="text-[16px] leading-[1.6] max-w-[520px]" style={{ color: "#a3a3ad" }}>
-          Documents, payments, e-signatures, and support, all in a single branded portal built and hosted for you.
+          {hasRealProduct
+            ? `Pay securely for ${product} below. You'll be taken to a secure checkout page to complete payment.`
+            : "Documents, payments, e-signatures, and support, all in a single branded portal built and hosted for you."}
         </p>
+        {hasRealProduct && (
+          <div className="text-[36px] font-medium" style={{ color }}>{priceLabel}</div>
+        )}
         <a
-          id="get-started"
-          href="#"
+          id="pay"
+          href={hasRealProduct ? payUrl! : "#"}
+          target={hasRealProduct ? "_blank" : undefined}
+          rel={hasRealProduct ? "noreferrer" : undefined}
           className="inline-flex items-center gap-2 text-[14px] font-medium px-5 py-3 rounded-lg no-underline mt-1"
           style={{ background: color, color: "#0c0c10" }}
         >
-          Sign in to your portal
+          {hasRealProduct ? `Pay ${priceLabel} now` : "Sign in to your portal"}
           <IconArrowRight size={15} />
         </a>
         <div className="text-[12px] font-mono mt-2" style={{ color: "#6b6b76" }}>{domain}</div>

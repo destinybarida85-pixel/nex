@@ -38,12 +38,12 @@ export default function Pricing() {
           <div className="card-body text-[13px]">For a founder getting set up.</div>
           <div className="flex flex-col gap-[7px] text-[12.5px] text-[var(--color-neutral-300)] mt-1">
             <span>· Business wallet + 3 users</span>
-            <span>· 20 AI documents / month</span>
+            <span>· Unlimited AI documents</span>
             <span>· E-signatures included</span>
             <span className="text-[var(--color-neutral-600)]">· No digital stamps</span>
             <span>· Core dashboard &amp; invoicing</span>
           </div>
-          <a href="/signup" className="btn btn-secondary btn-block text-[13px] mt-auto">Get started</a>
+          <a href="/signup" className="btn btn-secondary btn-block text-[13px] mt-auto">Start 7-day trial</a>
         </div>
 
         <div
@@ -66,7 +66,7 @@ export default function Pricing() {
             <span>· White-label branding + custom domain</span>
             <span>· API access &amp; webhooks</span>
           </div>
-          <a href="/signup" className="btn btn-primary btn-block text-[13px] mt-auto">Start 14-day trial</a>
+          <a href="/signup" className="btn btn-primary btn-block text-[13px] mt-auto">Start 7-day trial</a>
         </div>
 
         <div className="card elev-sm p-[22px] gap-2.5 nx-price-card">

@@ -1,17 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconGlobe } from "@/components/icons";
+import { useHasSession } from "@/lib/useSession";
+import { isBackendConfigured } from "@/lib/backendStatus";
 
 const swatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
 
+type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url: string };
+
 export default function WhiteLabelPage() {
+  const { hasSession, checked } = useHasSession();
   const [tenantAccent, setTenantAccent] = useState(swatches[0]);
   const [poweredBy, setPoweredBy] = useState(false);
   const [companyName, setCompanyName] = useState("Atlas Chambers");
   const [domain, setDomain] = useState("portal.atlaschambers.com");
+  const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([]);
+  const [selectedLinkId, setSelectedLinkId] = useState("");
 
-  const siteUrl = `/site-preview?name=${encodeURIComponent(companyName)}&color=${encodeURIComponent(tenantAccent)}&domain=${encodeURIComponent(domain)}&powered=${poweredBy ? "1" : "0"}`;
+  useEffect(() => {
+    if (!checked || !isBackendConfigured || !hasSession) return;
+    fetch("/api/stripe/payment-links")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.links) {
+          setPaymentLinks(data.links);
+          if (data.links.length > 0) setSelectedLinkId(data.links[0].id);
+        }
+      })
+      .catch(() => {
+        // Stay empty on any failure — the picker just shows the "create one" hint.
+      });
+  }, [checked, hasSession]);
+
+  const selectedLink = paymentLinks.find((l) => l.id === selectedLinkId);
+
+  const siteUrl =
+    `/site-preview?name=${encodeURIComponent(companyName)}&color=${encodeURIComponent(tenantAccent)}&domain=${encodeURIComponent(domain)}&powered=${poweredBy ? "1" : "0"}` +
+    (selectedLink
+      ? `&product=${encodeURIComponent(selectedLink.title)}&price=${selectedLink.amount_cents}&currency=${selectedLink.currency}&payUrl=${encodeURIComponent(selectedLink.url)}`
+      : "");
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -68,6 +96,22 @@ export default function WhiteLabelPage() {
             <div className="field">
               <label>Custom domain</label>
               <input className="input font-mono text-[12.5px]" value={domain} onChange={(e) => setDomain(e.target.value)} />
+            </div>
+            <div className="field">
+              <label>What are clients paying for?</label>
+              {paymentLinks.length > 0 ? (
+                <select className="input text-[12.5px]" value={selectedLinkId} onChange={(e) => setSelectedLinkId(e.target.value)}>
+                  {paymentLinks.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.title} · {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
+                  No real payment links yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create one on the Payments page</a>, then it'll show up here so the mini site can actually charge clients.
+                </div>
+              )}
             </div>
             <div className="field">
               <label>Applies to</label>
