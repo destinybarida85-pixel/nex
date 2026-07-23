@@ -1,7 +1,9 @@
-import { employees } from "./directory";
-import { IconSearch } from "@/components/icons";
+"use client";
 
-export default function DirectoryTable() {
+import { IconSearch } from "@/components/icons";
+import type { Employee } from "./directory";
+
+export default function DirectoryTable({ employees, live }: { employees: Employee[]; live: boolean }) {
   return (
     <div className="card elev-sm p-[16px_18px] gap-2.5">
       <div className="flex items-center gap-2.5 flex-wrap">
@@ -41,7 +43,7 @@ export default function DirectoryTable() {
       </table>
       </div>
       <div className="card-meta justify-between">
-        <span>Showing {employees.length} of 22 employees</span>
+        <span>{live ? `${employees.length} employees · saved to your account` : `Showing ${employees.length} of 22 employees`}</span>
       </div>
     </div>
   );

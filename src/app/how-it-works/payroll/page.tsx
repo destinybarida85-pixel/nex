@@ -108,8 +108,9 @@ export default function PayrollHowItWorksPage() {
             <div>
               <div className="text-[15px] font-medium">Where this stands, honestly.</div>
               <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
-                The interface and workflow are fully built. Running a real payroll deposit through a payroll
-                processor isn&rsquo;t wired up yet — today this manages records, not live bank transfers.
+                Your employee directory and payroll run history are real and saved. Actually depositing pay through
+                a payroll processor isn&rsquo;t wired up yet — running a payroll here records the numbers, it
+                doesn&rsquo;t move real money.
               </div>
             </div>
           </div>
