@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 import HealthScore from "@/components/analytics/HealthScore";
 import ExpenseBreakdown from "@/components/analytics/ExpenseBreakdown";
 import GrowthChart from "@/components/analytics/GrowthChart";
+import { useHasSession } from "@/lib/useSession";
+import { isBackendConfigured } from "@/lib/backendStatus";
 import { IconSparkle, IconDownload } from "@/components/icons";
 
 const ranges = ["30 days", "Quarter", "Year"];
+const rangeDays: Record<string, number> = { "30 days": 30, Quarter: 90, Year: 365 };
 
 const kpisByRange: Record<string, { label: string; value: string; meta?: string; metaLabel: string }[]> = {
   "30 days": [
@@ -32,9 +35,42 @@ const kpisByRange: Record<string, { label: string; value: string; meta?: string;
   ],
 };
 
+type WalletTx = { direction: "credit" | "debit"; amount_cents: number; created_at: string; counterparty: string };
+
 export default function AnalyticsPage() {
+  const { hasSession, checked } = useHasSession();
   const [range, setRange] = useState("30 days");
-  const kpis = kpisByRange[range];
+  const [live, setLive] = useState(false);
+  const [transactions, setTransactions] = useState<WalletTx[]>([]);
+
+  useEffect(() => {
+    if (!checked || !isBackendConfigured || !hasSession) return;
+    fetch("/api/wallet")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured) {
+          setLive(true);
+          setTransactions(data.transactions ?? []);
+        }
+      })
+      .catch(() => {});
+  }, [checked, hasSession]);
+
+  let kpis = kpisByRange[range];
+  if (live) {
+    const cutoff = Date.now() - rangeDays[range] * 24 * 60 * 60 * 1000;
+    const inRange = transactions.filter((t) => new Date(t.created_at).getTime() >= cutoff);
+    const revenueCents = inRange.filter((t) => t.direction === "credit").reduce((s, t) => s + t.amount_cents, 0);
+    const expenseCents = inRange.filter((t) => t.direction === "debit").reduce((s, t) => s + t.amount_cents, 0);
+    const netMargin = revenueCents > 0 ? Math.round(((revenueCents - expenseCents) / revenueCents) * 100) : 0;
+    const uniqueCounterparties = new Set(inRange.filter((t) => t.direction === "credit").map((t) => t.counterparty)).size;
+    kpis = [
+      { label: "Revenue", value: `$${(revenueCents / 100).toLocaleString()}`, metaLabel: `Real, last ${rangeDays[range]}d` },
+      { label: "Expenses", value: `$${(expenseCents / 100).toLocaleString()}`, metaLabel: `Real, last ${rangeDays[range]}d` },
+      { label: "Net margin", value: revenueCents > 0 ? `${netMargin}%` : "—", metaLabel: revenueCents > 0 ? "Real" : "No revenue yet" },
+      { label: "Paying counterparties", value: String(uniqueCounterparties), metaLabel: `Real, last ${rangeDays[range]}d` },
+    ];
+  }
 
   return (
     <div className="flex min-h-screen bg-[var(--color-bg)]">
@@ -45,7 +81,7 @@ export default function AnalyticsPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Analytics</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">Business performance for Meridian Studio</div>
+              <div className="text-muted text-[12.5px] mt-[3px]">{live ? "Real numbers from your wallet" : "Business performance for Meridian Studio"}</div>
             </div>
             <div className="flex-1 hidden sm:block" />
             <div className="seg">
@@ -84,6 +120,14 @@ export default function AnalyticsPage() {
             <ExpenseBreakdown />
             <GrowthChart />
           </div>
+
+          {live && (
+            <div className="text-[11px] text-[var(--color-neutral-500)]">
+              The KPI tiles above are computed from your real wallet transactions. The charts below (revenue trend,
+              health score, expense breakdown, growth) are still illustrative — wiring those to real time-series
+              data is the next piece.
+            </div>
+          )}
 
           <div
             className="rounded-xl p-4 flex items-center gap-3 border"

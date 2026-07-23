@@ -99,9 +99,9 @@ export default function AnalyticsHowItWorksPage() {
             <div>
               <div className="text-[15px] font-medium">Where this stands, honestly.</div>
               <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
-                The charts and layout are fully built. The Dashboard&rsquo;s KPI tiles and recent transactions
-                already pull real numbers from your wallet — this page&rsquo;s deeper charts are the next piece
-                to wire to the same real data.
+                The top KPI row (revenue, expenses, margin, paying counterparties) is now computed from your real
+                wallet transactions. The deeper charts below it (trend lines, health score, expense breakdown) are
+                still illustrative — that's the next piece to wire to real time-series data.
               </div>
             </div>
           </div>
