@@ -132,8 +132,8 @@ export default function ProductStory() {
         icon={IconSparkle}
         title="From prompt to finished document."
         copy="Draft contracts, invoices, HR letters and reports in seconds. Origin AI understands your business context (clients, terms, prior documents), so drafts arrive nearly done."
-        cta="See the AI assistant"
-        ctaHref="#modules"
+        cta="See how it works"
+        ctaHref="/how-it-works/ai-assistant"
         visual={
           <div
             className="rounded-xl p-5 flex flex-col gap-2.5 border"
@@ -161,8 +161,8 @@ export default function ProductStory() {
         icon={IconESign}
         title="Legally binding, sealed in seconds."
         copy="Route any document for signature with OTP identity checks, a full audit trail, and a tamper-evident certificate. No separate e-sign subscription required."
-        cta="How signing works"
-        ctaHref="#modules"
+        cta="See how it works"
+        ctaHref="/how-it-works/signing"
         visual={
           <VisualFrame>
             <div className="text-[9.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">MSA · Halcyon Ventures</div>
@@ -186,8 +186,8 @@ export default function ProductStory() {
         icon={IconPayments}
         title="Get paid without the follow-up."
         copy="Branded invoices, recurring billing, and shareable payment links, with automatic reminders so you're not the one chasing overdue clients."
-        cta="See payments"
-        ctaHref="#modules"
+        cta="See how it works"
+        ctaHref="/how-it-works/payments"
         visual={
           <VisualFrame>
             <div className="flex items-center">
@@ -211,8 +211,8 @@ export default function ProductStory() {
         icon={IconClients}
         title="Every client, every deal, in view."
         copy="A pipeline built for services businesses (leads, proposals, signed deals), plus the project and task tracking to deliver on them."
-        cta="See the pipeline"
-        ctaHref="#modules"
+        cta="See how it works"
+        ctaHref="/how-it-works/crm"
         visual={
           <VisualFrame>
             <div className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Sales pipeline</div>
@@ -235,8 +235,8 @@ export default function ProductStory() {
         icon={IconEmployees}
         title="Run payroll like it's nothing."
         copy="Directory, attendance, leave, and salary runs, paid directly from the business wallet, with payslips generated automatically."
-        cta="See HR &amp; payroll"
-        ctaHref="#modules"
+        cta="See how it works"
+        ctaHref="/how-it-works/payroll"
         visual={
           <VisualFrame>
             <div className="flex items-center">
@@ -254,8 +254,8 @@ export default function ProductStory() {
         icon={IconAnalytics}
         title="Know where the business stands."
         copy="Cash flow, growth trends, and a business health score, with AI-written summaries so a five-minute check tells you everything you need."
-        cta="See analytics"
-        ctaHref="#modules"
+        cta="See how it works"
+        ctaHref="/how-it-works/analytics"
         visual={
           <VisualFrame>
             <div className="flex items-baseline">
