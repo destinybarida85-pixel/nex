@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { stages, initialDeals, type Deal, type Stage } from "./deals";
+import { stages, type Deal, type Stage } from "./deals";
 
 const stageAccent: Record<Stage, boolean> = {
   Lead: false,
@@ -31,17 +30,19 @@ function DealCard({ deal }: { deal: Deal }) {
   );
 }
 
-export default function KanbanBoard() {
-  const [deals, setDeals] = useState<Deal[]>(initialDeals);
-  const [dragOverStage, setDragOverStage] = useState<Stage | null>(null);
-
-  function handleDrop(e: React.DragEvent, stage: Stage) {
-    e.preventDefault();
-    const id = e.dataTransfer.getData("text/plain");
-    setDeals((prev) => prev.map((d) => (d.id === id ? { ...d, stage, days: 0 } : d)));
-    setDragOverStage(null);
-  }
-
+export default function KanbanBoard({
+  deals,
+  dragOverStage,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+}: {
+  deals: Deal[];
+  dragOverStage: Stage | null;
+  onDragOver: (stage: Stage) => void;
+  onDragLeave: () => void;
+  onDrop: (id: string, stage: Stage) => void;
+}) {
   return (
     <div className="flex gap-3.5 overflow-x-auto pb-2">
       {stages.map((stage) => {
@@ -52,10 +53,14 @@ export default function KanbanBoard() {
             key={stage}
             onDragOver={(e) => {
               e.preventDefault();
-              setDragOverStage(stage);
+              onDragOver(stage);
             }}
-            onDragLeave={() => setDragOverStage(null)}
-            onDrop={(e) => handleDrop(e, stage)}
+            onDragLeave={onDragLeave}
+            onDrop={(e) => {
+              e.preventDefault();
+              const id = e.dataTransfer.getData("text/plain");
+              onDrop(id, stage);
+            }}
             className="w-[240px] flex-none flex flex-col gap-2.5 rounded-xl p-2.5"
             style={{
               background: dragOverStage === stage ? "color-mix(in srgb, var(--color-accent-900) 35%, transparent)" : "transparent",

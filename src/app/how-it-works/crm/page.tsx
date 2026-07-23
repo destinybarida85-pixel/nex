@@ -104,10 +104,10 @@ export default function CrmHowItWorksPage() {
           <div className="flex items-center gap-3">
             <IconCheckCircle size={20} className="text-[var(--color-accent)]" />
             <div>
-              <div className="text-[15px] font-medium">Where this stands, honestly.</div>
+              <div className="text-[15px] font-medium">Real and saved.</div>
               <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
-                The board and drag-and-drop are real and fully interactive. Saving your pipeline to a database
-                (so it persists after a refresh) is on the roadmap, same as Payroll and Analytics.
+                Every deal you add and every drag between stages is saved to your account. Refresh the page and it's
+                still there.
               </div>
             </div>
           </div>
