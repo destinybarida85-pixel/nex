@@ -57,11 +57,26 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   const isAuthPage = AUTH_PAGES.some((p) => pathname === p);
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
 
   if (!user && isProtected) {
     const redirectUrl = new URL("/signin", request.url);
     redirectUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(redirectUrl);
+  }
+
+  // The Super Admin console operates on every tenant's data, so being signed in
+  // isn't enough — it's restricted to an explicit allowlist of platform-owner
+  // emails, not just "whoever happens to be logged in."
+  if (user && isAdminRoute) {
+    const allowedEmails = (process.env.PLATFORM_ADMIN_EMAILS ?? "")
+      .split(",")
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean);
+    const email = user.email?.toLowerCase();
+    if (!email || !allowedEmails.includes(email)) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
   }
 
   if (user && isAuthPage) {
