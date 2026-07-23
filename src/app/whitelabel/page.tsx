@@ -8,6 +8,7 @@ import { isBackendConfigured } from "@/lib/backendStatus";
 const swatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
 
 type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url: string };
+type TenantDocument = { id: string; title: string; status: string };
 
 export default function WhiteLabelPage() {
   const { hasSession, checked } = useHasSession();
@@ -17,6 +18,13 @@ export default function WhiteLabelPage() {
   const [domain, setDomain] = useState("portal.atlaschambers.com");
   const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([]);
   const [selectedLinkId, setSelectedLinkId] = useState("");
+  const [documents, setDocuments] = useState<TenantDocument[]>([]);
+  const [selectedDocId, setSelectedDocId] = useState("");
+  const [docFormOpen, setDocFormOpen] = useState(false);
+  const [docTitle, setDocTitle] = useState("");
+  const [docText, setDocText] = useState("");
+  const [docSaving, setDocSaving] = useState(false);
+  const [docError, setDocError] = useState("");
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
@@ -31,7 +39,42 @@ export default function WhiteLabelPage() {
       .catch(() => {
         // Stay empty on any failure — the picker just shows the "create one" hint.
       });
+    fetch("/api/documents")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.documents) {
+          setDocuments(data.documents);
+          if (data.documents.length > 0) setSelectedDocId(data.documents[0].id);
+        }
+      })
+      .catch(() => {});
   }, [checked, hasSession]);
+
+  async function createDocument() {
+    if (!docTitle.trim() || !docText.trim()) {
+      setDocError("Give it a title and some content.");
+      return;
+    }
+    setDocSaving(true);
+    setDocError("");
+    const res = await fetch("/api/documents", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: docTitle.trim(), text: docText.trim() }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      setDocError(data.error || "Couldn't save the document.");
+      setDocSaving(false);
+      return;
+    }
+    setDocuments((prev) => [data.document, ...prev]);
+    setSelectedDocId(data.document.id);
+    setDocFormOpen(false);
+    setDocTitle("");
+    setDocText("");
+    setDocSaving(false);
+  }
 
   const selectedLink = paymentLinks.find((l) => l.id === selectedLinkId);
 
@@ -39,7 +82,8 @@ export default function WhiteLabelPage() {
     `/site-preview?name=${encodeURIComponent(companyName)}&color=${encodeURIComponent(tenantAccent)}&domain=${encodeURIComponent(domain)}&powered=${poweredBy ? "1" : "0"}` +
     (selectedLink
       ? `&product=${encodeURIComponent(selectedLink.title)}&price=${selectedLink.amount_cents}&currency=${selectedLink.currency}&payUrl=${encodeURIComponent(selectedLink.url)}`
-      : "");
+      : "") +
+    (selectedDocId ? `&docId=${encodeURIComponent(selectedDocId)}` : "");
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -111,6 +155,40 @@ export default function WhiteLabelPage() {
                 <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
                   No real payment links yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create one on the Payments page</a>, then it'll show up here so the mini site can actually charge clients.
                 </div>
+              )}
+            </div>
+            <div className="field">
+              <label>What document should clients see?</label>
+              {documents.length > 0 && (
+                <select className="input text-[12.5px]" value={selectedDocId} onChange={(e) => setSelectedDocId(e.target.value)}>
+                  <option value="">None</option>
+                  {documents.map((d) => (
+                    <option key={d.id} value={d.id}>{d.title}</option>
+                  ))}
+                </select>
+              )}
+              {docFormOpen ? (
+                <div className="flex flex-col gap-2 p-3 mt-2 rounded-lg border border-[var(--color-divider)]">
+                  <input className="input text-[12.5px]" placeholder="Document title (e.g. Service Agreement)" value={docTitle} onChange={(e) => setDocTitle(e.target.value)} />
+                  <textarea
+                    className="input text-[12.5px]"
+                    style={{ minHeight: 100 }}
+                    placeholder="Paste or write what clients should read..."
+                    value={docText}
+                    onChange={(e) => setDocText(e.target.value)}
+                  />
+                  {docError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{docError}</div>}
+                  <div className="flex gap-1.5">
+                    <button className="btn btn-primary text-[12px] flex-none" onClick={createDocument} disabled={docSaving}>
+                      {docSaving ? "Saving…" : "Save document"}
+                    </button>
+                    <button className="btn btn-secondary text-[12px] flex-none" onClick={() => setDocFormOpen(false)}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <button className="btn btn-ghost text-[11.5px] self-start mt-1.5" onClick={() => setDocFormOpen(true)}>
+                  + Add a document
+                </button>
               )}
             </div>
             <div className="field">

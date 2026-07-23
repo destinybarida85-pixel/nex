@@ -96,8 +96,8 @@ export default function ProductStory() {
         icon={IconWallet}
         title="A real business balance, inside your OS."
         copy="Track your balance and transactions in one place, and get paid through real, live Stripe payment links, not a fake account number. Receive, transfer, run payroll and pay vendors, all from one dashboard."
-        cta="Explore the wallet"
-        ctaHref="#pricing"
+        cta="See how it works"
+        ctaHref="/how-it-works/wallet"
         visual={
           <VisualFrame>
             <div className="flex items-center">
@@ -283,8 +283,8 @@ export default function ProductStory() {
         icon={IconGlobe}
         title="Your clients see your brand. Only yours."
         copy="Logo, colors, domain, emails, PDFs, portal: every client-facing surface carries your identity. Origin runs invisibly behind the scenes, with a Super Admin console for the platform owner."
-        cta="How white-label works"
-        ctaHref="#pricing"
+        cta="See how it works"
+        ctaHref="/how-it-works/whitelabel"
         tilt={7}
         visual={
           <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>

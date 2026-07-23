@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { IconArrowRight, IconCheckCircle, IconShieldCheck, IconSparkle } from "@/components/icons";
+import { IconArrowRight, IconCheckCircle, IconShieldCheck, IconSparkle, IconDocuments } from "@/components/icons";
 
 const features = [
   { icon: IconShieldCheck, title: "Bank-grade security", copy: "Every account, card, and document is protected end-to-end." },
@@ -26,6 +26,19 @@ function SitePreview() {
   const priceLabel = priceCents
     ? (Number(priceCents) / 100).toLocaleString(undefined, { style: "currency", currency: currency.toUpperCase() })
     : "";
+
+  const docId = params.get("docId");
+  const [document, setDocument] = useState<{ title: string; text: string } | null>(null);
+
+  useEffect(() => {
+    if (!docId) return;
+    fetch(`/api/documents/${docId}/public`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.document) setDocument(data.document);
+      })
+      .catch(() => {});
+  }, [docId]);
 
   return (
     <div className="min-h-screen" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
@@ -80,6 +93,21 @@ function SitePreview() {
         </a>
         <div className="text-[12px] font-mono mt-2" style={{ color: "#6b6b76" }}>{domain}</div>
       </section>
+
+      {document && (
+        <section className="max-w-[720px] mx-auto px-6 pb-16">
+          <div className="rounded-xl p-6 sm:p-8 flex flex-col gap-4" style={{ background: "#141418", border: "1px solid #232329" }}>
+            <div className="flex items-center gap-2" style={{ color }}>
+              <IconDocuments size={16} />
+              <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#9a9aa4" }}>Document</span>
+            </div>
+            <h2 className="text-[22px] font-medium m-0">{document.title}</h2>
+            <p className="text-[14px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#c4c4cc" }}>
+              {document.text}
+            </p>
+          </div>
+        </section>
+      )}
 
       <section className="max-w-[1080px] mx-auto px-6 pb-20 grid gap-4 grid-cols-1 sm:grid-cols-3">
         {features.map((f) => (
