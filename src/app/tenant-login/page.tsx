@@ -74,7 +74,7 @@ export default function TenantLoginPage() {
               Single sign-on (SSO)
             </button>
             <div className="text-[11px] text-[var(--color-neutral-600)] text-center">
-              Protected by two-factor authentication
+              Secured by encrypted sign-in
             </div>
           </div>
         </div>

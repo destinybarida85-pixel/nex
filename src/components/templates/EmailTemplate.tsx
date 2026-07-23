@@ -53,7 +53,7 @@ export default function EmailTemplate({ tenantName, tenantAccent, poweredBy }: {
         <div className="pt-5 flex flex-col gap-1 text-[11px]" style={{ borderTop: "1px solid #e4e4ea", color: "#9a9aa6" }}>
           <span>{tenantName} · 118 Harbor St, Suite 4B</span>
           <span>
-            Sent via secure e-signature · protected by two-factor authentication
+            Sent via secure e-signature · protected by tamper-evident signature hashing
             {poweredBy ? " · Powered by Origin" : ""}
           </span>
         </div>

@@ -70,7 +70,7 @@ export default function SignPage() {
       </div>
 
       <div className="text-[11px] text-[var(--color-neutral-600)] mt-6 flex items-center gap-2">
-        Protected by two-factor authentication · Audit trail retained for 7 years
+        Protected by tamper-evident hash-chained signatures · Audit trail retained for 7 years
       </div>
     </div>
   );
