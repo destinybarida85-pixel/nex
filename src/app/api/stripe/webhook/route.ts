@@ -28,6 +28,28 @@ export async function POST(request: Request) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
+
+    // Origin's own subscription billing (a tenant paying Origin for their plan),
+    // distinguished from a one-time payment-link checkout by mode.
+    if (session.mode === "subscription" && session.customer && session.subscription) {
+      const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+      const priceId = subscription.items.data[0]?.price.id;
+      const plan =
+        priceId === process.env.STRIPE_GROWTH_PRICE_ID
+          ? "growth"
+          : priceId === process.env.STRIPE_STARTER_PRICE_ID
+            ? "starter"
+            : "starter";
+      await supabase
+        .from("tenants")
+        .update({
+          subscription_id: subscription.id,
+          plan,
+          subscription_status: subscription.status,
+        })
+        .eq("stripe_customer_id", session.customer as string);
+    }
+
     const paymentLinkId = session.payment_link as string | null;
     if (paymentLinkId && session.amount_total) {
       const { data: link } = await supabase
@@ -79,6 +101,14 @@ export async function POST(request: Request) {
         }
       }
     }
+  }
+
+  if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+    const subscription = event.data.object as Stripe.Subscription;
+    await supabase
+      .from("tenants")
+      .update({ subscription_status: subscription.status })
+      .eq("stripe_customer_id", subscription.customer as string);
   }
 
   return NextResponse.json({ received: true });

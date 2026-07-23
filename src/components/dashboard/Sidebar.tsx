@@ -49,6 +49,7 @@ const workNav = [
 
 const bottomNav = [
   { label: "Settings", icon: IconSettings, href: "#" },
+  { label: "Billing", icon: IconPayments, href: "/billing" },
   { label: "White-label", icon: IconGlobe, href: "/whitelabel" },
   { label: "API Center", icon: IconApi, href: "#" },
 ];

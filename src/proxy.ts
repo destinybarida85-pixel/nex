@@ -18,6 +18,7 @@ const PROTECTED_PREFIXES = [
   "/employees",
   "/payments",
   "/payroll",
+  "/billing",
   "/invoices",
   "/templates",
   "/whitelabel",
