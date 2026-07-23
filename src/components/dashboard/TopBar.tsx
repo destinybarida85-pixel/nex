@@ -1,10 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { IconSearch, IconPlus, IconBell, IconMessages } from "@/components/icons";
+import { useEffect, useRef, useState } from "react";
+import { IconSearch, IconPlus, IconBell, IconMessages, IconSparkle, IconClients, IconEmployees, IconLink } from "@/components/icons";
+
+const quickCreateItems = [
+  { label: "New document", icon: IconSparkle, href: "/assistant" },
+  { label: "New deal", icon: IconClients, href: "/crm" },
+  { label: "New employee", icon: IconEmployees, href: "/employees" },
+  { label: "New payment link", icon: IconLink, href: "/payments" },
+];
 
 export default function TopBar() {
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [quickCreateOpen, setQuickCreateOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setAvatar(localStorage.getItem("origin-avatar"));
@@ -12,6 +21,15 @@ export default function TopBar() {
     window.addEventListener("origin-avatar-updated", onUpdate);
     return () => window.removeEventListener("origin-avatar-updated", onUpdate);
   }, []);
+
+  useEffect(() => {
+    if (!quickCreateOpen) return;
+    function onClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setQuickCreateOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [quickCreateOpen]);
 
   return (
     <header className="flex items-center gap-2 sm:gap-3.5 pl-16 pr-3 py-3 sm:px-7 border-b border-[var(--color-divider)]">
@@ -23,10 +41,30 @@ export default function TopBar() {
         </kbd>
       </div>
       <div className="flex-1 hidden md:block" />
-      <button className="btn btn-primary text-[13px] flex-none">
-        <IconPlus size={14} />
-        <span className="hidden sm:inline">Quick create</span>
-      </button>
+      <div className="relative flex-none" ref={menuRef}>
+        <button className="btn btn-primary text-[13px] flex-none" onClick={() => setQuickCreateOpen((v) => !v)}>
+          <IconPlus size={14} />
+          <span className="hidden sm:inline">Quick create</span>
+        </button>
+        {quickCreateOpen && (
+          <div
+            className="absolute right-0 top-[calc(100%+6px)] w-[200px] rounded-lg border p-1.5 flex flex-col gap-0.5 z-30"
+            style={{ background: "var(--color-bg)", borderColor: "var(--color-divider)", boxShadow: "var(--shadow-md)" }}
+          >
+            {quickCreateItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-md text-[13px] no-underline text-[var(--color-text)] hover:bg-[var(--color-surface)] transition-colors"
+                onClick={() => setQuickCreateOpen(false)}
+              >
+                <item.icon size={14} className="text-[var(--color-accent)]" />
+                {item.label}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
       <button className="btn btn-icon btn-secondary relative flex-none" aria-label="Notifications">
         <IconBell size={16} />
         <span

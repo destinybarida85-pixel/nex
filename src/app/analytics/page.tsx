@@ -72,6 +72,21 @@ export default function AnalyticsPage() {
     ];
   }
 
+  function exportReport() {
+    const rows = [
+      ["Metric", "Value", "Detail"],
+      ...kpis.map((k) => [k.label, k.value, k.metaLabel]),
+    ];
+    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `origin-analytics-${range.replace(/\s+/g, "-").toLowerCase()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="flex min-h-screen bg-[var(--color-bg)]">
       <Sidebar active="Analytics" />
@@ -92,7 +107,7 @@ export default function AnalyticsPage() {
                 </label>
               ))}
             </div>
-            <button className="btn btn-secondary text-[13px]">
+            <button className="btn btn-secondary text-[13px]" onClick={exportReport}>
               <IconDownload size={14} />
               Export report
             </button>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
-import { eventsByDay, today } from "@/components/calendar/events";
+import { eventsByDay as initialEventsByDay, today, type CalendarEvent } from "@/components/calendar/events";
 import { IconPlus } from "@/components/icons";
 
 const monthLabel = new Date(today.year, today.month, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
@@ -13,6 +13,10 @@ const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function CalendarPage() {
   const [selectedDay, setSelectedDay] = useState(today.day);
+  const [eventsByDay, setEventsByDay] = useState<Record<number, CalendarEvent[]>>(initialEventsByDay);
+  const [formOpen, setFormOpen] = useState(false);
+  const [newTime, setNewTime] = useState("");
+  const [newTitle, setNewTitle] = useState("");
   const cells: (number | null)[] = [
     ...Array(firstWeekday).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
@@ -23,6 +27,17 @@ export default function CalendarPage() {
     month: "long",
     day: "numeric",
   });
+
+  function addEvent() {
+    if (!newTitle.trim()) return;
+    setEventsByDay((prev) => ({
+      ...prev,
+      [selectedDay]: [...(prev[selectedDay] ?? []), { time: newTime.trim() || "—", title: newTitle.trim() }],
+    }));
+    setNewTime("");
+    setNewTitle("");
+    setFormOpen(false);
+  }
 
   return (
     <div className="flex min-h-screen bg-[var(--color-bg)]">
@@ -36,11 +51,22 @@ export default function CalendarPage() {
               <div className="text-muted text-[12.5px] mt-[3px]">{monthLabel}</div>
             </div>
             <div className="flex-1 hidden sm:block" />
-            <button className="btn btn-primary text-[13px]">
+            <button className="btn btn-primary text-[13px]" onClick={() => setFormOpen((v) => !v)}>
               <IconPlus size={14} />
               New event
             </button>
           </div>
+
+          {formOpen && (
+            <div className="card elev-sm p-4 gap-2.5">
+              <div className="text-[12px] text-[var(--color-neutral-500)]">Adding to {selectedDate}</div>
+              <div className="flex gap-2 flex-wrap">
+                <input className="input text-[12.5px]" style={{ maxWidth: 120 }} placeholder="Time (e.g. 14:00)" value={newTime} onChange={(e) => setNewTime(e.target.value)} />
+                <input className="input text-[12.5px] flex-1" placeholder="What's happening?" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+                <button className="btn btn-primary text-[12.5px] flex-none" onClick={addEvent}>Add</button>
+              </div>
+            </div>
+          )}
 
           <div className="grid gap-3.5 grid-cols-1 lg:grid-cols-[1fr_320px]">
             <div className="card elev-sm p-5 gap-3">

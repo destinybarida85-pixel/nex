@@ -1,3 +1,5 @@
+"use client";
+
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { IconDownload } from "@/components/icons";
 
@@ -25,6 +27,21 @@ const invoices = [
   { org: "Cascade Relief (NGO)", plan: "Standard", planTag: "tag-neutral", amount: "N/A", date: "Trial · ends Aug 4", status: "Trial", statusTag: "tag-outline" },
 ];
 
+function exportInvoicesCsv() {
+  const rows = [
+    ["Organization", "Plan", "Amount", "Billing date", "Status"],
+    ...invoices.map((inv) => [inv.org, inv.plan, inv.amount, inv.date, inv.status]),
+  ];
+  const csv = rows.map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "origin-platform-invoices.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function AdminBillingPage() {
   return (
     <div className="min-h-screen flex bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -39,7 +56,7 @@ export default function AdminBillingPage() {
             </div>
           </div>
           <div className="flex-1 hidden sm:block" />
-          <button className="btn btn-secondary text-[12.5px]">
+          <button className="btn btn-secondary text-[12.5px]" onClick={exportInvoicesCsv}>
             <IconDownload size={13} />
             Export CSV
           </button>

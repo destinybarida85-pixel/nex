@@ -36,7 +36,7 @@ export default function SideStack() {
         >
           Software spend rose 22% this quarter. Generate a cost-review report?
         </div>
-        <button className="btn btn-primary btn-block text-[12.5px] mt-0.5">Ask Origin AI</button>
+        <a href="/assistant" className="btn btn-primary btn-block text-[12.5px] mt-0.5">Ask Origin AI</a>
       </div>
 
       <div className="card elev-sm p-[16px_18px] gap-2.5">

@@ -25,9 +25,25 @@ export default function WhiteLabelPage() {
   const [docText, setDocText] = useState("");
   const [docSaving, setDocSaving] = useState(false);
   const [docError, setDocError] = useState("");
+  const [live, setLive] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishedAt, setPublishedAt] = useState<string | null>(null);
+  const [publishError, setPublishError] = useState("");
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
+    fetch("/api/tenant")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.tenant) {
+          setLive(true);
+          if (data.tenant.name) setCompanyName(data.tenant.name);
+          if (data.tenant.domain) setDomain(data.tenant.domain);
+          if (data.tenant.brand_color) setTenantAccent(data.tenant.brand_color);
+          setPoweredBy(!!data.tenant.powered_by_badge);
+        }
+      })
+      .catch(() => {});
     fetch("/api/stripe/payment-links")
       .then((r) => r.json())
       .then((data) => {
@@ -74,6 +90,26 @@ export default function WhiteLabelPage() {
     setDocTitle("");
     setDocText("");
     setDocSaving(false);
+  }
+
+  async function publishBranding() {
+    setPublishing(true);
+    setPublishError("");
+    if (live) {
+      const res = await fetch("/api/tenant", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: companyName, domain, brandColor: tenantAccent, poweredByBadge: poweredBy }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setPublishError(data.error || "Couldn't save your branding.");
+        setPublishing(false);
+        return;
+      }
+    }
+    setPublishedAt(new Date().toLocaleTimeString());
+    setPublishing(false);
   }
 
   const selectedLink = paymentLinks.find((l) => l.id === selectedLinkId);
@@ -205,12 +241,20 @@ export default function WhiteLabelPage() {
               Show &ldquo;Powered by&rdquo; badge to clients
               <span className="tag tag-outline text-[9.5px] ml-auto">{poweredBy ? "On" : "Off"}</span>
             </label>
-            <div className="flex gap-2 mt-0.5 flex-wrap">
-              <button className="btn btn-primary text-[12.5px]">Publish branding</button>
+            {publishError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{publishError}</div>}
+            <div className="flex gap-2 mt-0.5 flex-wrap items-center">
+              <button className="btn btn-primary text-[12.5px]" onClick={publishBranding} disabled={publishing}>
+                {publishing ? "Publishing…" : "Publish branding"}
+              </button>
               <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary text-[12.5px]">
                 <IconGlobe size={13} />
                 Create mini website
               </a>
+              {publishedAt && (
+                <span className="text-[11px] text-[var(--color-neutral-500)]">
+                  {live ? `Saved at ${publishedAt}` : `Applied locally at ${publishedAt} (sign in to save for real)`}
+                </span>
+              )}
             </div>
             <a href="/templates" className="btn btn-ghost text-[12.5px] self-start">
               View branded invoice &amp; email templates →
