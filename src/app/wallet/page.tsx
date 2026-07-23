@@ -8,34 +8,21 @@ import ReceiveModal from "@/components/wallet/ReceiveModal";
 import CardsTab from "@/components/wallet/CardsTab";
 import CryptoTab from "@/components/wallet/CryptoTab";
 import { initialTransactions, beneficiaries, type WalletTx } from "@/components/wallet/data";
-import { generateAccountNumber, generateRoutingNumber } from "@/lib/generateAccountNumber";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
-import { IconDownload, IconSend, IconReceive, IconEye, IconEyeOff, IconPlus } from "@/components/icons";
-
-type SubAccount = { id?: string; label: string; number: string; routing: string };
-
-function formatAccountNumber(digits: string) {
-  return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
-}
+import { IconDownload, IconSend, IconReceive, IconEye, IconEyeOff } from "@/components/icons";
 
 export default function WalletPage() {
   const { hasSession, checked } = useHasSession();
   const [live, setLive] = useState(false);
   const [primaryAccountId, setPrimaryAccountId] = useState<string | null>(null);
-  const [accountNumber, setAccountNumber] = useState("0219 4417 8830");
-  const [routingNumber, setRoutingNumber] = useState("021944178");
 
   const [view, setView] = useState<"overview" | "cards" | "crypto">("overview");
   const [transactions, setTransactions] = useState<WalletTx[]>(initialTransactions);
   const [balance, setBalance] = useState(248610.44);
   const [showTransfer, setShowTransfer] = useState(false);
   const [showReceive, setShowReceive] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [hideBalances, setHideBalances] = useState(false);
-  const [subAccounts, setSubAccounts] = useState<SubAccount[]>([]);
-  const [newLabel, setNewLabel] = useState("");
-  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
@@ -44,19 +31,12 @@ export default function WalletPage() {
       .then((res) => res.json())
       .then((data) => {
         if (!data.configured || !data.accounts?.length) return;
-        type DbAccount = { id: string; label: string; account_number: string; routing_number: string; balance_cents: number };
+        type DbAccount = { id: string; label: string; balance_cents: number };
         const accounts = data.accounts as DbAccount[];
         const primary = accounts.find((a) => a.label === "Primary") ?? accounts[0];
 
         setPrimaryAccountId(primary.id);
-        setAccountNumber(formatAccountNumber(primary.account_number));
-        setRoutingNumber(primary.routing_number);
         setBalance(primary.balance_cents / 100);
-        setSubAccounts(
-          accounts
-            .filter((a) => a.id !== primary.id)
-            .map((a) => ({ id: a.id, label: a.label, number: formatAccountNumber(a.account_number), routing: a.routing_number }))
-        );
 
         type DbTx = { id: string; counterparty: string; direction: string; amount_cents: number; created_at: string };
         const txs = (data.transactions ?? []) as DbTx[];
@@ -78,29 +58,6 @@ export default function WalletPage() {
         // Stay in local demo mode on any failure.
       });
   }, [checked, hasSession]);
-
-  async function createSubAccount() {
-    const label = newLabel.trim() || `Sub-account ${subAccounts.length + 2}`;
-
-    if (live) {
-      const res = await fetch("/api/wallet/accounts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ label }),
-      });
-      const data = await res.json();
-      if (res.ok && data.account) {
-        setSubAccounts((prev) => [
-          ...prev,
-          { id: data.account.id, label: data.account.label, number: formatAccountNumber(data.account.account_number), routing: data.account.routing_number },
-        ]);
-      }
-    } else {
-      setSubAccounts((prev) => [...prev, { label, number: generateAccountNumber(), routing: generateRoutingNumber() }]);
-    }
-    setNewLabel("");
-    setCreating(false);
-  }
 
   async function handleSend(party: string, amount: number) {
     if (live && primaryAccountId) {
@@ -145,12 +102,6 @@ export default function WalletPage() {
     setShowTransfer(false);
   }
 
-  function copyAccount() {
-    navigator.clipboard.writeText(accountNumber.replace(/\s/g, ""));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
-  }
-
   function downloadStatement() {
     const rows = [
       ["Counterparty", "Type", "Date", "Status", "Amount"],
@@ -178,7 +129,7 @@ export default function WalletPage() {
             <div>
               <h3 className="m-0 text-[22px]">Business Wallet</h3>
               <div className="text-muted text-[12.5px] mt-[3px]">
-                Virtual account backed by Column Bank N.A.{live && " · Saved to your account"}
+                Your Origin business balance{live && " · Saved to your account"}
               </div>
             </div>
             <div className="flex-1 hidden sm:block" />
@@ -242,70 +193,21 @@ export default function WalletPage() {
 
             <div className="card elev-sm p-5 gap-2.5">
               <div className="flex items-center">
-                <span className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Virtual account</span>
-                <span className="tag tag-accent ml-auto text-[9.5px]">Active</span>
+                <span className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Get paid</span>
+                <span className="tag tag-accent ml-auto text-[9.5px]">Stripe</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-[17px] tracking-[.05em]" style={filter}>{accountNumber}</span>
-                <button className="btn btn-ghost text-[11px] px-1.5 py-0.5" onClick={copyAccount}>
-                  {copied ? "Copied!" : "Copy"}
-                </button>
+              <div className="text-[12.5px] text-[var(--color-neutral-300)] leading-[1.6]">
+                Origin doesn&rsquo;t issue its own account numbers &mdash; real payments run through your own Stripe
+                account instead, so nothing here can bounce or mislead anyone.
               </div>
-              <div className="text-[11.5px] text-[var(--color-neutral-500)]">
-                Meridian Studio Inc. · Column Bank N.A. · ACH + Wire · Routing {routingNumber}
+              <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
+                Hit &ldquo;Receive&rdquo; to share a real, payable link, or manage all your links on the{" "}
+                <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Payments page</a>.
               </div>
-
-              {subAccounts.length > 0 && (
-                <div className="flex flex-col gap-2 pt-2.5 mt-1 border-t border-[var(--color-divider)]">
-                  {subAccounts.map((acc, i) => (
-                    <div key={acc.id ?? i} className="flex items-center gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[11px] text-[var(--color-neutral-400)]">{acc.label}</div>
-                        <div className="font-mono text-[13px] tracking-[.03em]" style={filter}>{acc.number}</div>
-                        <div className="font-mono text-[9.5px] text-[var(--color-neutral-600)]">Routing {acc.routing}</div>
-                      </div>
-                      <button
-                        className="btn btn-ghost text-[11px] px-1.5 py-0.5 flex-none"
-                        onClick={() => {
-                          navigator.clipboard.writeText(acc.number.replace(/\s/g, ""));
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1800);
-                        }}
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {creating ? (
-                <div className="flex gap-1.5 pt-2.5 mt-1 border-t border-[var(--color-divider)]">
-                  <input
-                    className="input text-[12px]"
-                    placeholder="e.g. Payroll account"
-                    value={newLabel}
-                    onChange={(e) => setNewLabel(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && createSubAccount()}
-                    autoFocus
-                  />
-                  <button className="btn btn-primary text-[12px] flex-none" onClick={createSubAccount}>
-                    Generate
-                  </button>
-                </div>
-              ) : (
-                <button
-                  className="btn btn-ghost text-[11.5px] self-start pt-2.5 mt-1 border-t border-[var(--color-divider)] rounded-none w-full justify-start"
-                  onClick={() => setCreating(true)}
-                >
-                  <IconPlus size={12} />
-                  New virtual account
-                </button>
-              )}
-
-              <div className="text-[11px] leading-[1.5] text-[var(--color-neutral-500)] border-t border-[var(--color-divider)] pt-2.5 mt-1">
-                Funds are held by our licensed banking partner. Origin provides the business interface.
-              </div>
+              <button className="btn btn-secondary text-[12.5px] mt-1" onClick={() => setShowReceive(true)}>
+                <IconReceive size={13} />
+                Get a payment link
+              </button>
             </div>
           </div>
 

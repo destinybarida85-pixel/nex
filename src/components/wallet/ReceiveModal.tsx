@@ -1,62 +1,126 @@
 "use client";
 
-import { useState } from "react";
-import { IconQrCode } from "@/components/icons";
+import { useEffect, useState } from "react";
+import { useHasSession } from "@/lib/useSession";
+import { isBackendConfigured } from "@/lib/backendStatus";
+
+type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url: string };
 
 export default function ReceiveModal({ onClose }: { onClose: () => void }) {
-  const [amount, setAmount] = useState("");
-  const [note, setNote] = useState("");
-  const [copied, setCopied] = useState<"account" | "link" | null>(null);
+  const { hasSession, checked } = useHasSession();
+  const [live, setLive] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [links, setLinks] = useState<PaymentLink[]>([]);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  function copy(text: string, which: "account" | "link") {
+  const [creating, setCreating] = useState(false);
+  const [title, setTitle] = useState("");
+  const [amount, setAmount] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!checked || !isBackendConfigured || !hasSession) {
+      setLoading(false);
+      return;
+    }
+    fetch("/api/stripe/payment-links")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured) {
+          setLive(true);
+          setLinks(data.links ?? []);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [checked, hasSession]);
+
+  function copy(text: string, id: string) {
     navigator.clipboard.writeText(text);
-    setCopied(which);
+    setCopied(id);
     setTimeout(() => setCopied(null), 1800);
   }
 
-  const requestLink = `https://pay.origin.io/req/${amount ? Number(amount).toFixed(2).replace(".", "") : "0000"}-mstudio${note ? "?note=" + encodeURIComponent(note) : ""}`;
+  async function createLink() {
+    const cents = Math.round(Number(amount) * 100);
+    if (!title.trim() || !cents || cents < 1) {
+      setError("Give it a title and a valid amount.");
+      return;
+    }
+    setError("");
+    const res = await fetch("/api/stripe/payment-links", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: title.trim(), amountCents: cents, kind: "one_time" }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      setError(data.error || "Couldn't create the payment link.");
+      return;
+    }
+    setLinks((prev) => [data.link, ...prev]);
+    setCreating(false);
+    setTitle("");
+    setAmount("");
+  }
 
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div className="dialog" onClick={(e) => e.stopPropagation()}>
         <div className="dialog-title">Receive money</div>
-        <div className="dialog-body flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <span className="text-[11px] text-[var(--color-neutral-500)] uppercase tracking-[.06em]">Your virtual account</span>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-[15px] tracking-[.04em]">0219 4417 8830</span>
-              <button className="btn btn-ghost text-[11px] px-1.5 py-0.5" onClick={() => copy("0219441788330", "account")}>
-                {copied === "account" ? "Copied!" : "Copy"}
-              </button>
+        <div className="dialog-body flex flex-col gap-3">
+          {loading ? (
+            <div className="text-[12.5px] text-[var(--color-neutral-500)]">Loading…</div>
+          ) : !live ? (
+            <div className="text-[12.5px] text-[var(--color-neutral-500)] leading-[1.6]">
+              Sign in and connect Stripe on the{" "}
+              <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Payments page</a>{" "}
+              to generate a real, shareable link people can actually pay.
             </div>
-            <span className="text-[11px] text-[var(--color-neutral-500)]">Column Bank N.A. · ACH + Wire</span>
-          </div>
+          ) : (
+            <>
+              <div className="text-[12px] text-[var(--color-neutral-500)] leading-[1.6]">
+                Share a link below — anyone who opens it pays through a real Stripe checkout page, and it lands
+                directly in your account.
+              </div>
 
-          <div className="hr" />
+              {links.length === 0 && !creating && (
+                <div className="text-[12.5px] text-[var(--color-neutral-500)]">No payment links yet.</div>
+              )}
 
-          <div className="text-[12.5px] font-medium">Request a specific amount</div>
-          <div className="field">
-            <label>Amount (USD)</label>
-            <input className="input" placeholder="0.00" value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" />
-          </div>
-          <div className="field">
-            <label>Note (optional)</label>
-            <input className="input" placeholder="What's this for?" value={note} onChange={(e) => setNote(e.target.value)} />
-          </div>
+              <div className="flex flex-col gap-2">
+                {links.slice(0, 4).map((l) => (
+                  <div key={l.id} className="flex items-center gap-2 p-2.5 rounded-lg" style={{ background: "var(--color-surface)" }}>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[12.5px] truncate">{l.title}</div>
+                      <div className="text-[11px] text-[var(--color-neutral-500)]">
+                        {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })}
+                      </div>
+                    </div>
+                    <button className="btn btn-ghost text-[11px] px-1.5 py-0.5 flex-none" onClick={() => copy(l.url, l.id)}>
+                      {copied === l.id ? "Copied!" : "Copy link"}
+                    </button>
+                  </div>
+                ))}
+              </div>
 
-          <div className="rounded-lg p-3 flex items-center gap-2.5" style={{ background: "var(--color-surface)" }}>
-            <IconQrCode size={28} className="text-[var(--color-accent)] flex-none" />
-            <div className="min-w-0 flex-1">
-              <div className="text-[11px] text-[var(--color-neutral-500)]">Shareable payment link</div>
-              <div className="text-[11.5px] font-mono truncate">{requestLink}</div>
-            </div>
-          </div>
+              {creating ? (
+                <div className="flex flex-col gap-2 p-3 rounded-lg" style={{ background: "var(--color-surface)" }}>
+                  <input className="input text-[12.5px]" placeholder="What's this for?" value={title} onChange={(e) => setTitle(e.target.value)} />
+                  <input className="input text-[12.5px]" placeholder="Amount (USD)" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                  {error && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+                  <button className="btn btn-primary text-[12.5px]" onClick={createLink}>Create link</button>
+                </div>
+              ) : (
+                <button className="btn btn-secondary text-[12.5px]" onClick={() => setCreating(true)}>
+                  New payment link
+                </button>
+              )}
+            </>
+          )}
         </div>
         <div className="dialog-actions">
           <button className="btn btn-secondary" onClick={onClose}>Close</button>
-          <button className="btn btn-primary" onClick={() => copy(requestLink, "link")}>
-            {copied === "link" ? "Link copied!" : "Copy request link"}
-          </button>
         </div>
       </div>
     </div>

@@ -1,6 +1,5 @@
 import TiltCard from "@/components/site/TiltCard";
 import ScrollReveal from "@/components/site/ScrollReveal";
-import LiveAccountFeed from "@/components/site/LiveAccountFeed";
 import {
   IconWallet,
   IconSparkle,
@@ -95,24 +94,34 @@ export default function ProductStory() {
         id="wallet"
         kicker="Business Wallet"
         icon={IconWallet}
-        title="A real business account, inside your OS."
-        copy="Virtual accounts backed by licensed banking partners, generated in real time as new clients onboard. Receive, transfer, run payroll and pay vendors: funds stay with the bank, the interface stays yours."
+        title="A real business balance, inside your OS."
+        copy="Track your balance and transactions in one place, and get paid through real, live Stripe payment links, not a fake account number. Receive, transfer, run payroll and pay vendors, all from one dashboard."
         cta="Explore the wallet"
         ctaHref="#pricing"
         visual={
           <VisualFrame>
             <div className="flex items-center">
-              <span className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Virtual account</span>
-              <span className="tag tag-accent ml-auto text-[9.5px]">Active</span>
+              <span className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</span>
+              <span className="tag tag-accent ml-auto text-[9.5px]">Live</span>
             </div>
-            <div className="font-mono text-[19px] tracking-[.05em]">0219 4417 8830</div>
-            <div className="text-[11.5px] text-[var(--color-neutral-500)]">Column Bank N.A. · ACH + Wire</div>
+            <div className="font-medium text-[26px] tracking-[-0.01em]">$48,610.44</div>
             <div className="flex gap-2 mt-1 flex-wrap">
               <button className="btn btn-primary text-xs">Receive</button>
               <button className="btn btn-secondary text-xs">Transfer</button>
               <button className="btn btn-secondary text-xs">Payment link</button>
             </div>
-            <LiveAccountFeed />
+            <div className="flex flex-col gap-2 pt-2.5 mt-1 border-t border-[var(--color-divider)]">
+              <span className="text-[9.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Real payment links</span>
+              {[
+                { title: "Consulting deposit", amount: "$2,000.00" },
+                { title: "Workshop tickets", amount: "$150.00" },
+              ].map((l) => (
+                <div key={l.title} className="flex items-center gap-2 text-[11px] text-[var(--color-neutral-400)]">
+                  <span className="truncate flex-1">{l.title}</span>
+                  <span className="text-[var(--color-neutral-300)]">{l.amount}</span>
+                </div>
+              ))}
+            </div>
           </VisualFrame>
         }
       />

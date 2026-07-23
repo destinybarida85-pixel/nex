@@ -28,7 +28,7 @@ export default function Hero() {
       />
       <div className="relative max-w-[860px] mx-auto px-6 pt-[110px] pb-16 flex flex-col items-center text-center">
         <span className="tag tag-accent text-[10.5px]">
-          AI-powered · Bank-backed wallets · True white-label
+          AI-powered · Real Stripe payments · True white-label
         </span>
         <h1 className="text-[clamp(40px,6.5vw,68px)] mt-5 tracking-[-0.03em] leading-[1.02] text-pretty">
           The complete business operating system.
@@ -41,7 +41,7 @@ export default function Hero() {
           <button className="btn btn-secondary text-sm px-[22px] py-[11px]">Book a demo</button>
         </div>
         <div className="text-[11.5px] text-[var(--color-neutral-600)] mt-3">
-          No card required · Funds held by licensed banking partners
+          No card required · Payments powered by Stripe
         </div>
       </div>
 

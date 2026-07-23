@@ -100,7 +100,7 @@ export default function InvoiceTemplate({ tenantName, tenantAccent, poweredBy }:
         </div>
 
         <div className="rounded-lg p-4 text-[11.5px]" style={{ background: "#eceef0", color: "#4a4a54" }}>
-          Pay by wire or ACH to virtual account <strong>0219 4417 8830</strong> · Column Bank N.A. Questions? Reply to this invoice or contact {tenantName}&rsquo;s billing team.
+          Pay securely online via the payment link included with this invoice. Questions? Reply to this invoice or contact {tenantName}&rsquo;s billing team.
         </div>
 
         {poweredBy && (
