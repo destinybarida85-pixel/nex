@@ -19,8 +19,8 @@ export default function Footer() {
       </div>
       <div className="flex gap-[22px] mt-10 text-[11.5px] text-[var(--color-neutral-600)] flex-wrap">
         <span className="mr-auto">© 2026 Origin Inc.</span>
-        <a href="/#top" className="text-inherit no-underline">Security</a>
-        <a href="/#top" className="text-inherit no-underline">API</a>
+        <a href="/security" className="text-inherit no-underline">Security</a>
+        <a href="/api-docs" className="text-inherit no-underline">API</a>
         <a href="/#pricing" className="text-inherit no-underline">Pricing</a>
         <a href="/contact" className="text-inherit no-underline">Contact</a>
         <a href="/privacy" className="text-inherit no-underline">Privacy</a>

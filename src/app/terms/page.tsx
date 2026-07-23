@@ -20,12 +20,12 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">2. Banking &amp; payment services</h2>
+        <h2 className="text-[18px] text-[var(--color-text)] font-medium">2. Payment services</h2>
         <p className="mt-2">
-          Origin is a software platform, not a bank. Virtual accounts, card issuance, and funds transfers made available in
-          the Service are provided by our licensed banking partner. Funds are held at the banking partner, subject to its
-          own terms and applicable regulation. Origin is not responsible for the acts or omissions of banking or payment
-          partners, except as required by law.
+          Origin is a software platform, not a bank or a payment processor. Payments made through the Service are
+          processed by Stripe, subject to Stripe&rsquo;s own terms and applicable regulation. Origin does not hold or
+          custody funds on your behalf, and is not responsible for the acts or omissions of Stripe, except as required
+          by law.
         </p>
       </section>
 
@@ -89,7 +89,7 @@ export default function TermsPage() {
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">9. Termination</h2>
         <p className="mt-2">
           You may stop using the Service and close your account at any time. We may suspend or terminate access for
-          material breach of these Terms, suspected fraud, or as required by our banking partner or applicable law. Upon
+          material breach of these Terms, suspected fraud, or as required by our payment processor or applicable law. Upon
           termination, we will make reasonable efforts to provide export of your Customer Data for a limited period.
         </p>
       </section>

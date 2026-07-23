@@ -70,7 +70,7 @@ const modules = [
   },
   {
     title: "API & Security",
-    body: "OAuth, webhooks, sandbox, 2FA, RBAC, audit logs.",
+    body: "Row-level tenant isolation, Stripe webhooks, OAuth sign-in, hash-chained signatures.",
     icon: (
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
         <path d="M8 7l-5 5 5 5M16 7l5 5-5 5" />

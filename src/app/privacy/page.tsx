@@ -19,9 +19,8 @@ export default function PrivacyPage() {
         </p>
         <p className="mt-2">
           <strong className="text-[var(--color-text)] font-medium">Business &amp; financial data</strong>: transaction
-          records, virtual account and routing details, invoices, payroll runs, and documents you create or upload in the
-          Service. Funds movement and account issuance are handled by our licensed banking partner, and Origin stores the
-          associated records needed to display them back to you.
+          records, invoices, payroll runs, and documents you create or upload in the Service. Real payments are processed
+          by Stripe, and Origin stores the associated records needed to display them back to you.
         </p>
         <p className="mt-2">
           <strong className="text-[var(--color-text)] font-medium">Usage data</strong>: pages visited, features used,
@@ -43,15 +42,15 @@ export default function PrivacyPage() {
           <li>To operate wallet, payroll, e-signature and AI document features you actively use.</li>
           <li>To communicate with you about your account, security notices, and product updates.</li>
           <li>To improve the Service through aggregated, de-identified usage analysis.</li>
-          <li>To comply with legal, tax, and regulatory obligations, including those of our banking partner.</li>
+          <li>To comply with legal, tax, and regulatory obligations, including those of our payment processor.</li>
         </ul>
       </section>
 
       <section>
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">3. How we share information</h2>
         <p className="mt-2">
-          We do not sell your personal information. We share it only with: (a) our licensed banking partner and payment
-          processors to move money and issue accounts on your behalf; (b) infrastructure and sub-processors that host or
+          We do not sell your personal information. We share it only with: (a) Stripe, to process payments on your
+          behalf; (b) infrastructure and sub-processors that host or
           secure the Service under contractual confidentiality obligations; (c) other users within your own organization
           or white-label tenant, according to the permissions your administrator sets; and (d) authorities, where required
           by law, regulation, or valid legal process.

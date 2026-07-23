@@ -35,7 +35,7 @@ export default function ContactPage() {
               ))}
             </div>
             <div className="text-[12px] text-[var(--color-neutral-500)] leading-[1.6]">
-              Origin Inc. is a software platform. Business wallet accounts are issued by our licensed banking partner, not by
+              Origin Inc. is a software platform. Payments made through Origin are processed by Stripe, not by
               Origin directly.
             </div>
           </div>
