@@ -4,6 +4,7 @@ import Nav from "@/components/site/Nav";
 import Footer from "@/components/site/Footer";
 import ScrollReveal from "@/components/site/ScrollReveal";
 import TiltCard from "@/components/site/TiltCard";
+import WhiteLabelWalkthroughScene from "@/components/site/WhiteLabelWalkthroughScene";
 import {
   IconGlobe,
   IconDocuments,
@@ -117,6 +118,14 @@ export default function WhiteLabelHowItWorksPage() {
             <a href="/signup" className="btn btn-primary text-sm px-[22px] py-[11px]">Try it free</a>
             <a href="/whitelabel" className="btn btn-secondary text-sm px-[22px] py-[11px]">Open white-label</a>
           </div>
+        </div>
+
+        {/* Auto-playing 3D walkthrough: someone brands it, shares it, a client pays. */}
+        <div className="relative max-w-[1080px] mx-auto px-6 pb-6">
+          <div className="text-center mb-5">
+            <span className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Watch someone run it, start to finish</span>
+          </div>
+          <WhiteLabelWalkthroughScene />
         </div>
       </section>
 
