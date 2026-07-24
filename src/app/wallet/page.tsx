@@ -5,12 +5,13 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 import TransferModal from "@/components/wallet/TransferModal";
 import ReceiveModal from "@/components/wallet/ReceiveModal";
+import PayoutModal from "@/components/wallet/PayoutModal";
 import CardsTab from "@/components/wallet/CardsTab";
 import CryptoTab from "@/components/wallet/CryptoTab";
 import { initialTransactions, beneficiaries, type WalletTx } from "@/components/wallet/data";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
-import { IconDownload, IconSend, IconReceive, IconEye, IconEyeOff } from "@/components/icons";
+import { IconDownload, IconSend, IconReceive, IconArrowUpCircle, IconEye, IconEyeOff } from "@/components/icons";
 
 export default function WalletPage() {
   const { hasSession, checked } = useHasSession();
@@ -22,11 +23,10 @@ export default function WalletPage() {
   const [balance, setBalance] = useState(248610.44);
   const [showTransfer, setShowTransfer] = useState(false);
   const [showReceive, setShowReceive] = useState(false);
+  const [showPayout, setShowPayout] = useState(false);
   const [hideBalances, setHideBalances] = useState(false);
 
-  useEffect(() => {
-    if (!checked || !isBackendConfigured || !hasSession) return;
-
+  function refetchWallet() {
     fetch("/api/wallet")
       .then((res) => res.json())
       .then((data) => {
@@ -57,6 +57,12 @@ export default function WalletPage() {
       .catch(() => {
         // Stay in local demo mode on any failure.
       });
+  }
+
+  useEffect(() => {
+    if (!checked || !isBackendConfigured || !hasSession) return;
+    refetchWallet();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked, hasSession]);
 
   async function handleSend(party: string, amount: number) {
@@ -188,6 +194,12 @@ export default function WalletPage() {
                   <IconReceive size={14} />
                   Receive
                 </button>
+                {live && (
+                  <button className="btn btn-secondary text-[13px]" onClick={() => setShowPayout(true)}>
+                    <IconArrowUpCircle size={14} />
+                    Payout to bank
+                  </button>
+                )}
               </div>
             </div>
 
@@ -268,6 +280,7 @@ export default function WalletPage() {
 
       {showTransfer && <TransferModal onClose={() => setShowTransfer(false)} onSend={handleSend} />}
       {showReceive && <ReceiveModal onClose={() => setShowReceive(false)} />}
+      {showPayout && <PayoutModal onClose={() => setShowPayout(false)} onPaidOut={refetchWallet} />}
     </div>
   );
 }

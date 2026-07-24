@@ -29,6 +29,10 @@ export default function TransferModal({
       <div className="dialog" onClick={(e) => e.stopPropagation()}>
         <div className="dialog-title">Transfer money</div>
         <div className="dialog-body flex flex-col gap-3">
+          <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
+            This records a transfer out of your balance for your own bookkeeping — it doesn&rsquo;t move real money
+            to the recipient yet. To actually withdraw real money, use &ldquo;Payout to bank&rdquo; instead.
+          </div>
           <div className="field">
             <label>Recipient</label>
             <select
