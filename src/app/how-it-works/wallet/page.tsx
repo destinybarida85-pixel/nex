@@ -118,9 +118,9 @@ export default function WalletHowItWorksPage() {
         </div>
 
         {/* Auto-playing 3D walkthrough: the whole flow driving itself, start to finish. */}
-        <div className="relative max-w-[900px] mx-auto px-6 pb-6">
-          <div className="text-center mb-4">
-            <span className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Watch it run, start to finish</span>
+        <div className="relative max-w-[1080px] mx-auto px-6 pb-6">
+          <div className="text-center mb-5">
+            <span className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Watch someone run it, start to finish</span>
           </div>
           <WalkthroughScene />
         </div>

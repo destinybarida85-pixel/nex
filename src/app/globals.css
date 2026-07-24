@@ -453,3 +453,16 @@ textarea.input { min-height: 90px; resize: vertical; }
   .nx-scene-pulse-dot, .nx-scene-particle { animation: none !important; opacity: 0 !important; }
   .nx-scene-tile { transition: none !important; }
 }
+
+/* — walkthrough "someone working" cursor — */
+@keyframes nx-cursor-ripple {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.55; }
+  100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
+}
+@keyframes nx-cursor-dip {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(0.78); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-cursor-ripple, .nx-cursor-dip { animation: none !important; }
+}
