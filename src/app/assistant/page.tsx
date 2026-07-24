@@ -99,18 +99,24 @@ export default function AssistantPage() {
   const [thinking, setThinking] = useState(false);
 
   async function handleSend(text: string) {
-    setMessages((prev) => [...prev, { role: "user", text }]);
+    const nextMessages: ChatMessage[] = [...messages, { role: "user", text }];
+    setMessages(nextMessages);
     setThinking(true);
 
     try {
       const res = await fetch("/api/assistant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: text }),
+        body: JSON.stringify({ messages: nextMessages }),
       });
       const data = await res.json();
 
       if (data.configured) {
+        if (data.type === "question" && data.question) {
+          setMessages((prev) => [...prev, { role: "ai", text: data.question }]);
+          setThinking(false);
+          return;
+        }
         setCurrentDocument({
           title: data.title,
           meta: data.meta,

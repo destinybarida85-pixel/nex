@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createNotification } from "@/lib/notify";
 
 // Stripe calls this directly (no user session), so it verifies the request via
 // the webhook signature instead, and uses the service-role client to write
@@ -48,6 +49,17 @@ export async function POST(request: Request) {
           subscription_status: subscription.status,
         })
         .eq("stripe_customer_id", session.customer as string);
+    }
+
+    if (session.mode === "payment" && session.metadata?.kind === "stamp_credits" && session.metadata.tenant_id) {
+      const credits = Number(session.metadata.credits) || 10;
+      const { data: tenant } = await supabase.from("tenants").select("stamp_credits").eq("id", session.metadata.tenant_id).single();
+      if (tenant) {
+        await supabase
+          .from("tenants")
+          .update({ stamp_credits: tenant.stamp_credits + credits })
+          .eq("id", session.metadata.tenant_id);
+      }
     }
 
     const paymentLinkId = session.payment_link as string | null;
@@ -97,6 +109,14 @@ export async function POST(request: Request) {
               status: "completed",
               memo: link.title,
             });
+
+            await createNotification(
+              supabase,
+              link.tenant_id,
+              "payment_received",
+              `Payment received: ${(session.amount_total / 100).toLocaleString(undefined, { style: "currency", currency: (session.currency || "usd").toUpperCase() })}`,
+              `${link.title} · ${session.customer_details?.email || "a customer"}`
+            );
           }
         }
       }

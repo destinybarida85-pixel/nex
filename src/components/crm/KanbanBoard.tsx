@@ -23,6 +23,9 @@ function DealCard({ deal }: { deal: Deal }) {
         <span className="text-[13px] font-medium" style={{ color: "var(--color-accent-300)" }}>{deal.value}</span>
         <span className="text-[10.5px] text-[var(--color-neutral-500)]">{deal.contact}</span>
       </div>
+      {deal.notes && (
+        <div className="text-[10.5px] text-[var(--color-neutral-500)] line-clamp-2">{deal.notes}</div>
+      )}
       {deal.days > 0 && (
         <span className="tag tag-neutral text-[9.5px] self-start">{deal.days}d in stage</span>
       )}

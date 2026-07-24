@@ -22,15 +22,17 @@ export default function ReviewStep({ onContinue }: { onContinue: () => void }) {
       </div>
 
       <div
-        className="rounded-xl p-7 flex flex-col gap-4 max-h-[320px] overflow-y-auto"
+        className="rounded-xl p-7 flex flex-col gap-4 max-h-[320px] overflow-y-auto overflow-x-hidden min-w-0"
         style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-sm)" }}
       >
         <h3 className="text-[17px] m-0">Master Services Agreement</h3>
         <div className="hr" style={{ margin: 0 }} />
         {sections.map((s) => (
-          <div key={s.heading}>
+          <div key={s.heading} className="min-w-0">
             <h5 className="text-[12.5px] mb-1" style={{ color: "var(--color-accent-300)" }}>{s.heading}</h5>
-            <p className="text-[12.5px] leading-[1.65] text-[var(--color-neutral-300)] m-0">{s.text}</p>
+            <p className="text-[12.5px] leading-[1.65] text-[var(--color-neutral-300)] m-0" style={{ overflowWrap: "break-word", wordBreak: "break-word" }}>
+              {s.text}
+            </p>
           </div>
         ))}
       </div>

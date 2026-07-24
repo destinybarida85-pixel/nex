@@ -15,6 +15,8 @@ export type SignatureProof = {
   documentHash: string;
   signedAt: string;
   persisted: boolean;
+  stampApplied: boolean;
+  stampCreditsRemaining: number | null;
 };
 
 export default function SignPage() {
@@ -50,18 +52,26 @@ export default function SignPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-neutral-900)] flex flex-col items-center py-12 px-4">
-      <div className="flex items-center gap-2.5 mb-8">
+    <div className="relative min-h-screen bg-[var(--color-neutral-900)] flex flex-col items-center py-12 px-4 overflow-hidden">
+      <div className="nx-grid-bg absolute inset-0 pointer-events-none" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(720px 420px at 50% -8%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent)" }}
+      />
+
+      <div className="relative flex items-center gap-2.5 mb-8">
         <IconLogoMark size={26} />
         <span className="font-medium text-[16px] text-[var(--color-text)]">Origin</span>
         <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">e-signature</span>
       </div>
 
-      <SignStepper current={step} />
+      <div className="relative">
+        <SignStepper current={step} />
+      </div>
 
       <div
-        className="w-full max-w-[440px] mt-8 p-8 rounded-2xl bg-[var(--color-bg)] text-[var(--color-text)]"
-        style={{ boxShadow: "var(--shadow-lg)" }}
+        className="relative w-full max-w-[440px] mt-8 p-8 rounded-2xl bg-[var(--color-bg)] text-[var(--color-text)]"
+        style={{ boxShadow: "var(--shadow-lg), 0 40px 80px -30px color-mix(in srgb, var(--color-accent) 25%, transparent)" }}
       >
         {step === 1 && <ReviewStep onContinue={() => setStep(2)} />}
         {step === 2 && <VerifyStep onContinue={() => setStep(3)} onBack={() => setStep(1)} />}
@@ -69,7 +79,7 @@ export default function SignPage() {
         {step === 4 && <CompleteStep signature={signature} proof={proof} sealing={sealing} />}
       </div>
 
-      <div className="text-[11px] text-[var(--color-neutral-600)] mt-6 flex items-center gap-2">
+      <div className="relative text-[11px] text-[var(--color-neutral-600)] mt-6 flex items-center gap-2">
         Protected by tamper-evident hash-chained signatures · Audit trail retained for 7 years
       </div>
     </div>

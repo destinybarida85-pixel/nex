@@ -42,16 +42,16 @@ const moneyNav = [
 const workNav = [
   { label: "Documents", icon: IconDocuments, href: "/assistant" },
   { label: "E-Signatures", icon: IconESign, href: "/sign" },
-  { label: "Projects", icon: IconProjects, href: "#" },
+  { label: "Projects", icon: IconProjects, href: "/projects" },
   { label: "Clients", icon: IconClients, href: "/crm" },
   { label: "Employees", icon: IconEmployees, href: "/employees" },
 ];
 
 const bottomNav = [
-  { label: "Settings", icon: IconSettings, href: "#" },
+  { label: "Settings", icon: IconSettings, href: "/settings" },
   { label: "Billing", icon: IconPayments, href: "/billing" },
   { label: "White-label", icon: IconGlobe, href: "/whitelabel" },
-  { label: "API Center", icon: IconApi, href: "#" },
+  { label: "API Center", icon: IconApi, href: "/api-docs" },
 ];
 
 function NavLink({

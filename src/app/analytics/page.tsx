@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="grid gap-3.5 grid-cols-1 lg:grid-cols-[2fr_1fr]">
-            <RevenueChart />
+            <RevenueChart transactions={transactions} live={live} />
             <HealthScore score={82} />
           </div>
 
@@ -138,9 +138,8 @@ export default function AnalyticsPage() {
 
           {live && (
             <div className="text-[11px] text-[var(--color-neutral-500)]">
-              The KPI tiles above are computed from your real wallet transactions. The charts below (revenue trend,
-              health score, expense breakdown, growth) are still illustrative — wiring those to real time-series
-              data is the next piece.
+              The KPI tiles and the revenue chart above are computed from your real wallet transactions. Health score,
+              expense breakdown, and growth below are still illustrative.
             </div>
           )}
 

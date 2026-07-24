@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 import KanbanBoard from "@/components/crm/KanbanBoard";
-import { initialDeals, type Deal, type Stage } from "@/components/crm/deals";
+import { initialDeals, type Deal, type Stage, fxRates, convertFromUsd, formatCurrency } from "@/components/crm/deals";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import { IconPlus } from "@/components/icons";
 
-type DbDeal = { id: string; company: string; title: string; value_cents: number; contact: string | null; stage: Stage };
+type DbDeal = { id: string; company: string; title: string; value_cents: number; contact: string | null; stage: Stage; notes: string | null };
 
 function fromDb(d: DbDeal): Deal {
   return {
@@ -20,6 +20,7 @@ function fromDb(d: DbDeal): Deal {
     contact: d.contact || "",
     stage: d.stage,
     days: 0,
+    notes: d.notes || undefined,
   };
 }
 
@@ -33,8 +34,10 @@ export default function CrmPage() {
   const [title, setTitle] = useState("");
   const [value, setValue] = useState("");
   const [contact, setContact] = useState("");
+  const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
+  const [displayCurrency, setDisplayCurrency] = useState("USD");
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
@@ -74,7 +77,7 @@ export default function CrmPage() {
       const res = await fetch("/api/crm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company: company.trim(), title: title.trim(), valueCents, contact: contact.trim() }),
+        body: JSON.stringify({ company: company.trim(), title: title.trim(), valueCents, contact: contact.trim(), notes: notes.trim() }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -85,7 +88,7 @@ export default function CrmPage() {
       setDeals((prev) => [fromDb(data.deal), ...prev]);
     } else {
       setDeals((prev) => [
-        { id: `d-${Date.now()}`, company: company.trim(), title: title.trim(), value: `$${Number(value.replace(/[^0-9.]/g, "") || 0).toLocaleString()}`, contact: contact.trim(), stage: "Lead", days: 0 },
+        { id: `d-${Date.now()}`, company: company.trim(), title: title.trim(), value: `$${Number(value.replace(/[^0-9.]/g, "") || 0).toLocaleString()}`, contact: contact.trim(), stage: "Lead", days: 0, notes: notes.trim() || undefined },
         ...prev,
       ]);
     }
@@ -94,6 +97,7 @@ export default function CrmPage() {
     setTitle("");
     setValue("");
     setContact("");
+    setNotes("");
     setCreating(false);
   }
 
@@ -104,10 +108,10 @@ export default function CrmPage() {
   const avgDealSize = openDeals.length > 0 ? Math.round(pipelineValue / openDeals.length) : 0;
 
   const kpis = [
-    { label: "Pipeline value", value: `$${pipelineValue.toLocaleString()}` },
+    { label: "Pipeline value", value: formatCurrency(convertFromUsd(pipelineValue, displayCurrency), displayCurrency) },
     { label: "Open deals", value: String(openDeals.length), metaLabel: `across ${new Set(openDeals.map((d) => d.stage)).size} stages` },
     { label: "Win rate", value: `${winRate}%` },
-    { label: "Avg deal size", value: `$${avgDealSize.toLocaleString()}`, metaLabel: "open pipeline" },
+    { label: "Avg deal size", value: formatCurrency(convertFromUsd(avgDealSize, displayCurrency), displayCurrency), metaLabel: "open pipeline" },
   ];
 
   return (
@@ -124,11 +128,26 @@ export default function CrmPage() {
               </div>
             </div>
             <div className="flex-1 hidden sm:block" />
+            <select
+              className="input text-[12.5px] w-[90px] flex-none"
+              value={displayCurrency}
+              onChange={(e) => setDisplayCurrency(e.target.value)}
+              aria-label="Display currency"
+            >
+              {Object.keys(fxRates).map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
             <button className="btn btn-primary text-[13px]" onClick={() => setFormOpen((v) => !v)}>
               <IconPlus size={14} />
               New deal
             </button>
           </div>
+          {displayCurrency !== "USD" && (
+            <div className="text-[11px] text-[var(--color-neutral-500)] -mt-3">
+              Converted at an approximate rate (1 USD ≈ {fxRates[displayCurrency]} {displayCurrency}) — deal values are still stored in USD.
+            </div>
+          )}
 
           {formOpen && (
             <div className="card elev-sm p-4 gap-2.5">
@@ -138,6 +157,7 @@ export default function CrmPage() {
                 <input className="input text-[13px]" placeholder="Value (e.g. 12000)" inputMode="decimal" value={value} onChange={(e) => setValue(e.target.value)} />
                 <input className="input text-[13px]" placeholder="Contact name" value={contact} onChange={(e) => setContact(e.target.value)} />
               </div>
+              <textarea className="input text-[13px]" style={{ minHeight: 60 }} placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
               {error && <div className="text-[12px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
               <div className="flex gap-1.5">
                 <button className="btn btn-primary text-[12.5px] flex-none" onClick={createDeal} disabled={creating}>

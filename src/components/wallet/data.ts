@@ -18,7 +18,25 @@ export const initialTransactions: WalletTx[] = [
 ];
 
 export const beneficiaries = [
-  { name: "AWS", account: "•• 7742", bank: "Wells Fargo" },
-  { name: "Figment Design", account: "•• 3310", bank: "Chase" },
-  { name: "Northbeam Co.", account: "•• 9021", bank: "Mercury" },
+  { name: "AWS", account: "•• 7742", bank: "Wells Fargo", country: "US" },
+  { name: "Figment Design", account: "•• 3310", bank: "Chase", country: "US" },
+  { name: "Northbeam Co.", account: "•• 9021", bank: "Mercury", country: "US" },
 ];
+
+export const banksByCountry: Record<string, string[]> = {
+  US: ["Wells Fargo", "Chase", "Bank of America", "Mercury", "Citibank"],
+  GB: ["Barclays", "HSBC UK", "NatWest", "Lloyds", "Monzo"],
+  NG: ["GTBank", "Access Bank", "Zenith Bank", "First Bank", "UBA"],
+  KE: ["Equity Bank", "KCB", "Co-operative Bank", "NCBA"],
+  ZA: ["Standard Bank", "FNB", "Absa", "Nedbank"],
+  CA: ["RBC", "TD Bank", "Scotiabank", "CIBC"],
+};
+
+export const countryNames: Record<string, string> = {
+  US: "United States",
+  GB: "United Kingdom",
+  NG: "Nigeria",
+  KE: "Kenya",
+  ZA: "South Africa",
+  CA: "Canada",
+};

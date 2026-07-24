@@ -120,7 +120,9 @@ export default function DocumentPanel({
                   <h5 className="text-[13px] tracking-[0.02em] mb-1.5" style={{ color: "var(--color-accent-300)" }}>
                     {section.heading}
                   </h5>
-                  <p className="text-[13px] leading-[1.7] text-[var(--color-neutral-300)] m-0">{section.text}</p>
+                  <p className="text-[13px] leading-[1.7] text-[var(--color-neutral-300)] m-0" style={{ overflowWrap: "break-word", wordBreak: "break-word" }}>
+                    {section.text}
+                  </p>
                 </>
               )}
             </div>

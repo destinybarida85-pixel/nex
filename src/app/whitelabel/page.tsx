@@ -1,25 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { IconGlobe } from "@/components/icons";
+import { useEffect, useRef, useState } from "react";
+import { IconGlobe, IconCamera, IconCheckCircle } from "@/components/icons";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 
-const swatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
+const baseSwatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
 
 type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url: string };
 type TenantDocument = { id: string; title: string; status: string };
+type Template = "clarity" | "ledger" | "atrium";
+
+const templates: { id: Template; name: string; why: string }[] = [
+  { id: "clarity", name: "Clarity", why: "Best for consulting & legal — a calm, centered page that puts the document and price front and center." },
+  { id: "ledger", name: "Ledger", why: "Best for ongoing client relationships — a dashboard-style sidebar layout that feels like a real portal." },
+  { id: "atrium", name: "Atrium", why: "Best if you have a strong header photo — a bold full-width banner up top for agencies and studios." },
+];
+
+function readAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function slugify(input: string) {
+  return input.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48);
+}
 
 export default function WhiteLabelPage() {
   const { hasSession, checked } = useHasSession();
-  const [tenantAccent, setTenantAccent] = useState(swatches[0]);
+  const [customSwatches, setCustomSwatches] = useState<string[]>([]);
+  const swatches = [...baseSwatches, ...customSwatches];
+  const colorPickerRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const headerInputRef = useRef<HTMLInputElement>(null);
+  const [tenantAccent, setTenantAccent] = useState(baseSwatches[0]);
   const [poweredBy, setPoweredBy] = useState(false);
   const [companyName, setCompanyName] = useState("Atlas Chambers");
   const [domain, setDomain] = useState("portal.atlaschambers.com");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [headerImageUrl, setHeaderImageUrl] = useState<string | null>(null);
+  const [template, setTemplate] = useState<Template>("clarity");
+  const [siteSlug, setSiteSlug] = useState("atlas-chambers");
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [sitePublished, setSitePublished] = useState(false);
   const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([]);
   const [selectedLinkId, setSelectedLinkId] = useState("");
   const [documents, setDocuments] = useState<TenantDocument[]>([]);
-  const [selectedDocId, setSelectedDocId] = useState("");
+  const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
   const [docFormOpen, setDocFormOpen] = useState(false);
   const [docTitle, setDocTitle] = useState("");
   const [docText, setDocText] = useState("");
@@ -29,6 +60,10 @@ export default function WhiteLabelPage() {
   const [publishing, setPublishing] = useState(false);
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
   const [publishError, setPublishError] = useState("");
+
+  useEffect(() => {
+    if (!slugTouched) setSiteSlug(slugify(companyName));
+  }, [companyName, slugTouched]);
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
@@ -41,6 +76,16 @@ export default function WhiteLabelPage() {
           if (data.tenant.domain) setDomain(data.tenant.domain);
           if (data.tenant.brand_color) setTenantAccent(data.tenant.brand_color);
           setPoweredBy(!!data.tenant.powered_by_badge);
+          if (data.tenant.logo_url) setLogoUrl(data.tenant.logo_url);
+          if (data.tenant.header_image_url) setHeaderImageUrl(data.tenant.header_image_url);
+          if (data.tenant.site_template) setTemplate(data.tenant.site_template);
+          if (data.tenant.site_slug) {
+            setSiteSlug(data.tenant.site_slug);
+            setSlugTouched(true);
+          }
+          setSitePublished(!!data.tenant.site_published);
+          if (Array.isArray(data.tenant.site_document_ids)) setSelectedDocIds(data.tenant.site_document_ids);
+          if (data.tenant.site_payment_link_id) setSelectedLinkId(data.tenant.site_payment_link_id);
         }
       })
       .catch(() => {});
@@ -49,7 +94,7 @@ export default function WhiteLabelPage() {
       .then((data) => {
         if (data.configured && data.links) {
           setPaymentLinks(data.links);
-          if (data.links.length > 0) setSelectedLinkId(data.links[0].id);
+          setSelectedLinkId((prev) => prev || (data.links.length > 0 ? data.links[0].id : ""));
         }
       })
       .catch(() => {
@@ -58,10 +103,7 @@ export default function WhiteLabelPage() {
     fetch("/api/documents")
       .then((r) => r.json())
       .then((data) => {
-        if (data.configured && data.documents) {
-          setDocuments(data.documents);
-          if (data.documents.length > 0) setSelectedDocId(data.documents[0].id);
-        }
+        if (data.configured && data.documents) setDocuments(data.documents);
       })
       .catch(() => {});
   }, [checked, hasSession]);
@@ -85,21 +127,50 @@ export default function WhiteLabelPage() {
       return;
     }
     setDocuments((prev) => [data.document, ...prev]);
-    setSelectedDocId(data.document.id);
+    setSelectedDocIds((prev) => [...prev, data.document.id]);
     setDocFormOpen(false);
     setDocTitle("");
     setDocText("");
     setDocSaving(false);
   }
 
-  async function publishBranding() {
+  function toggleDoc(id: string) {
+    setSelectedDocIds((prev) => (prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]));
+  }
+
+  async function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
+    setLogoUrl(await readAsDataUrl(file));
+  }
+
+  async function handleHeaderFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
+    setHeaderImageUrl(await readAsDataUrl(file));
+  }
+
+  async function publishBranding(publish?: boolean) {
     setPublishing(true);
     setPublishError("");
+    const nextPublished = publish ?? sitePublished;
     if (live) {
       const res = await fetch("/api/tenant", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: companyName, domain, brandColor: tenantAccent, poweredByBadge: poweredBy }),
+        body: JSON.stringify({
+          name: companyName,
+          domain,
+          brandColor: tenantAccent,
+          poweredByBadge: poweredBy,
+          logoUrl: logoUrl || "",
+          headerImageUrl: headerImageUrl || "",
+          siteSlug,
+          siteTemplate: template,
+          siteDocumentIds: selectedDocIds,
+          sitePaymentLinkId: selectedLinkId || null,
+          sitePublished: nextPublished,
+        }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -107,19 +178,11 @@ export default function WhiteLabelPage() {
         setPublishing(false);
         return;
       }
+      setSitePublished(nextPublished);
     }
     setPublishedAt(new Date().toLocaleTimeString());
     setPublishing(false);
   }
-
-  const selectedLink = paymentLinks.find((l) => l.id === selectedLinkId);
-
-  const siteUrl =
-    `/site-preview?name=${encodeURIComponent(companyName)}&color=${encodeURIComponent(tenantAccent)}&domain=${encodeURIComponent(domain)}&powered=${poweredBy ? "1" : "0"}` +
-    (selectedLink
-      ? `&product=${encodeURIComponent(selectedLink.title)}&price=${selectedLink.amount_cents}&currency=${selectedLink.currency}&payUrl=${encodeURIComponent(selectedLink.url)}`
-      : "") +
-    (selectedDocId ? `&docId=${encodeURIComponent(selectedDocId)}` : "");
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -140,16 +203,44 @@ export default function WhiteLabelPage() {
             <div className="field">
               <label>Logo</label>
               <div className="flex items-center gap-3 p-3 border border-dashed border-[var(--color-divider)] rounded-lg">
-                <span
-                  className="w-9 h-9 rounded-[9px] grid place-items-center font-medium text-[15px]"
-                  style={{ background: `color-mix(in srgb, ${tenantAccent} 18%, transparent)`, color: tenantAccent }}
-                >
-                  {companyName.trim().charAt(0).toUpperCase() || "A"}
-                </span>
-                <div className="text-xs text-[var(--color-neutral-400)]">
-                  atlas-mark.svg
-                  <div className="text-[10.5px] text-[var(--color-neutral-500)]">Drop a new file to replace</div>
+                {logoUrl ? (
+                  <img src={logoUrl} alt="" className="w-9 h-9 rounded-[9px] object-cover flex-none" />
+                ) : (
+                  <span
+                    className="w-9 h-9 rounded-[9px] grid place-items-center font-medium text-[15px] flex-none"
+                    style={{ background: `color-mix(in srgb, ${tenantAccent} 18%, transparent)`, color: tenantAccent }}
+                  >
+                    {companyName.trim().charAt(0).toUpperCase() || "A"}
+                  </span>
+                )}
+                <div className="text-xs text-[var(--color-neutral-400)] flex-1">
+                  {logoUrl ? "Custom logo uploaded" : "No logo yet — using your initial"}
                 </div>
+                <button className="btn btn-secondary text-[11.5px] flex-none" onClick={() => logoInputRef.current?.click()}>
+                  <IconCamera size={12} />
+                  Upload
+                </button>
+                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFile} />
+              </div>
+            </div>
+            <div className="field">
+              <label>Header image (optional)</label>
+              <div className="flex items-center gap-3 p-3 border border-dashed border-[var(--color-divider)] rounded-lg">
+                {headerImageUrl ? (
+                  <img src={headerImageUrl} alt="" className="w-14 h-9 rounded-md object-cover flex-none" />
+                ) : (
+                  <div className="w-14 h-9 rounded-md flex-none grid place-items-center" style={{ background: "var(--color-surface)" }}>
+                    <IconCamera size={13} className="text-[var(--color-neutral-500)]" />
+                  </div>
+                )}
+                <div className="text-xs text-[var(--color-neutral-400)] flex-1">
+                  {headerImageUrl ? "Banner uploaded" : "Used by the Atrium template"}
+                </div>
+                <button className="btn btn-secondary text-[11.5px] flex-none" onClick={() => headerInputRef.current?.click()}>
+                  <IconCamera size={12} />
+                  Upload
+                </button>
+                <input ref={headerInputRef} type="file" accept="image/*" className="hidden" onChange={handleHeaderFile} />
               </div>
             </div>
             <div className="field">
@@ -168,19 +259,71 @@ export default function WhiteLabelPage() {
                     }}
                   />
                 ))}
-                <span className="w-[26px] h-[26px] rounded-lg border border-dashed border-[var(--color-divider)] grid place-items-center text-[var(--color-neutral-500)] text-[13px]">
+                <button
+                  type="button"
+                  aria-label="Add a custom color"
+                  onClick={() => colorPickerRef.current?.click()}
+                  className="w-[26px] h-[26px] rounded-lg border border-dashed border-[var(--color-divider)] grid place-items-center text-[var(--color-neutral-500)] text-[13px] cursor-pointer hover:border-[var(--color-neutral-600)] transition-colors"
+                >
                   +
-                </span>
+                </button>
+                <input
+                  ref={colorPickerRef}
+                  type="color"
+                  className="hidden"
+                  value={tenantAccent}
+                  onChange={(e) => {
+                    const color = e.target.value;
+                    setCustomSwatches((prev) => (prev.includes(color) || baseSwatches.includes(color) ? prev : [...prev, color]));
+                    setTenantAccent(color);
+                  }}
+                />
               </div>
             </div>
             <div className="field">
-              <label>Custom domain</label>
+              <label>Custom domain (marketing/reference only)</label>
               <input className="input font-mono text-[12.5px]" value={domain} onChange={(e) => setDomain(e.target.value)} />
             </div>
+
+            <div className="field">
+              <label>Website template</label>
+              <div className="flex flex-col gap-1.5">
+                {templates.map((t) => (
+                  <label
+                    key={t.id}
+                    className="flex items-start gap-2.5 p-2.5 rounded-lg border cursor-pointer"
+                    style={{ borderColor: template === t.id ? tenantAccent : "var(--color-divider)", background: template === t.id ? `color-mix(in srgb, ${tenantAccent} 8%, transparent)` : "transparent" }}
+                  >
+                    <input type="radio" name="template" className="mt-0.5" checked={template === t.id} onChange={() => setTemplate(t.id)} />
+                    <div>
+                      <div className="text-[12.5px] font-medium">{t.name}</div>
+                      <div className="text-[11px] text-[var(--color-neutral-500)] leading-[1.5]">{t.why}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="field">
+              <label>Website address</label>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[12px] text-[var(--color-neutral-500)] font-mono">origin.app/site/</span>
+                <input
+                  className="input font-mono text-[12.5px] flex-1"
+                  value={siteSlug}
+                  onChange={(e) => {
+                    setSlugTouched(true);
+                    setSiteSlug(slugify(e.target.value));
+                  }}
+                />
+              </div>
+            </div>
+
             <div className="field">
               <label>What are clients paying for?</label>
               {paymentLinks.length > 0 ? (
                 <select className="input text-[12.5px]" value={selectedLinkId} onChange={(e) => setSelectedLinkId(e.target.value)}>
+                  <option value="">None</option>
                   {paymentLinks.map((l) => (
                     <option key={l.id} value={l.id}>
                       {l.title} · {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })}
@@ -194,15 +337,16 @@ export default function WhiteLabelPage() {
               )}
             </div>
             <div className="field">
-              <label>What document should clients see?</label>
-              {documents.length > 0 && (
-                <select className="input text-[12.5px]" value={selectedDocId} onChange={(e) => setSelectedDocId(e.target.value)}>
-                  <option value="">None</option>
-                  {documents.map((d) => (
-                    <option key={d.id} value={d.id}>{d.title}</option>
-                  ))}
-                </select>
-              )}
+              <label>Documents to feature (their work, shown to clients)</label>
+              <div className="flex flex-col gap-1">
+                {documents.map((d) => (
+                  <label key={d.id} className="flex items-center gap-2 text-[12.5px] py-0.5">
+                    <input type="checkbox" checked={selectedDocIds.includes(d.id)} onChange={() => toggleDoc(d.id)} />
+                    {d.title}
+                  </label>
+                ))}
+                {documents.length === 0 && <div className="text-[11.5px] text-[var(--color-neutral-500)]">No documents yet.</div>}
+              </div>
               {docFormOpen ? (
                 <div className="flex flex-col gap-2 p-3 mt-2 rounded-lg border border-[var(--color-divider)]">
                   <input className="input text-[12.5px]" placeholder="Document title (e.g. Service Agreement)" value={docTitle} onChange={(e) => setDocTitle(e.target.value)} />
@@ -243,16 +387,25 @@ export default function WhiteLabelPage() {
             </label>
             {publishError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{publishError}</div>}
             <div className="flex gap-2 mt-0.5 flex-wrap items-center">
-              <button className="btn btn-primary text-[12.5px]" onClick={publishBranding} disabled={publishing}>
-                {publishing ? "Publishing…" : "Publish branding"}
+              <button className="btn btn-secondary text-[12.5px]" onClick={() => publishBranding()} disabled={publishing}>
+                {publishing ? "Saving…" : "Save changes"}
               </button>
-              <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary text-[12.5px]">
-                <IconGlobe size={13} />
-                Create mini website
-              </a>
+              <button
+                className="btn btn-primary text-[12.5px]"
+                onClick={() => publishBranding(!sitePublished)}
+                disabled={publishing || !live}
+              >
+                {sitePublished ? <IconCheckCircle size={13} /> : <IconGlobe size={13} />}
+                {sitePublished ? "Live · click to unpublish" : "Publish website"}
+              </button>
+              {sitePublished && (
+                <a href={`/site/${siteSlug}`} target="_blank" rel="noopener noreferrer" className="btn btn-ghost text-[12.5px]">
+                  View live site →
+                </a>
+              )}
               {publishedAt && (
                 <span className="text-[11px] text-[var(--color-neutral-500)]">
-                  {live ? `Saved at ${publishedAt}` : `Applied locally at ${publishedAt} (sign in to save for real)`}
+                  {live ? `Saved at ${publishedAt}` : `Sign in to save this for real`}
                 </span>
               )}
             </div>
@@ -263,66 +416,69 @@ export default function WhiteLabelPage() {
 
           <div className="flex flex-col gap-2.5">
             <div className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">
-              Live preview: what your clients see
+              Preview · what your clients will see
             </div>
             <div className="border border-[var(--color-divider)] rounded-xl overflow-hidden">
               <div className="flex items-center gap-1.5 px-3 py-2 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">
                 <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
                 <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
                 <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
-                <span className="ml-2.5 font-mono text-[10.5px] text-[var(--color-neutral-500)]">
-                  {domain}
-                </span>
+                <span className="ml-2.5 font-mono text-[10.5px] text-[var(--color-neutral-500)]">origin.app/site/{siteSlug}</span>
               </div>
-              <div className="flex bg-[var(--color-bg)]">
-                <div className="w-[150px] flex-none p-[14px_10px] border-r border-[var(--color-divider)] flex flex-col gap-1.5">
-                  <div className="flex items-center gap-[7px] px-1 pb-2">
-                    <span
-                      className="w-5 h-5 rounded-[6px] grid place-items-center text-[11px] font-medium"
-                      style={{ background: `color-mix(in srgb, ${tenantAccent} 18%, transparent)`, color: tenantAccent }}
-                    >
-                      {companyName.trim().charAt(0).toUpperCase() || "A"}
-                    </span>
-                    <span className="text-xs font-medium">{companyName}</span>
+
+              {template === "ledger" ? (
+                <div className="flex" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
+                  <div className="w-[110px] flex-none p-3 border-r flex flex-col gap-1" style={{ borderColor: "#1c1c22" }}>
+                    <div className="flex items-center gap-1.5 pb-2">
+                      {logoUrl ? <img src={logoUrl} alt="" className="w-4 h-4 rounded object-cover" /> : <span className="w-4 h-4 rounded grid place-items-center text-[8px]" style={{ background: tenantAccent, color: "#0c0c10" }}>{companyName.charAt(0)}</span>}
+                      <span className="text-[10px] font-medium truncate">{companyName}</span>
+                    </div>
+                    <span className="px-1.5 py-1 rounded text-[9px]" style={{ color: tenantAccent, background: `color-mix(in srgb, ${tenantAccent} 14%, transparent)` }}>Overview</span>
+                    <span className="px-1.5 py-1 text-[9px]" style={{ color: "#9a9aa4" }}>Documents</span>
                   </div>
-                  <div
-                    className="px-2 py-[5px] rounded-md text-[11px]"
-                    style={{ color: tenantAccent, background: `color-mix(in srgb, ${tenantAccent} 12%, transparent)` }}
-                  >
-                    Dashboard
+                  <div className="flex-1 p-3.5 flex flex-col gap-2">
+                    <div className="text-[11px] font-medium">Welcome back.</div>
+                    {selectedDocIds.slice(0, 2).map((id) => (
+                      <div key={id} className="text-[9.5px] p-1.5 rounded" style={{ background: "#141418" }}>{documents.find((d) => d.id === id)?.title}</div>
+                    ))}
                   </div>
-                  <div className="px-2 py-[5px] text-[11px] text-[var(--color-neutral-500)]">Matters</div>
-                  <div className="px-2 py-[5px] text-[11px] text-[var(--color-neutral-500)]">Documents</div>
-                  <div className="px-2 py-[5px] text-[11px] text-[var(--color-neutral-500)]">Billing</div>
                 </div>
-                <div className="flex-1 p-3.5 flex flex-col gap-2.5">
-                  <div className="text-[13px] font-medium">Good morning, Counsel</div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="p-2.5 rounded-lg bg-[var(--color-surface)]">
-                      <div className="text-[9px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Trust balance</div>
-                      <div className="text-[15px] font-medium mt-0.5">$412,080</div>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-[var(--color-surface)]">
-                      <div className="text-[9px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Open matters</div>
-                      <div className="text-[15px] font-medium mt-0.5">37</div>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-[var(--color-surface)]">
-                      <div className="text-[9px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Awaiting signature</div>
-                      <div className="text-[15px] font-medium mt-0.5" style={{ color: tenantAccent }}>5</div>
-                    </div>
-                  </div>
+              ) : template === "atrium" ? (
+                <div style={{ background: "#0c0c10", color: "#f4f4f7" }}>
                   <div
-                    className="h-14 rounded-lg"
-                    style={{
-                      background: `linear-gradient(180deg, color-mix(in srgb, ${tenantAccent} 14%, transparent), transparent)`,
-                      border: `1px solid color-mix(in srgb, ${tenantAccent} 25%, transparent)`,
-                    }}
+                    className="h-[70px]"
+                    style={headerImageUrl ? { backgroundImage: `url(${headerImageUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : { background: `linear-gradient(160deg, color-mix(in srgb, ${tenantAccent} 30%, transparent), transparent)` }}
                   />
-                  <div className="text-[10px] text-[var(--color-neutral-600)] text-center">
-                    No platform branding visible to clients
+                  <div className="p-3.5 flex flex-col gap-1.5">
+                    <div className="flex items-center gap-1.5">
+                      {logoUrl ? <img src={logoUrl} alt="" className="w-4 h-4 rounded object-cover" /> : <span className="w-4 h-4 rounded grid place-items-center text-[8px]" style={{ background: tenantAccent, color: "#0c0c10" }}>{companyName.charAt(0)}</span>}
+                      <span className="text-[10px] font-medium">{companyName}</span>
+                    </div>
+                    <div className="text-[12px] font-medium mt-1">{companyName}, all in one branded portal.</div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex bg-[var(--color-bg)]">
+                  <div className="flex-1 p-3.5 flex flex-col gap-2.5 items-center text-center">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="" className="w-6 h-6 rounded-md object-cover" />
+                    ) : (
+                      <span className="w-6 h-6 rounded-md grid place-items-center text-[11px] font-medium" style={{ background: `color-mix(in srgb, ${tenantAccent} 18%, transparent)`, color: tenantAccent }}>
+                        {companyName.trim().charAt(0).toUpperCase() || "A"}
+                      </span>
+                    )}
+                    <div className="text-[12px] font-medium">Everything {companyName} clients need, in one place.</div>
+                    {selectedLinkId && (
+                      <span className="px-2.5 py-1 rounded-md text-[10px]" style={{ background: tenantAccent, color: "#0c0c10" }}>
+                        Pay now
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="text-[10.5px] text-[var(--color-neutral-500)]">
+              {sitePublished ? "This is live — anyone with the link can see it." : "Publish to make this a real, reachable page for your clients."}
             </div>
           </div>
         </div>

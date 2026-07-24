@@ -1,20 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { beneficiaries as demoBeneficiaries } from "./data";
+import { beneficiaries as demoBeneficiaries, banksByCountry, countryNames } from "@/components/wallet/data";
 import { IconPlus } from "@/components/icons";
 
 export default function Beneficiaries() {
   const [beneficiaries, setBeneficiaries] = useState(demoBeneficiaries);
   const [formOpen, setFormOpen] = useState(false);
   const [name, setName] = useState("");
-  const [bank, setBank] = useState("");
+  const [country, setCountry] = useState("US");
+  const [bank, setBank] = useState(banksByCountry.US[0]);
 
   function addBeneficiary() {
     if (!name.trim()) return;
-    setBeneficiaries((prev) => [...prev, { name: name.trim(), bank: bank.trim() || "—", account: "New" }]);
+    setBeneficiaries((prev) => [...prev, { name: name.trim(), bank, account: "New", country }]);
     setName("");
-    setBank("");
+    setCountry("US");
+    setBank(banksByCountry.US[0]);
     setFormOpen(false);
   }
 
@@ -30,7 +32,24 @@ export default function Beneficiaries() {
       {formOpen && (
         <div className="flex flex-col gap-1.5 p-2.5 rounded-lg" style={{ background: "var(--color-bg)" }}>
           <input className="input text-[12px]" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-          <input className="input text-[12px]" placeholder="Bank" value={bank} onChange={(e) => setBank(e.target.value)} />
+          <select
+            className="input text-[12px]"
+            value={country}
+            onChange={(e) => {
+              const c = e.target.value;
+              setCountry(c);
+              setBank(banksByCountry[c][0]);
+            }}
+          >
+            {Object.keys(banksByCountry).map((c) => (
+              <option key={c} value={c}>{countryNames[c]}</option>
+            ))}
+          </select>
+          <select className="input text-[12px]" value={bank} onChange={(e) => setBank(e.target.value)}>
+            {banksByCountry[country].map((b) => (
+              <option key={b} value={b}>{b}</option>
+            ))}
+          </select>
           <button className="btn btn-primary text-[11.5px]" onClick={addBeneficiary}>Save</button>
         </div>
       )}
@@ -45,7 +64,9 @@ export default function Beneficiaries() {
             </span>
             <div className="flex-1 min-w-0">
               <div className="text-[12.5px] truncate">{b.name}</div>
-              <div className="text-[10.5px] text-[var(--color-neutral-500)]">{b.bank}</div>
+              <div className="text-[10.5px] text-[var(--color-neutral-500)]">
+                {b.bank}{b.country && ` · ${countryNames[b.country] || b.country}`}
+              </div>
             </div>
             <span className="font-mono text-[11px] text-[var(--color-neutral-500)]">{b.account}</span>
           </div>

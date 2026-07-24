@@ -8,14 +8,14 @@ export async function GET() {
   const { error, status, supabase, tenantId } = await requireTenant();
   if (error) return NextResponse.json({ configured: true, error }, { status });
 
-  const { data: deals, error: dealsError } = await supabase!
-    .from("deals")
+  const { data: projects, error: projError } = await supabase!
+    .from("projects")
     .select("*")
     .eq("tenant_id", tenantId)
     .order("created_at", { ascending: false });
-  if (dealsError) return NextResponse.json({ error: dealsError.message }, { status: 500 });
+  if (projError) return NextResponse.json({ error: projError.message }, { status: 500 });
 
-  return NextResponse.json({ configured: true, deals });
+  return NextResponse.json({ configured: true, projects });
 }
 
 export async function POST(request: Request) {
@@ -24,30 +24,31 @@ export async function POST(request: Request) {
   const { error, status, supabase, tenantId } = await requireTenant();
   if (error) return NextResponse.json({ error }, { status });
 
-  const { company, title, valueCents, contact, notes } = (await request.json()) as {
-    company?: string;
-    title?: string;
-    valueCents?: number;
-    contact?: string;
+  const { name, client, status: projStatus, dueDate, notes } = (await request.json()) as {
+    name?: string;
+    client?: string;
+    status?: string;
+    dueDate?: string;
     notes?: string;
   };
-  if (!company?.trim() || !title?.trim()) {
-    return NextResponse.json({ error: "Give the deal a company and a title." }, { status: 400 });
+  if (!name?.trim()) {
+    return NextResponse.json({ error: "Give the project a name." }, { status: 400 });
   }
+  const validStatus = ["Planning", "Active", "Blocked", "Done"];
 
-  const { data: deal, error: insertError } = await supabase!
-    .from("deals")
+  const { data: project, error: insertError } = await supabase!
+    .from("projects")
     .insert({
       tenant_id: tenantId,
-      company: company.trim(),
-      title: title.trim(),
-      value_cents: valueCents && valueCents > 0 ? Math.round(valueCents) : 0,
-      contact: contact?.trim() || null,
+      name: name.trim(),
+      client: client?.trim() || null,
+      status: projStatus && validStatus.includes(projStatus) ? projStatus : "Planning",
+      due_date: dueDate || null,
       notes: notes?.trim() || null,
     })
     .select()
     .single();
   if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
 
-  return NextResponse.json({ deal });
+  return NextResponse.json({ project });
 }

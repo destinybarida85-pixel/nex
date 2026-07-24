@@ -8,7 +8,31 @@ export type Deal = {
   contact: string;
   stage: Stage;
   days: number;
+  notes?: string;
 };
+
+// Static, illustrative FX rates (approximate, not a live feed) — good enough to
+// compare pipeline value across currencies without wiring a paid FX API.
+export const fxRates: Record<string, number> = {
+  USD: 1,
+  EUR: 0.92,
+  GBP: 0.78,
+  NGN: 1550,
+  KES: 129,
+  ZAR: 18.2,
+};
+
+export function convertFromUsd(usd: number, currency: string): number {
+  return usd * (fxRates[currency] ?? 1);
+}
+
+export function formatCurrency(amount: number, currency: string): string {
+  try {
+    return amount.toLocaleString(undefined, { style: "currency", currency, maximumFractionDigits: 0 });
+  } catch {
+    return `${currency} ${Math.round(amount).toLocaleString()}`;
+  }
+}
 
 export const stages: Stage[] = ["Lead", "Qualified", "Proposal", "Negotiation", "Won"];
 

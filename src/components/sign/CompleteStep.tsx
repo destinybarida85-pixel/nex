@@ -1,5 +1,10 @@
-import { IconCheckCircle, IconLock, IconDownload } from "@/components/icons";
+"use client";
+
+import { useState } from "react";
+import { IconCheckCircle, IconLock, IconDownload, IconEdit } from "@/components/icons";
+
 import Stamp from "./Stamp";
+import { demoDocument } from "./document";
 import type { SignatureProof } from "@/app/sign/page";
 
 const audit = [
@@ -10,6 +15,8 @@ const audit = [
   { label: "Signed & sealed", meta: "Jul 21, 2026 · 08:45" },
 ];
 
+const stampColors = ["#9184d9", "#63c3b2", "#d9a05b", "#e0665f"];
+
 export default function CompleteStep({
   signature,
   proof,
@@ -19,6 +26,29 @@ export default function CompleteStep({
   proof: SignatureProof | null;
   sealing: boolean;
 }) {
+  const [stampLabel, setStampLabel] = useState("SEALED");
+  const [stampSub, setStampSub] = useState("ORIGIN E-SIGN");
+  const [stampColor, setStampColor] = useState(stampColors[0]);
+  const [editingStamp, setEditingStamp] = useState(false);
+  const [buyingCredits, setBuyingCredits] = useState(false);
+
+  const stampBlocked = proof && !proof.stampApplied;
+
+  async function buyCredits() {
+    setBuyingCredits(true);
+    try {
+      const res = await fetch("/api/billing/stamp-credits", { method: "POST" });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+    } catch {
+      // Stay on the page — the button just goes back to normal.
+    }
+    setBuyingCredits(false);
+  }
+
   return (
     <div className="flex flex-col items-center gap-5 text-center">
       <span
@@ -35,6 +65,19 @@ export default function CompleteStep({
       </div>
 
       <div className="print-area w-full flex flex-col gap-5 items-center text-center" style={{ padding: 4 }}>
+        <div className="card elev-sm w-full text-left gap-3 p-4">
+          <h5 className="text-[14px] m-0">{demoDocument.title}</h5>
+          <div className="hr" style={{ margin: 0 }} />
+          {demoDocument.sections.map((s) => (
+            <div key={s.heading}>
+              <h6 className="text-[11.5px] mb-1 m-0" style={{ color: "var(--color-accent-300)" }}>{s.heading}</h6>
+              <p className="text-[11.5px] leading-[1.6] text-[var(--color-neutral-300)] m-0" style={{ overflowWrap: "break-word" }}>
+                {s.text}
+              </p>
+            </div>
+          ))}
+        </div>
+
         <div className="card elev-sm w-full text-left gap-2.5 p-4 relative overflow-visible">
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-col gap-2.5 flex-1 min-w-0">
@@ -57,10 +100,68 @@ export default function CompleteStep({
                 </div>
               )}
             </div>
-            <div className="flex-none -mt-2 -mr-1">
-              <Stamp label="SEALED" sub="ORIGIN E-SIGN" />
+
+            <div className="flex-none -mt-2 -mr-1 flex flex-col items-center gap-1.5">
+              {stampBlocked ? (
+                <div className="flex flex-col items-center gap-1.5 w-[108px]">
+                  <div
+                    className="w-[108px] h-[108px] rounded-full grid place-items-center text-center p-2"
+                    style={{ border: "2.5px dashed var(--color-neutral-700)", color: "var(--color-neutral-500)" }}
+                  >
+                    <span className="text-[10px] leading-[1.4]">Out of stamp credits</span>
+                  </div>
+                  <button className="btn btn-primary text-[10.5px] no-print" style={{ padding: "5px 10px" }} onClick={buyCredits} disabled={buyingCredits}>
+                    {buyingCredits ? "…" : "Buy 10 credits · $9"}
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Stamp label={stampLabel} sub={stampSub} color={stampColor} />
+                  <button
+                    className="btn btn-secondary text-[10.5px] no-print"
+                    style={{ padding: "4px 9px" }}
+                    onClick={() => setEditingStamp((v) => !v)}
+                  >
+                    <IconEdit size={11} />
+                    Edit stamp
+                  </button>
+                </>
+              )}
             </div>
           </div>
+
+          {editingStamp && !stampBlocked && (
+            <div className="no-print flex flex-col gap-2 p-3 rounded-lg border" style={{ borderColor: "var(--color-divider)" }}>
+              <div className="grid grid-cols-2 gap-2">
+                <input className="input text-[12px]" placeholder="Main text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 14))} />
+                <input className="input text-[12px]" placeholder="Sub text" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 20))} />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-[var(--color-neutral-500)]">Color</span>
+                {stampColors.map((c) => (
+                  <button
+                    key={c}
+                    aria-label={`Use ${c}`}
+                    onClick={() => setStampColor(c)}
+                    className="w-[20px] h-[20px] rounded-md cursor-pointer"
+                    style={{ background: c, outline: stampColor === c ? "2px solid var(--color-text)" : "none", outlineOffset: 2 }}
+                  />
+                ))}
+                <button className="btn btn-secondary text-[11px] ml-auto" style={{ padding: "4px 9px" }} onClick={() => setEditingStamp(false)}>
+                  Done
+                </button>
+              </div>
+              <div className="text-[10.5px] text-[var(--color-neutral-500)]">This stamp's text and color apply to this document only.</div>
+            </div>
+          )}
+
+          {proof && !stampBlocked && proof.stampCreditsRemaining !== null && (
+            <div className="text-[10.5px] no-print text-[var(--color-neutral-500)]">
+              {proof.stampCreditsRemaining} stamp {proof.stampCreditsRemaining === 1 ? "credit" : "credits"} left ·{" "}
+              <a href="/stamps" style={{ color: "var(--color-accent-300)" }}>view stamp history</a>
+            </div>
+          )}
+
           {proof && (
             <div
               className="text-[10.5px] no-print flex items-center gap-1.5 pt-2 mt-1 border-t border-[var(--color-divider)]"
@@ -92,7 +193,10 @@ export default function CompleteStep({
         <IconDownload size={14} />
         Print / Save as PDF
       </button>
-      <a href="/dashboard" className="btn btn-secondary btn-block" style={{ marginTop: 0 }}>
+      <a href="/signatures" className="btn btn-secondary btn-block" style={{ marginTop: 0 }}>
+        View signature history
+      </a>
+      <a href="/dashboard" className="btn btn-ghost btn-block" style={{ marginTop: 0 }}>
         Back to dashboard
       </a>
     </div>

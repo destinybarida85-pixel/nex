@@ -1,4 +1,5 @@
-export default function Stamp({ label, sub }: { label: string; sub: string }) {
+export default function Stamp({ label, sub, color }: { label: string; sub: string; color?: string }) {
+  const c = color || "var(--color-accent)";
   return (
     <div
       className="pointer-events-none select-none"
@@ -10,9 +11,9 @@ export default function Stamp({ label, sub }: { label: string; sub: string }) {
         width: 108,
         height: 108,
         borderRadius: "50%",
-        border: "2.5px solid var(--color-accent)",
-        boxShadow: "inset 0 0 0 4px color-mix(in srgb, var(--color-accent) 25%, transparent)",
-        color: "var(--color-accent)",
+        border: `2.5px solid ${c}`,
+        boxShadow: `inset 0 0 0 4px color-mix(in srgb, ${c} 25%, transparent)`,
+        color: c,
         transform: "rotate(-11deg)",
         opacity: 0.9,
         textAlign: "center",

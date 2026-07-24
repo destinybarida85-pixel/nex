@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { beneficiaries } from "./data";
+import { beneficiaries, countryNames } from "./data";
 
 export default function TransferModal({
   onClose,
@@ -43,7 +43,7 @@ export default function TransferModal({
             >
               {beneficiaries.map((b) => (
                 <option key={b.name} value={b.name}>
-                  {b.name} · {b.bank}
+                  {b.name} · {b.bank}{b.country ? ` (${countryNames[b.country] || b.country})` : ""}
                 </option>
               ))}
             </select>
