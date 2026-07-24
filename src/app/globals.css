@@ -410,3 +410,46 @@ textarea.input { min-height: 90px; resize: vertical; }
 @media (prefers-reduced-motion: reduce) {
   .nx-auth-card { animation: none !important; }
 }
+
+/* — homepage cinematic hero scene (the "4D act": the product loop playing out) — */
+@keyframes nx-scene-drift {
+  0%, 100% { transform: rotateX(19deg) rotateZ(-1deg) translateY(0); }
+  50% { transform: rotateX(16deg) rotateZ(1deg) translateY(-6px); }
+}
+@keyframes nx-scene-glow {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.12); }
+}
+@keyframes nx-scene-pulse {
+  0% { left: 2%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { left: 98%; opacity: 0; }
+}
+@keyframes nx-scene-rise {
+  from { opacity: 0; transform: translateY(14px) translateZ(0); }
+  to { opacity: 1; transform: translateY(0) translateZ(40px); }
+}
+@keyframes nx-scene-particle {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  15% { opacity: 0.7; }
+  85% { opacity: 0.7; }
+  100% { transform: translateY(-90px) translateX(var(--px, 10px)); opacity: 0; }
+}
+@keyframes nx-scene-sig {
+  to { stroke-dashoffset: 0; }
+}
+.nx-scene-stage {
+  transform-style: preserve-3d;
+  animation: nx-scene-drift 12s ease-in-out infinite;
+}
+.nx-scene-tile {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.7s, border-color 0.7s, opacity 0.7s;
+}
+.nx-scene-pulse-dot { animation: nx-scene-pulse 8s linear infinite; }
+.nx-scene-particle { animation: nx-scene-particle 4.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .nx-scene-stage { animation: none !important; }
+  .nx-scene-pulse-dot, .nx-scene-particle { animation: none !important; opacity: 0 !important; }
+  .nx-scene-tile { transition: none !important; }
+}
