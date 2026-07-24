@@ -4,6 +4,7 @@ import Nav from "@/components/site/Nav";
 import Footer from "@/components/site/Footer";
 import ScrollReveal from "@/components/site/ScrollReveal";
 import TiltCard from "@/components/site/TiltCard";
+import WalkthroughScene from "@/components/site/WalkthroughScene";
 import {
   IconSparkle,
   IconESign,
@@ -114,6 +115,14 @@ export default function WalletHowItWorksPage() {
             <a href="/signup" className="btn btn-primary text-sm px-[22px] py-[11px]">Try it free</a>
             <a href="/wallet" className="btn btn-secondary text-sm px-[22px] py-[11px]">Open the wallet</a>
           </div>
+        </div>
+
+        {/* Auto-playing 3D walkthrough: the whole flow driving itself, start to finish. */}
+        <div className="relative max-w-[900px] mx-auto px-6 pb-6">
+          <div className="text-center mb-4">
+            <span className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Watch it run, start to finish</span>
+          </div>
+          <WalkthroughScene />
         </div>
       </section>
 
