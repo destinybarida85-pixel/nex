@@ -189,6 +189,8 @@ export default function WhiteLabelPage() {
     setPublishing(false);
   }
 
+  const selectedLink = paymentLinks.find((l) => l.id === selectedLinkId);
+
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <div className="max-w-[1240px] mx-auto p-4 sm:p-[22px_26px] flex flex-col gap-4">
@@ -499,20 +501,27 @@ export default function WhiteLabelPage() {
                   </div>
                 </div>
               ) : template === "landing" ? (
-                <div className="grid place-items-center p-6" style={{ background: "#0c0c10", color: "#f4f4f7", minHeight: 130 }}>
-                  <div className="flex flex-col items-center gap-1.5 text-center">
-                    {logoUrl ? (
-                      <img src={logoUrl} alt="" className="w-7 h-7 rounded-xl object-cover" />
-                    ) : (
-                      <span className="w-7 h-7 rounded-xl grid place-items-center text-[11px] font-medium" style={{ background: tenantAccent, color: "#0c0c10" }}>
-                        {companyName.trim().charAt(0).toUpperCase() || "A"}
+                <div className="flex flex-col items-center justify-center p-6 gap-2" style={{ background: "#0c0c10", color: "#f4f4f7", height: 200 }}>
+                  {logoUrl ? (
+                    <img src={logoUrl} alt="" className="w-9 h-9 rounded-xl object-cover" />
+                  ) : (
+                    <span className="w-9 h-9 rounded-xl grid place-items-center text-[13px] font-medium" style={{ background: tenantAccent, color: "#0c0c10" }}>
+                      {companyName.trim().charAt(0).toUpperCase() || "A"}
+                    </span>
+                  )}
+                  <span className="text-[11px] font-medium">{companyName}</span>
+                  {selectedLink ? (
+                    <>
+                      <span className="text-[15px] font-medium mt-1" style={{ color: tenantAccent }}>
+                        {(selectedLink.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: selectedLink.currency.toUpperCase() })}
                       </span>
-                    )}
-                    <span className="text-[9.5px]">{companyName}</span>
-                    {selectedLinkId && (
-                      <span className="px-3 py-1.5 rounded-md text-[10px] font-medium mt-1" style={{ background: tenantAccent, color: "#0c0c10" }}>Pay now</span>
-                    )}
-                  </div>
+                      <span className="px-4 py-2 rounded-md text-[10.5px] font-medium" style={{ background: tenantAccent, color: "#0c0c10" }}>Pay now</span>
+                    </>
+                  ) : (
+                    <span className="text-[10px] text-center max-w-[220px]" style={{ color: "#6b6b76" }}>
+                      Select a payment link below to show a real price and "Pay now" button here.
+                    </span>
+                  )}
                 </div>
               ) : (
                 <div className="flex bg-[var(--color-bg)]">
