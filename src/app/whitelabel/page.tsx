@@ -63,6 +63,7 @@ export default function WhiteLabelPage() {
   const [publishing, setPublishing] = useState(false);
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
   const [publishError, setPublishError] = useState("");
+  const [justSaved, setJustSaved] = useState(false);
 
   useEffect(() => {
     if (!slugTouched) setSiteSlug(slugify(companyName));
@@ -157,6 +158,7 @@ export default function WhiteLabelPage() {
   async function publishBranding(publish?: boolean) {
     setPublishing(true);
     setPublishError("");
+    setJustSaved(false);
     const nextPublished = publish ?? sitePublished;
     if (live) {
       const res = await fetch("/api/tenant", {
@@ -187,6 +189,8 @@ export default function WhiteLabelPage() {
     }
     setPublishedAt(new Date().toLocaleTimeString());
     setPublishing(false);
+    setJustSaved(true);
+    setTimeout(() => setJustSaved(false), 3000);
   }
 
   const selectedLink = paymentLinks.find((l) => l.id === selectedLinkId);
@@ -407,7 +411,18 @@ export default function WhiteLabelPage() {
               Show &ldquo;Powered by&rdquo; badge to clients
               <span className="tag tag-outline text-[9.5px] ml-auto">{poweredBy ? "On" : "Off"}</span>
             </label>
+            {!live && checked && (
+              <div className="p-2.5 rounded-lg text-[12px]" style={{ background: "color-mix(in srgb, #e0665f 15%, transparent)", color: "#e0665f" }}>
+                You&rsquo;re not signed in right now, so nothing here can be saved. Sign in, then reload this page.
+              </div>
+            )}
             {publishError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{publishError}</div>}
+            {justSaved && (
+              <div className="p-2.5 rounded-lg text-[12.5px] font-medium flex items-center gap-2" style={{ background: "color-mix(in srgb, #63c3b2 18%, transparent)", color: "#63c3b2" }}>
+                <IconCheckCircle size={14} />
+                {live ? "Saved." : "Nothing was saved — you're not signed in (see the message above)."}
+              </div>
+            )}
             <div className="flex gap-2 mt-0.5 flex-wrap items-center">
               <button className="btn btn-secondary text-[12.5px]" onClick={() => publishBranding()} disabled={publishing}>
                 {publishing ? "Saving…" : "Save changes"}
@@ -425,9 +440,9 @@ export default function WhiteLabelPage() {
                   View live site →
                 </a>
               )}
-              {publishedAt && (
+              {!live && (
                 <span className="text-[11px] text-[var(--color-neutral-500)]">
-                  {live ? `Saved at ${publishedAt}` : `Sign in to save this for real`}
+                  &ldquo;Publish website&rdquo; is disabled until you&rsquo;re signed in.
                 </span>
               )}
             </div>
