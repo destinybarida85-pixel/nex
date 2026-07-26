@@ -7,6 +7,14 @@ export const documentAccents: DocumentAccent[] = [
   { id: "burgundy", label: "Burgundy", color: "#5c2a3a" },
 ];
 
+export type DocumentLayout = "classic" | "modern" | "minimal";
+
+export const documentLayouts: { id: DocumentLayout; label: string; why: string }[] = [
+  { id: "classic", label: "Classic", why: "Serif letterhead with a formal feel — best for contracts and legal agreements." },
+  { id: "modern", label: "Modern", why: "Bold sans-serif with numbered sections — best for invoices, proposals, and reports." },
+  { id: "minimal", label: "Minimal", why: "Quiet and typographic, almost no lines — best for letters and short notices." },
+];
+
 export const paperBg = "#ffffff";
 export const paperInk = "#22222a";
 export const paperMuted = "#6b6b76";

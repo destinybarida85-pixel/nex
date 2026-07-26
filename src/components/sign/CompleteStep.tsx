@@ -6,6 +6,7 @@ import { IconCheckCircle, IconLock, IconDownload, IconEdit, IconChevronDown, Ico
 import Stamp from "./Stamp";
 import { demoDocument, type SignDocument } from "./document";
 import DocumentPaper from "@/components/document/DocumentPaper";
+import type { DocumentLayout } from "@/components/document/theme";
 import type { SignatureProof } from "@/app/sign/page";
 
 const audit = [
@@ -64,6 +65,7 @@ export default function CompleteStep({
   signed = true,
   applyStamp: applyStampOption = true,
   accentColor,
+  layout,
 }: {
   document?: SignDocument;
   signature: string;
@@ -72,6 +74,7 @@ export default function CompleteStep({
   signed?: boolean;
   applyStamp?: boolean;
   accentColor: string;
+  layout: DocumentLayout;
 }) {
   const [stampTypeId, setStampTypeId] = useState("official");
   const stampType = stampTypes.find((t) => t.id === stampTypeId) || stampTypes[0];
@@ -144,6 +147,7 @@ export default function CompleteStep({
             title={document.title}
             sections={document.sections}
             accentColor={accentColor}
+            layout={layout}
             headerRight={stampPosition === "header" ? embeddedStamp : undefined}
             footerSlot={stampPosition === "footer" && embeddedStamp ? <div className="flex justify-center">{embeddedStamp}</div> : undefined}
           />

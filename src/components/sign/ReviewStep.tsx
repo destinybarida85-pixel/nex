@@ -4,7 +4,7 @@ import { useState } from "react";
 import { IconDocuments } from "@/components/icons";
 import { demoDocument, type SignDocument } from "./document";
 import DocumentPaper from "@/components/document/DocumentPaper";
-import { documentAccents } from "@/components/document/theme";
+import { documentAccents, documentLayouts, type DocumentLayout } from "@/components/document/theme";
 
 export default function ReviewStep({
   onContinue,
@@ -15,6 +15,8 @@ export default function ReviewStep({
   onApplyStampChange,
   accentColor,
   onAccentColorChange,
+  layout,
+  onLayoutChange,
 }: {
   onContinue: () => void;
   document?: SignDocument;
@@ -24,6 +26,8 @@ export default function ReviewStep({
   onApplyStampChange?: (value: boolean) => void;
   accentColor: string;
   onAccentColorChange: (color: string) => void;
+  layout: DocumentLayout;
+  onLayoutChange: (layout: DocumentLayout) => void;
 }) {
   const [reviewed, setReviewed] = useState(false);
 
@@ -40,7 +44,16 @@ export default function ReviewStep({
       </div>
 
       <div className="rounded-xl overflow-hidden max-h-[320px] overflow-y-auto">
-        <DocumentPaper title={document.title} sections={document.sections} accentColor={accentColor} big={false} />
+        <DocumentPaper title={document.title} sections={document.sections} accentColor={accentColor} layout={layout} big={false} />
+      </div>
+
+      <div className="field">
+        <label className="text-[11px] text-[var(--color-neutral-500)]">Document style</label>
+        <select className="input text-[12.5px]" value={layout} onChange={(e) => onLayoutChange(e.target.value as DocumentLayout)}>
+          {documentLayouts.map((l) => (
+            <option key={l.id} value={l.id}>{l.label} — {l.why}</option>
+          ))}
+        </select>
       </div>
 
       <div className="flex items-center gap-1.5">

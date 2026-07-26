@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { IconDocuments, IconDownload, IconESign, IconCamera } from "@/components/icons";
 import { SIGN_DOCUMENT_STORAGE_KEY } from "@/components/sign/document";
 import DocumentPaper from "@/components/document/DocumentPaper";
-import { documentAccents } from "@/components/document/theme";
+import { documentAccents, documentLayouts, type DocumentLayout } from "@/components/document/theme";
 
 export type DocumentStep = { label: string; done: boolean };
 export type DocumentData = {
@@ -35,6 +35,7 @@ export default function DocumentPanel({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<DocumentData>(document);
   const [accentColor, setAccentColor] = useState(documentAccents[0].color);
+  const [layout, setLayout] = useState<DocumentLayout>("classic");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
@@ -140,7 +141,7 @@ export default function DocumentPanel({
           </div>
         ) : (
           <div className="flex-1 min-w-0 max-w-[620px] print-area">
-            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} logoUrl={logoUrl} />
+            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} layout={layout} logoUrl={logoUrl} />
           </div>
         )}
 
@@ -165,6 +166,11 @@ export default function DocumentPanel({
 
           <div className="card elev-sm gap-2.5 p-4 no-print">
             <div className="card-title text-[13px]">Document style</div>
+            <select className="input text-[11.5px]" value={layout} onChange={(e) => setLayout(e.target.value as DocumentLayout)}>
+              {documentLayouts.map((l) => (
+                <option key={l.id} value={l.id}>{l.label}</option>
+              ))}
+            </select>
             <div className="flex items-center gap-1.5">
               {documentAccents.map((a) => (
                 <button
