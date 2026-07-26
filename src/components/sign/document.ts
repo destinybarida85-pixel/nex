@@ -1,4 +1,13 @@
-export const demoDocument = {
+export type SignSection = { heading: string; text: string };
+export type SignDocument = {
+  title: string;
+  sentBy: string;
+  signerName: string;
+  signerEmail: string;
+  sections: SignSection[];
+};
+
+export const demoDocument: SignDocument = {
   title: "Master Services Agreement · Halcyon Ventures",
   sentBy: "Meridian Studio",
   signerName: "Jordan Ashby",
@@ -11,6 +20,8 @@ export const demoDocument = {
   ],
 };
 
-export function canonicalDocumentText(): string {
-  return [demoDocument.title, ...demoDocument.sections.map((s) => `${s.heading}: ${s.text}`)].join("\n");
+export function canonicalDocumentText(doc: SignDocument = demoDocument): string {
+  return [doc.title, ...doc.sections.map((s) => `${s.heading}: ${s.text}`)].join("\n");
 }
+
+export const SIGN_DOCUMENT_STORAGE_KEY = "origin-sign-document";

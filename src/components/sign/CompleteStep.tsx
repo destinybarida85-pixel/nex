@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { IconCheckCircle, IconLock, IconDownload, IconEdit } from "@/components/icons";
+import { IconCheckCircle, IconLock, IconDownload, IconEdit, IconChevronDown } from "@/components/icons";
 
 import Stamp from "./Stamp";
-import { demoDocument } from "./document";
+import { demoDocument, type SignDocument } from "./document";
 import type { SignatureProof } from "@/app/sign/page";
 
 const audit = [
@@ -17,22 +17,62 @@ const audit = [
 
 const stampColors = ["#9184d9", "#63c3b2", "#d9a05b", "#e0665f"];
 
+const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+const stampTypes: { id: string; name: string; label: string; sub: string }[] = [
+  { id: "official", name: "Official Stamp", label: "SEALED", sub: "ORIGIN E-SIGN" },
+  { id: "company", name: "Company Stamp", label: "COMPANY", sub: "AUTHORIZED" },
+  { id: "signature", name: "Signature Stamp", label: "SIGNED", sub: "REPRODUCTION" },
+  { id: "date", name: "Date Stamp", label: today.toUpperCase(), sub: "DATE STAMPED" },
+  { id: "received", name: "Received Stamp", label: "RECEIVED", sub: today.toUpperCase() },
+  { id: "paid", name: "Paid Stamp", label: "PAID", sub: "PAYMENT COMPLETE" },
+  { id: "ctc", name: "Certified True Copy", label: "CERTIFIED", sub: "TRUE COPY" },
+  { id: "notary", name: "Notary Stamp/Seal", label: "NOTARIZED", sub: "NOTARY SEAL" },
+  { id: "name", name: "Name Stamp", label: "NAME", sub: "TITLE" },
+  { id: "round_seal", name: "Round/Common Seal", label: "SEAL", sub: "COMMON SEAL" },
+  { id: "logo", name: "Logo Stamp", label: "LOGO", sub: "" },
+  { id: "inspection", name: "Inspection Stamp", label: "INSPECTED", sub: "QUALITY PASSED" },
+  { id: "approval", name: "Approval Stamp", label: "APPROVED", sub: today.toUpperCase() },
+  { id: "rejected", name: "Rejected/Cancelled", label: "REJECTED", sub: "VOIDED" },
+  { id: "confidential", name: "Confidential Stamp", label: "CONFIDENTIAL", sub: "RESTRICTED" },
+  { id: "customs", name: "Customs/Border Stamp", label: "CLEARED", sub: "CUSTOMS" },
+  { id: "postal", name: "Postal Stamp", label: "POSTAGE", sub: "" },
+  { id: "embossing", name: "Embossing Seal", label: "EMBOSSED", sub: "OFFICIAL SEAL" },
+];
+
 export default function CompleteStep({
+  document = demoDocument,
   signature,
   proof,
   sealing,
+  signed = true,
+  applyStamp: applyStampOption = true,
 }: {
+  document?: SignDocument;
   signature: string;
   proof: SignatureProof | null;
   sealing: boolean;
+  signed?: boolean;
+  applyStamp?: boolean;
 }) {
-  const [stampLabel, setStampLabel] = useState("SEALED");
-  const [stampSub, setStampSub] = useState("ORIGIN E-SIGN");
+  const [stampTypeId, setStampTypeId] = useState("official");
+  const stampType = stampTypes.find((t) => t.id === stampTypeId) || stampTypes[0];
+  const [stampLabel, setStampLabel] = useState(stampType.label);
+  const [stampSub, setStampSub] = useState(stampType.sub);
   const [stampColor, setStampColor] = useState(stampColors[0]);
   const [editingStamp, setEditingStamp] = useState(false);
   const [buyingCredits, setBuyingCredits] = useState(false);
+  const [showAudit, setShowAudit] = useState(false);
 
-  const stampBlocked = proof && !proof.stampApplied;
+  const stampBlocked = signed && applyStampOption && proof && !proof.stampApplied;
+  const showStampCard = signed && applyStampOption;
+
+  function selectStampType(id: string) {
+    const t = stampTypes.find((s) => s.id === id) || stampTypes[0];
+    setStampTypeId(id);
+    setStampLabel(t.label);
+    setStampSub(t.sub);
+  }
 
   async function buyCredits() {
     setBuyingCredits(true);
@@ -58,134 +98,157 @@ export default function CompleteStep({
         <IconCheckCircle size={30} />
       </span>
       <div>
-        <h4 className="m-0 text-[19px]">Document signed and sealed</h4>
+        <h4 className="m-0 text-[19px]">{signed ? "Document signed and sealed" : "Document reviewed and completed"}</h4>
         <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1.5 max-w-[320px]">
-          MSA · Halcyon Ventures has been signed by all parties and sealed with a tamper-evident certificate.
+          {signed
+            ? `${document.title} has been signed and sealed with a tamper-evident certificate.`
+            : `${document.title} has been marked reviewed and completed — no signature was required.`}
         </div>
       </div>
 
       <div className="print-area w-full flex flex-col gap-5 items-center text-center" style={{ padding: 4 }}>
-        <div className="card elev-sm w-full text-left gap-3 p-4">
-          <h5 className="text-[14px] m-0">{demoDocument.title}</h5>
-          <div className="hr" style={{ margin: 0 }} />
-          {demoDocument.sections.map((s) => (
+        <div className="card w-full text-left gap-3 p-5" style={{ background: "#f4f4f2" }}>
+          <h5 className="text-[15px] m-0" style={{ color: "#181818" }}>{document.title}</h5>
+          <div className="hr" style={{ margin: 0, borderColor: "rgba(0,0,0,0.1)" }} />
+          {document.sections.map((s) => (
             <div key={s.heading}>
-              <h6 className="text-[11.5px] mb-1 m-0" style={{ color: "var(--color-accent-300)" }}>{s.heading}</h6>
-              <p className="text-[11.5px] leading-[1.6] text-[var(--color-neutral-300)] m-0" style={{ overflowWrap: "break-word" }}>
+              <h6 className="text-[11.5px] mb-1 m-0" style={{ color: "#5b4fb8" }}>{s.heading}</h6>
+              <p className="text-[11.5px] leading-[1.6] m-0" style={{ color: "#33333a", overflowWrap: "break-word", wordBreak: "break-word" }}>
                 {s.text}
               </p>
             </div>
           ))}
         </div>
 
-        <div className="card elev-sm w-full text-left gap-2.5 p-4 relative overflow-visible">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex flex-col gap-2.5 flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <IconLock size={13} className="text-[var(--color-accent)]" />
-                <span className="text-[12px] font-mono text-[var(--color-neutral-400)]">
-                  {sealing
-                    ? "Computing certificate…"
-                    : `Certificate ID: ${proof?.certificateId ?? "unavailable"}`}
-                </span>
-              </div>
-              {signature.startsWith("data:") ? (
-                <img src={signature} alt="Signature" className="h-10 self-start" />
-              ) : (
-                <span style={{ fontFamily: "cursive", fontSize: 22 }}>{signature}</span>
-              )}
-              {proof && (
-                <div className="text-[9.5px] font-mono text-[var(--color-neutral-600)] break-all">
-                  SHA-256: {proof.recordHash}
+        {signed && (
+          <div className="card elev-sm w-full text-left gap-2.5 p-4 relative overflow-visible">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-col gap-2.5 flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <IconLock size={13} className="text-[var(--color-accent)]" />
+                  <span className="text-[12px] font-mono text-[var(--color-neutral-400)]">
+                    {sealing
+                      ? "Computing certificate…"
+                      : `Certificate ID: ${proof?.certificateId ?? "unavailable"}`}
+                  </span>
                 </div>
-              )}
-            </div>
-
-            <div className="flex-none -mt-2 -mr-1 flex flex-col items-center gap-1.5">
-              {stampBlocked ? (
-                <div className="flex flex-col items-center gap-1.5 w-[108px]">
-                  <div
-                    className="w-[108px] h-[108px] rounded-full grid place-items-center text-center p-2"
-                    style={{ border: "2.5px dashed var(--color-neutral-700)", color: "var(--color-neutral-500)" }}
-                  >
-                    <span className="text-[10px] leading-[1.4]">Out of stamp credits</span>
+                {signature.startsWith("data:") ? (
+                  <img src={signature} alt="Signature" className="h-10 self-start" />
+                ) : (
+                  <span style={{ fontFamily: "cursive", fontSize: 22 }}>{signature}</span>
+                )}
+                {proof && (
+                  <div className="text-[9.5px] font-mono text-[var(--color-neutral-600)] break-all">
+                    SHA-256: {proof.recordHash}
                   </div>
-                  <button className="btn btn-primary text-[10.5px] no-print" style={{ padding: "5px 10px" }} onClick={buyCredits} disabled={buyingCredits}>
-                    {buyingCredits ? "…" : "Buy 10 credits · $9"}
-                  </button>
+                )}
+              </div>
+
+              {showStampCard && (
+                <div className="flex-none -mt-2 -mr-1 flex flex-col items-center gap-1.5">
+                  {stampBlocked ? (
+                    <div className="flex flex-col items-center gap-1.5 w-[108px]">
+                      <div
+                        className="w-[108px] h-[108px] rounded-full grid place-items-center text-center p-2"
+                        style={{ border: "2.5px dashed var(--color-neutral-700)", color: "var(--color-neutral-500)" }}
+                      >
+                        <span className="text-[10px] leading-[1.4]">Out of stamp credits</span>
+                      </div>
+                      <button className="btn btn-primary text-[10.5px] no-print" style={{ padding: "5px 10px" }} onClick={buyCredits} disabled={buyingCredits}>
+                        {buyingCredits ? "…" : "Buy 10 credits · $9"}
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <Stamp label={stampLabel} sub={stampSub} color={stampColor} />
+                      <button
+                        className="btn btn-secondary text-[10.5px] no-print"
+                        style={{ padding: "4px 9px" }}
+                        onClick={() => setEditingStamp((v) => !v)}
+                      >
+                        <IconEdit size={11} />
+                        Edit stamp
+                      </button>
+                    </>
+                  )}
                 </div>
-              ) : (
-                <>
-                  <Stamp label={stampLabel} sub={stampSub} color={stampColor} />
-                  <button
-                    className="btn btn-secondary text-[10.5px] no-print"
-                    style={{ padding: "4px 9px" }}
-                    onClick={() => setEditingStamp((v) => !v)}
-                  >
-                    <IconEdit size={11} />
-                    Edit stamp
-                  </button>
-                </>
               )}
             </div>
+
+            {editingStamp && !stampBlocked && showStampCard && (
+              <div className="no-print flex flex-col gap-2 p-3 rounded-lg border" style={{ borderColor: "var(--color-divider)" }}>
+                <select className="input text-[12px]" value={stampTypeId} onChange={(e) => selectStampType(e.target.value)}>
+                  {stampTypes.map((t) => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+                <div className="grid grid-cols-2 gap-2">
+                  <input className="input text-[12px]" placeholder="Main text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 14))} />
+                  <input className="input text-[12px]" placeholder="Sub text" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 20))} />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-[var(--color-neutral-500)]">Color</span>
+                  {stampColors.map((c) => (
+                    <button
+                      key={c}
+                      aria-label={`Use ${c}`}
+                      onClick={() => setStampColor(c)}
+                      className="w-[20px] h-[20px] rounded-md cursor-pointer"
+                      style={{ background: c, outline: stampColor === c ? "2px solid var(--color-text)" : "none", outlineOffset: 2 }}
+                    />
+                  ))}
+                  <button className="btn btn-secondary text-[11px] ml-auto" style={{ padding: "4px 9px" }} onClick={() => setEditingStamp(false)}>
+                    Done
+                  </button>
+                </div>
+                <div className="text-[10.5px] text-[var(--color-neutral-500)]">Pick a stamp type for sensible defaults, then customize the text and color.</div>
+              </div>
+            )}
+
+            {showStampCard && proof && !stampBlocked && proof.stampCreditsRemaining !== null && (
+              <div className="text-[10.5px] no-print text-[var(--color-neutral-500)]">
+                {proof.stampCreditsRemaining} stamp {proof.stampCreditsRemaining === 1 ? "credit" : "credits"} left ·{" "}
+                <a href="/stamps" style={{ color: "var(--color-accent-300)" }}>view stamp history</a>
+              </div>
+            )}
+
+            {proof && (
+              <div
+                className="text-[10.5px] no-print flex items-center gap-1.5 pt-2 mt-1 border-t border-[var(--color-divider)]"
+                style={{ color: proof.persisted ? "#63c3b2" : "var(--color-neutral-500)" }}
+              >
+                <IconCheckCircle size={11} />
+                {proof.persisted
+                  ? "Independently verifiable: stored server-side in the signatures ledger."
+                  : "Computed live from the document and signature. Connect a database to make this independently verifiable."}
+              </div>
+            )}
           </div>
+        )}
 
-          {editingStamp && !stampBlocked && (
-            <div className="no-print flex flex-col gap-2 p-3 rounded-lg border" style={{ borderColor: "var(--color-divider)" }}>
-              <div className="grid grid-cols-2 gap-2">
-                <input className="input text-[12px]" placeholder="Main text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 14))} />
-                <input className="input text-[12px]" placeholder="Sub text" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 20))} />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-[var(--color-neutral-500)]">Color</span>
-                {stampColors.map((c) => (
-                  <button
-                    key={c}
-                    aria-label={`Use ${c}`}
-                    onClick={() => setStampColor(c)}
-                    className="w-[20px] h-[20px] rounded-md cursor-pointer"
-                    style={{ background: c, outline: stampColor === c ? "2px solid var(--color-text)" : "none", outlineOffset: 2 }}
-                  />
-                ))}
-                <button className="btn btn-secondary text-[11px] ml-auto" style={{ padding: "4px 9px" }} onClick={() => setEditingStamp(false)}>
-                  Done
-                </button>
-              </div>
-              <div className="text-[10.5px] text-[var(--color-neutral-500)]">This stamp's text and color apply to this document only.</div>
+        <div className="card elev-sm w-full text-left no-print">
+          <button
+            className="w-full flex items-center gap-2 p-4 cursor-pointer"
+            style={{ background: "transparent", border: "none", color: "inherit" }}
+            onClick={() => setShowAudit((v) => !v)}
+          >
+            <span className="card-title text-[13px]">Audit trail</span>
+            <span className="text-[11px] text-[var(--color-neutral-500)] ml-auto">{showAudit ? "Hide" : "Show"}</span>
+            <span style={{ transform: showAudit ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
+              <IconChevronDown size={13} className="text-[var(--color-neutral-500)]" />
+            </span>
+          </button>
+          {showAudit && (
+            <div className="flex flex-col gap-2.5 px-4 pb-4">
+              {audit.map((a) => (
+                <div key={a.label} className="flex items-center gap-2.5 text-[12px]">
+                  <span className="w-[7px] h-[7px] rounded-full flex-none" style={{ background: "var(--color-accent)" }} />
+                  <span className="flex-1">{a.label}</span>
+                  <span className="text-[var(--color-neutral-500)] font-mono text-[10.5px]">{a.meta}</span>
+                </div>
+              ))}
             </div>
           )}
-
-          {proof && !stampBlocked && proof.stampCreditsRemaining !== null && (
-            <div className="text-[10.5px] no-print text-[var(--color-neutral-500)]">
-              {proof.stampCreditsRemaining} stamp {proof.stampCreditsRemaining === 1 ? "credit" : "credits"} left ·{" "}
-              <a href="/stamps" style={{ color: "var(--color-accent-300)" }}>view stamp history</a>
-            </div>
-          )}
-
-          {proof && (
-            <div
-              className="text-[10.5px] no-print flex items-center gap-1.5 pt-2 mt-1 border-t border-[var(--color-divider)]"
-              style={{ color: proof.persisted ? "#63c3b2" : "var(--color-neutral-500)" }}
-            >
-              <IconCheckCircle size={11} />
-              {proof.persisted
-                ? "Independently verifiable: stored server-side in the signatures ledger."
-                : "Computed live from the document and signature. Connect a database to make this independently verifiable."}
-            </div>
-          )}
-        </div>
-
-        <div className="card elev-sm w-full text-left gap-2.5 p-4">
-          <div className="card-title text-[13px]">Audit trail</div>
-          <div className="flex flex-col gap-2.5 mt-1">
-            {audit.map((a) => (
-              <div key={a.label} className="flex items-center gap-2.5 text-[12px]">
-                <span className="w-[7px] h-[7px] rounded-full flex-none" style={{ background: "var(--color-accent)" }} />
-                <span className="flex-1">{a.label}</span>
-                <span className="text-[var(--color-neutral-500)] font-mono text-[10.5px]">{a.meta}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 

@@ -194,6 +194,13 @@ export function IconChevronUpDown({ size, className }: IconProps) {
     </svg>
   );
 }
+export function IconChevronDown({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className} strokeWidth={2}>
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
 export function IconEye({ size, className }: IconProps) {
   return (
     <svg {...base(size)} className={className}>

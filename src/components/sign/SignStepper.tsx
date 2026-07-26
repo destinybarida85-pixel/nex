@@ -2,12 +2,13 @@ import { IconCheckCircle } from "@/components/icons";
 
 const steps = ["Review", "Verify", "Sign", "Complete"];
 
-export default function SignStepper({ current }: { current: number }) {
+export default function SignStepper({ current, skippedSigning }: { current: number; skippedSigning?: boolean }) {
   return (
     <div className="flex items-center gap-2 max-w-[420px] mx-auto w-full">
       {steps.map((label, i) => {
         const index = i + 1;
-        const done = index < current;
+        const skipped = skippedSigning && (index === 2 || index === 3);
+        const done = index < current && !skipped;
         const active = index === current;
         return (
           <div key={label} className="flex items-center flex-1 last:flex-none">
@@ -15,7 +16,9 @@ export default function SignStepper({ current }: { current: number }) {
               <span
                 className="w-6 h-6 rounded-full grid place-items-center flex-none"
                 style={
-                  done
+                  skipped
+                    ? { border: "1.5px dashed var(--color-divider)", color: "var(--color-neutral-700)" }
+                    : done
                     ? { color: "var(--color-accent)" }
                     : active
                     ? { border: "1.5px solid var(--color-accent)", color: "var(--color-accent-300)" }
@@ -26,9 +29,9 @@ export default function SignStepper({ current }: { current: number }) {
               </span>
               <span
                 className="text-[10.5px]"
-                style={{ color: active || done ? "var(--color-text)" : "var(--color-neutral-600)" }}
+                style={{ color: skipped ? "var(--color-neutral-700)" : active || done ? "var(--color-text)" : "var(--color-neutral-600)" }}
               >
-                {label}
+                {skipped ? "Skipped" : label}
               </span>
             </div>
             {index < steps.length && (

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { IconDocuments, IconDownload, IconESign, IconLogoMark } from "@/components/icons";
+import { SIGN_DOCUMENT_STORAGE_KEY } from "@/components/sign/document";
 
 export type DocumentStep = { label: string; done: boolean };
 export type DocumentData = {
@@ -49,16 +50,30 @@ export default function DocumentPanel({
     }));
   }
 
+  function sendForSignature() {
+    try {
+      sessionStorage.setItem(
+        SIGN_DOCUMENT_STORAGE_KEY,
+        JSON.stringify({
+          title: document.title,
+          sentBy: "Origin AI draft",
+          signerName: "Signer",
+          signerEmail: "signer@example.com",
+          sections: document.body,
+        })
+      );
+    } catch {
+      // sessionStorage unavailable — /sign falls back to its own demo document.
+    }
+  }
+
   const shown = editing ? draft : document;
 
   return (
     <div className="flex-1 min-w-0 flex flex-col">
       <div className="flex items-center gap-3 px-4 md:px-6 py-4 border-b border-[var(--color-divider)] flex-wrap">
         <IconDocuments size={16} className="text-[var(--color-accent)]" />
-        <div>
-          <div className="card-title text-[15px]">{shown.title}</div>
-          <div className="card-meta">{shown.meta}</div>
-        </div>
+        <div className="card-title text-[14px]">Document</div>
         <span className={`tag ${shown.statusTag} ml-auto`}>{editing ? "Editing" : shown.status}</span>
         <button className="btn btn-icon btn-secondary" aria-label="Print document" onClick={() => window.print()}>
           <IconDownload size={14} />
@@ -67,44 +82,44 @@ export default function DocumentPanel({
 
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 flex flex-col md:flex-row gap-6">
         <div
-          className="flex-1 min-w-0 max-w-[620px] rounded-xl p-5 md:p-8 flex flex-col gap-5 print-area"
-          style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-sm)" }}
+          className="flex-1 min-w-0 max-w-[620px] rounded-xl p-6 md:p-9 flex flex-col gap-5 print-area"
+          style={{ background: "#f4f4f2", boxShadow: "var(--shadow-sm)" }}
         >
           <div className="flex items-center gap-2.5">
             <IconLogoMark size={26} />
-            <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Origin Inc. · Document</div>
+            <div className="text-[11px] tracking-[.08em] uppercase" style={{ color: "#6b6b76" }}>Origin Inc. · Document</div>
           </div>
           <div className="text-center pt-1">
             {editing ? (
               <>
                 <input
                   className="input text-[19px] text-center font-medium"
-                  style={{ background: "transparent", border: "none" }}
+                  style={{ background: "transparent", border: "none", color: "#181818" }}
                   value={draft.title}
                   onChange={(e) => setDraft((prev) => ({ ...prev, title: e.target.value }))}
                 />
                 <input
                   className="input text-[12px] text-center mt-1"
-                  style={{ background: "transparent", border: "none" }}
+                  style={{ background: "transparent", border: "none", color: "#5a5a63" }}
                   value={draft.meta}
                   onChange={(e) => setDraft((prev) => ({ ...prev, meta: e.target.value }))}
                 />
               </>
             ) : (
               <>
-                <h3 className="text-[19px] m-0">{shown.title}</h3>
-                <div className="text-[12px] text-[var(--color-neutral-500)] mt-1">{shown.meta}</div>
+                <h3 className="text-[19px] m-0" style={{ color: "#181818", overflowWrap: "break-word" }}>{shown.title}</h3>
+                <div className="text-[12px] mt-1" style={{ color: "#5a5a63", overflowWrap: "break-word" }}>{shown.meta}</div>
               </>
             )}
           </div>
-          <div className="hr" />
+          <div className="hr" style={{ borderColor: "rgba(0,0,0,0.1)" }} />
           {shown.body.map((section, i) => (
-            <div key={i}>
+            <div key={i} className="min-w-0">
               {editing ? (
                 <>
                   <input
                     className="input text-[13px] mb-1.5 font-medium"
-                    style={{ color: "var(--color-accent-300)" }}
+                    style={{ color: "#5b4fb8" }}
                     value={section.heading}
                     onChange={(e) => updateSection(i, "heading", e.target.value)}
                   />
@@ -117,27 +132,27 @@ export default function DocumentPanel({
                 </>
               ) : (
                 <>
-                  <h5 className="text-[13px] tracking-[0.02em] mb-1.5" style={{ color: "var(--color-accent-300)" }}>
+                  <h5 className="text-[13px] tracking-[0.02em] mb-1.5" style={{ color: "#5b4fb8" }}>
                     {section.heading}
                   </h5>
-                  <p className="text-[13px] leading-[1.7] text-[var(--color-neutral-300)] m-0" style={{ overflowWrap: "break-word", wordBreak: "break-word" }}>
+                  <p className="text-[13px] leading-[1.7] m-0" style={{ color: "#33333a", overflowWrap: "break-word", wordBreak: "break-word" }}>
                     {section.text}
                   </p>
                 </>
               )}
             </div>
           ))}
-          <div className="hr" />
+          <div className="hr" style={{ borderColor: "rgba(0,0,0,0.1)" }} />
           <div>
-            <h5 className="text-[13px] tracking-[0.02em] mb-3" style={{ color: "var(--color-accent-300)" }}>
+            <h5 className="text-[13px] tracking-[0.02em] mb-3" style={{ color: "#5b4fb8" }}>
               Signatures
             </h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {["Party A", "Party B"].map((party) => (
                 <div key={party} className="flex flex-col gap-1">
-                  <div className="h-8 border-b border-[var(--color-divider)]" />
-                  <div className="text-[11px] text-[var(--color-neutral-500)]">{party} signature</div>
-                  <div className="text-[10px] text-[var(--color-neutral-600)] mt-2">Date: ______________</div>
+                  <div className="h-8" style={{ borderBottom: "1px solid rgba(0,0,0,0.15)" }} />
+                  <div className="text-[11px]" style={{ color: "#6b6b76" }}>{party} signature</div>
+                  <div className="text-[10px] mt-2" style={{ color: "#8a8a94" }}>Date: ______________</div>
                 </div>
               ))}
             </div>
@@ -174,7 +189,7 @@ export default function DocumentPanel({
             </>
           ) : (
             <>
-              <a href="/sign" className="btn btn-primary btn-block text-[12.5px]">
+              <a href="/sign" className="btn btn-primary btn-block text-[12.5px]" onClick={sendForSignature}>
                 <IconESign size={14} />
                 Send for signature
               </a>

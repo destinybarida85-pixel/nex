@@ -10,12 +10,13 @@ const isConfigured = !!(
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { documentTitle, documentContent, signerName, signerEmail, signatureData } = body as {
+  const { documentTitle, documentContent, signerName, signerEmail, signatureData, skipStamp } = body as {
     documentTitle: string;
     documentContent: string;
     signerName: string;
     signerEmail: string;
     signatureData: string;
+    skipStamp?: boolean;
   };
 
   if (!documentContent || !signerName || !signerEmail || !signatureData) {
@@ -90,7 +91,9 @@ export async function POST(request: Request) {
 
   let stampApplied = false;
   let stampCreditsRemaining: number | null = null;
-  if (doc!.tenant_id) {
+  if (skipStamp) {
+    // The signer opted out of applying a stamp — no credit charged, nothing to show.
+  } else if (doc!.tenant_id) {
     const { data: tenant } = await supabase.from("tenants").select("stamp_credits").eq("id", doc!.tenant_id).single();
     if (tenant && tenant.stamp_credits > 0) {
       await supabase.from("tenants").update({ stamp_credits: tenant.stamp_credits - 1 }).eq("id", doc!.tenant_id);

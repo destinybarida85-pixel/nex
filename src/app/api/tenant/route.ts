@@ -3,7 +3,7 @@ import { requireTenant } from "@/lib/requireTenant";
 import { isBackendConfigured } from "@/lib/backendStatus";
 
 const SELECT_FIELDS =
-  "name, domain, brand_color, powered_by_badge, stamp_credits, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id";
+  "name, domain, custom_domain, brand_color, powered_by_badge, stamp_credits, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id";
 
 export async function GET() {
   if (!isBackendConfigured) return NextResponse.json({ configured: false });
@@ -39,6 +39,7 @@ export async function PATCH(request: Request) {
   const body = (await request.json()) as {
     name?: string;
     domain?: string;
+    customDomain?: string;
     brandColor?: string;
     poweredByBadge?: boolean;
     logoUrl?: string;
@@ -53,13 +54,14 @@ export async function PATCH(request: Request) {
   const update: Record<string, unknown> = {};
   if (body.name?.trim()) update.name = body.name.trim();
   if (body.domain?.trim()) update.domain = body.domain.trim();
+  if (typeof body.customDomain === "string") update.custom_domain = body.customDomain.trim().toLowerCase() || null;
   if (body.brandColor?.trim()) update.brand_color = body.brandColor.trim();
   if (typeof body.poweredByBadge === "boolean") update.powered_by_badge = body.poweredByBadge;
   if (typeof body.logoUrl === "string") update.logo_url = body.logoUrl || null;
   if (typeof body.headerImageUrl === "string") update.header_image_url = body.headerImageUrl || null;
   if (body.siteSlug?.trim()) update.site_slug = slugify(body.siteSlug);
   if (typeof body.sitePublished === "boolean") update.site_published = body.sitePublished;
-  if (body.siteTemplate && ["clarity", "ledger", "atrium"].includes(body.siteTemplate)) update.site_template = body.siteTemplate;
+  if (body.siteTemplate && ["clarity", "ledger", "atrium", "portfolio", "landing"].includes(body.siteTemplate)) update.site_template = body.siteTemplate;
   if (Array.isArray(body.siteDocumentIds)) update.site_document_ids = body.siteDocumentIds;
   if (body.sitePaymentLinkId !== undefined) update.site_payment_link_id = body.sitePaymentLinkId || null;
 

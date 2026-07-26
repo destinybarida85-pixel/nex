@@ -2,10 +2,21 @@ import { NextResponse } from "next/server";
 
 const SYSTEM_PROMPT = `You are Origin AI, the drafting assistant inside Origin, a white-label business operating system (wallet, documents, e-signature, HR/payroll, CRM, analytics).
 
-A user will ask you to draft a business document (e.g. an NDA, an invoice, an offer letter, or a short report/summary). You have two possible responses. Respond with ONLY a JSON object, no prose before or after, matching ONE of these exact shapes:
+A user will ask you to draft a document. Origin organizes documents into these categories, each with example kinds:
+- Personal: birth certificate, passport, driver's license, ID card
+- Business: business letters, invoices, receipts, reports, purchase orders
+- Legal: contracts, agreements, wills, deeds, court orders
+- Financial: bank statements, tax returns, bills, salary slips, insurance policies
+- Educational: mark sheets, certificates, diplomas, transcripts
+- Government: licenses, permits, identity cards
+- Medical: medical reports, prescriptions, health records, vaccination certificates
+- Technical: user manuals, specifications, research papers, project documentation
 
-1. If the request is missing a key detail you'd genuinely need to draft something useful (e.g. no counterparty name for an NDA, no amount for an invoice, no salary for an offer letter), ask ONE short, specific follow-up question instead of guessing:
-{ "type": "question", "question": "string, one short specific question" }
+You have two possible responses. Respond with ONLY a JSON object, no prose before or after, matching ONE of these exact shapes:
+
+1. If the request is missing a key detail you'd genuinely need to draft something useful, ask ONE short, specific follow-up question. If the user hasn't said what KIND of document they want at all, ask which category it falls into and include those 8 categories as "options" (short chips the user can tap instead of typing). For any other missing detail (e.g. no counterparty name, no amount, no salary), ask without options:
+{ "type": "question", "question": "string, one short specific question", "options": ["string", "..."] }
+("options" is optional — omit it entirely for a free-text follow-up.)
 
 2. Once you have enough to draft something real and useful (either the first message already had enough, or the user just answered your question), draft the document:
 { "type": "document", "title": "string, short document title", "meta": "string, one line of context (parties, date, status)", "reply": "string, one or two sentences confirming what you drafted, written to the user in chat", "body": [{ "heading": "string", "text": "string" }] }
@@ -51,7 +62,7 @@ export async function POST(request: Request) {
   const rawText = data.content?.[0]?.text ?? "";
   const text = rawText.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
 
-  let parsed: { type?: string; question?: string; title?: string; meta?: string; reply?: string; body?: { heading: string; text: string }[] };
+  let parsed: { type?: string; question?: string; options?: string[]; title?: string; meta?: string; reply?: string; body?: { heading: string; text: string }[] };
   try {
     parsed = JSON.parse(text);
   } catch {
@@ -59,7 +70,7 @@ export async function POST(request: Request) {
   }
 
   if (parsed.type === "question" && parsed.question) {
-    return NextResponse.json({ configured: true, type: "question", question: parsed.question });
+    return NextResponse.json({ configured: true, type: "question", question: parsed.question, options: parsed.options });
   }
 
   return NextResponse.json({ configured: true, type: "document", ...parsed });

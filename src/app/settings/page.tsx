@@ -9,6 +9,7 @@ import { IconPlus, IconArrowRight } from "@/components/icons";
 
 type Member = { id: string; full_name: string | null; role: string; created_at: string };
 type PendingInvite = { id: string; email: string; role: string; created_at: string };
+type ApiKey = { id: string; name: string; key_prefix: string; created_at: string; last_used_at: string | null; revoked_at: string | null };
 
 export default function SettingsPage() {
   const { hasSession, checked } = useHasSession();
@@ -24,6 +25,11 @@ export default function SettingsPage() {
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState("");
 
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
+  const [newKeyName, setNewKeyName] = useState("");
+  const [creatingKey, setCreatingKey] = useState(false);
+  const [revealedKey, setRevealedKey] = useState<string | null>(null);
+
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
     fetch("/api/tenant")
@@ -36,6 +42,7 @@ export default function SettingsPage() {
       })
       .catch(() => {});
     loadTeam();
+    loadKeys();
   }, [checked, hasSession]);
 
   function loadTeam() {
@@ -48,6 +55,36 @@ export default function SettingsPage() {
         }
       })
       .catch(() => {});
+  }
+
+  function loadKeys() {
+    fetch("/api/api-keys")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.keys) setApiKeys(data.keys);
+      })
+      .catch(() => {});
+  }
+
+  async function createKey() {
+    setCreatingKey(true);
+    const res = await fetch("/api/api-keys", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newKeyName.trim() || "API key" }),
+    });
+    const data = await res.json();
+    if (data.key) {
+      setApiKeys((prev) => [{ ...data.key, last_used_at: null, revoked_at: null }, ...prev]);
+      setRevealedKey(data.key.plaintext);
+      setNewKeyName("");
+    }
+    setCreatingKey(false);
+  }
+
+  async function revokeKey(id: string) {
+    setApiKeys((prev) => prev.map((k) => (k.id === id ? { ...k, revoked_at: new Date().toISOString() } : k)));
+    await fetch(`/api/api-keys/${id}`, { method: "DELETE" }).catch(() => {});
   }
 
   async function saveName() {
@@ -165,6 +202,57 @@ export default function SettingsPage() {
                 No email is sent automatically yet — share your signup link with them directly. When they sign up with the invited email, they&rsquo;ll join this business instead of starting a new one.
               </div>
             )}
+          </div>
+
+          <div className="card elev-sm p-5 gap-3.5">
+            <div className="flex items-center gap-2">
+              <div className="card-title text-sm">API keys</div>
+              <span className="tag tag-neutral ml-auto text-[10px]">{apiKeys.filter((k) => !k.revoked_at).length} active</span>
+            </div>
+            <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
+              Generate a key so your own app or script can read your Origin data. Send it as{" "}
+              <code className="font-mono">Authorization: Bearer &lt;key&gt;</code> to <code className="font-mono">/api/v1/documents</code>.
+            </div>
+
+            {revealedKey && (
+              <div className="p-3 rounded-lg border" style={{ borderColor: "var(--color-accent)" }}>
+                <div className="text-[11.5px] mb-1.5" style={{ color: "var(--color-accent-300)" }}>
+                  Copy this now — it won&rsquo;t be shown again.
+                </div>
+                <div className="flex gap-1.5">
+                  <input className="input font-mono text-[11.5px] flex-1" readOnly value={revealedKey} />
+                  <button className="btn btn-secondary text-[11.5px] flex-none" onClick={() => navigator.clipboard.writeText(revealedKey)}>
+                    Copy
+                  </button>
+                  <button className="btn btn-ghost text-[11.5px] flex-none" onClick={() => setRevealedKey(null)}>
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-1.5">
+              {apiKeys.map((k) => (
+                <div key={k.id} className="flex items-center gap-2.5 p-2 rounded-lg" style={{ background: "var(--color-surface)" }}>
+                  <span className="text-[13px] flex-1 truncate">{k.name}</span>
+                  <span className="font-mono text-[11px] text-[var(--color-neutral-500)]">{k.key_prefix}…</span>
+                  {k.revoked_at ? (
+                    <span className="tag tag-neutral text-[9.5px]">Revoked</span>
+                  ) : (
+                    <button className="btn btn-ghost text-[10.5px] flex-none" onClick={() => revokeKey(k.id)}>Revoke</button>
+                  )}
+                </div>
+              ))}
+              {apiKeys.length === 0 && <div className="text-[12.5px] text-[var(--color-neutral-500)]">No API keys yet.</div>}
+            </div>
+
+            <div className="flex gap-1.5">
+              <input className="input text-[12.5px] flex-1" placeholder="Key name (e.g. Zapier)" value={newKeyName} onChange={(e) => setNewKeyName(e.target.value)} />
+              <button className="btn btn-primary text-[12.5px] flex-none" onClick={createKey} disabled={creatingKey || !live}>
+                <IconPlus size={13} />
+                Generate
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">

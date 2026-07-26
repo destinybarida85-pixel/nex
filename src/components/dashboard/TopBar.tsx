@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IconSearch, IconPlus, IconBell, IconMessages, IconSparkle, IconClients, IconEmployees, IconLink, IconESign, IconWallet } from "@/components/icons";
+import { IconSearch, IconPlus, IconBell, IconMessages, IconSparkle, IconClients, IconEmployees, IconLink, IconESign, IconWallet, IconSend } from "@/components/icons";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 
@@ -13,6 +13,7 @@ const quickCreateItems = [
 ];
 
 type Notification = { id: string; kind: string; title: string; body: string | null; read_at: string | null; created_at: string };
+type ChatMsg = { id: string; sender: "user" | "support"; body: string; created_at: string };
 
 const kindIcon: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   document_signed: IconESign,
@@ -35,8 +36,13 @@ export default function TopBar() {
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMsg[]>([]);
+  const [chatDraft, setChatDraft] = useState("");
+  const [chatSending, setChatSending] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
   const { hasSession, checked } = useHasSession();
 
   useEffect(() => {
@@ -62,16 +68,47 @@ export default function TopBar() {
   }, [checked, hasSession]);
 
   useEffect(() => {
-    if (!quickCreateOpen && !notifOpen) return;
+    if (!checked || !isBackendConfigured || !hasSession || !chatOpen) return;
+    function load() {
+      fetch("/api/chat")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.configured && data.messages) setChatMessages(data.messages);
+        })
+        .catch(() => {});
+    }
+    load();
+    const interval = setInterval(load, 6000);
+    return () => clearInterval(interval);
+  }, [checked, hasSession, chatOpen]);
+
+  useEffect(() => {
+    if (!quickCreateOpen && !notifOpen && !chatOpen) return;
     function onClickOutside(e: MouseEvent) {
       if (quickCreateOpen && menuRef.current && !menuRef.current.contains(e.target as Node)) setQuickCreateOpen(false);
       if (notifOpen && notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+      if (chatOpen && chatRef.current && !chatRef.current.contains(e.target as Node)) setChatOpen(false);
     }
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
-  }, [quickCreateOpen, notifOpen]);
+  }, [quickCreateOpen, notifOpen, chatOpen]);
 
   const unreadCount = notifications.filter((n) => !n.read_at).length;
+
+  async function sendChat() {
+    const text = chatDraft.trim();
+    if (!text) return;
+    setChatSending(true);
+    setChatDraft("");
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ body: text }),
+    });
+    const data = await res.json();
+    if (data.message) setChatMessages((prev) => [...prev, data.message]);
+    setChatSending(false);
+  }
 
   async function openNotifications() {
     setNotifOpen((v) => !v);
@@ -153,10 +190,49 @@ export default function TopBar() {
           </div>
         )}
       </div>
-      <div className="hidden sm:block flex-none">
-        <button className="btn btn-icon btn-secondary" aria-label="Messages">
+      <div className="relative hidden sm:block flex-none" ref={chatRef}>
+        <button className="btn btn-icon btn-secondary" aria-label="Chat with support" onClick={() => setChatOpen((v) => !v)}>
           <IconMessages size={16} />
         </button>
+        {chatOpen && (
+          <div
+            className="absolute right-0 top-[calc(100%+6px)] w-[300px] rounded-lg border flex flex-col z-30"
+            style={{ background: "var(--color-bg)", borderColor: "var(--color-divider)", boxShadow: "var(--shadow-md)" }}
+          >
+            <div className="px-2.5 py-2 text-[11px] tracking-[.06em] uppercase text-[var(--color-neutral-500)] border-b" style={{ borderColor: "var(--color-divider)" }}>
+              Chat with Origin support
+            </div>
+            <div className="max-h-[240px] overflow-y-auto p-2.5 flex flex-col gap-2">
+              {chatMessages.length === 0 ? (
+                <div className="text-[12px] text-[var(--color-neutral-500)] text-center py-4">
+                  Send a message and our team will reply here — usually within a few hours.
+                </div>
+              ) : (
+                chatMessages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`text-[12px] px-2.5 py-2 rounded-lg max-w-[85%] ${m.sender === "user" ? "self-end" : "self-start"}`}
+                    style={{ background: m.sender === "user" ? "var(--color-accent-900)" : "var(--color-surface)" }}
+                  >
+                    {m.body}
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="flex gap-1.5 p-2.5 border-t" style={{ borderColor: "var(--color-divider)" }}>
+              <input
+                className="input text-[12px] flex-1"
+                placeholder="Type a message…"
+                value={chatDraft}
+                onChange={(e) => setChatDraft(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && sendChat()}
+              />
+              <button className="btn btn-primary btn-icon" aria-label="Send" onClick={sendChat} disabled={chatSending}>
+                <IconSend size={13} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       <a
         href="/profile"

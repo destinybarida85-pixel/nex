@@ -3,9 +3,16 @@
 import { useState } from "react";
 import { IconSparkle, IconSend } from "@/components/icons";
 
-export type ChatMessage = { role: "user" | "ai"; text: string };
+export type ChatMessage = { role: "user" | "ai"; text: string; options?: string[] };
 
-const suggestions = ["Draft an NDA", "Write an invoice", "Draft an offer letter", "Summarize this contract"];
+const suggestions = [
+  "Draft an NDA",
+  "Write an invoice",
+  "Draft an offer letter",
+  "Write a service agreement",
+  "Draft a receipt",
+  "Write a purchase order",
+];
 
 export default function ChatPanel({
   messages,
@@ -40,12 +47,22 @@ export default function ChatPanel({
               {m.text}
             </div>
           ) : (
-            <div
-              key={i}
-              className="self-start max-w-[90%] text-[13px] leading-[1.55] text-[var(--color-neutral-300)] px-3.5 py-2.5 rounded-xl"
-              style={{ background: "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" }}
-            >
-              {m.text}
+            <div key={i} className="self-start max-w-[90%] flex flex-col gap-1.5">
+              <div
+                className="text-[13px] leading-[1.55] text-[var(--color-neutral-300)] px-3.5 py-2.5 rounded-xl"
+                style={{ background: "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" }}
+              >
+                {m.text}
+              </div>
+              {m.options && m.options.length > 0 && i === messages.length - 1 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {m.options.map((o) => (
+                    <button key={o} onClick={() => onSend(o)} className="tag tag-outline cursor-pointer hover:opacity-80 transition-opacity">
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )
         )}

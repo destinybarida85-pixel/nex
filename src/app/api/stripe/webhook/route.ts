@@ -117,6 +117,15 @@ export async function POST(request: Request) {
               `Payment received: ${(session.amount_total / 100).toLocaleString(undefined, { style: "currency", currency: (session.currency || "usd").toUpperCase() })}`,
               `${link.title} · ${session.customer_details?.email || "a customer"}`
             );
+
+            await supabase.from("receipts").insert({
+              tenant_id: link.tenant_id,
+              kind: "payment",
+              amount_cents: session.amount_total,
+              currency: session.currency || "usd",
+              counterparty: session.customer_details?.email || "a customer",
+              reference: link.title,
+            });
           }
         }
       }

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconLogoMark } from "@/components/icons";
 import SignStepper from "@/components/sign/SignStepper";
 import ReviewStep from "@/components/sign/ReviewStep";
 import VerifyStep from "@/components/sign/VerifyStep";
 import SignStep from "@/components/sign/SignStep";
 import CompleteStep from "@/components/sign/CompleteStep";
-import { demoDocument, canonicalDocumentText } from "@/components/sign/document";
+import { demoDocument, canonicalDocumentText, SIGN_DOCUMENT_STORAGE_KEY, type SignDocument } from "@/components/sign/document";
 
 export type SignatureProof = {
   certificateId: string;
@@ -24,6 +24,24 @@ export default function SignPage() {
   const [signature, setSignature] = useState("");
   const [proof, setProof] = useState<SignatureProof | null>(null);
   const [sealing, setSealing] = useState(false);
+  const [signDocument, setSignDocument] = useState<SignDocument>(demoDocument);
+  const [requireSignature, setRequireSignature] = useState(true);
+  const [applyStamp, setApplyStamp] = useState(true);
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(SIGN_DOCUMENT_STORAGE_KEY);
+      if (stored) setSignDocument(JSON.parse(stored));
+    } catch {
+      // Malformed/missing storage — stay on the demo document.
+    }
+  }, []);
+
+  function skipToComplete() {
+    setSignature("");
+    setProof(null);
+    setStep(4);
+  }
 
   async function completeSigning(sig: string) {
     setSignature(sig);
@@ -34,11 +52,12 @@ export default function SignPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          documentTitle: demoDocument.title,
-          documentContent: canonicalDocumentText(),
-          signerName: demoDocument.signerName,
-          signerEmail: demoDocument.signerEmail,
+          documentTitle: signDocument.title,
+          documentContent: canonicalDocumentText(signDocument),
+          signerName: signDocument.signerName,
+          signerEmail: signDocument.signerEmail,
           signatureData: sig,
+          skipStamp: !applyStamp,
         }),
       });
       const data = await res.json();
@@ -66,17 +85,35 @@ export default function SignPage() {
       </div>
 
       <div className="relative">
-        <SignStepper current={step} />
+        <SignStepper current={step} skippedSigning={!requireSignature} />
       </div>
 
       <div
         className="relative w-full max-w-[440px] mt-8 p-8 rounded-2xl bg-[var(--color-bg)] text-[var(--color-text)]"
         style={{ boxShadow: "var(--shadow-lg), 0 40px 80px -30px color-mix(in srgb, var(--color-accent) 25%, transparent)" }}
       >
-        {step === 1 && <ReviewStep onContinue={() => setStep(2)} />}
+        {step === 1 && (
+          <ReviewStep
+            document={signDocument}
+            requireSignature={requireSignature}
+            onRequireSignatureChange={setRequireSignature}
+            applyStamp={applyStamp}
+            onApplyStampChange={setApplyStamp}
+            onContinue={() => (requireSignature ? setStep(2) : skipToComplete())}
+          />
+        )}
         {step === 2 && <VerifyStep onContinue={() => setStep(3)} onBack={() => setStep(1)} />}
         {step === 3 && <SignStep onContinue={completeSigning} onBack={() => setStep(2)} />}
-        {step === 4 && <CompleteStep signature={signature} proof={proof} sealing={sealing} />}
+        {step === 4 && (
+          <CompleteStep
+            document={signDocument}
+            signature={signature}
+            proof={proof}
+            sealing={sealing}
+            signed={requireSignature}
+            applyStamp={applyStamp}
+          />
+        )}
       </div>
 
       <div className="relative text-[11px] text-[var(--color-neutral-600)] mt-6 flex items-center gap-2">

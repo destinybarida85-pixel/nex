@@ -200,6 +200,11 @@ export default function WalletPage() {
                     Payout to bank
                   </button>
                 )}
+                {live && (
+                  <a href="/receipts" className="btn btn-ghost text-[13px]">
+                    Receipts
+                  </a>
+                )}
               </div>
             </div>
 

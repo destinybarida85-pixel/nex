@@ -68,5 +68,14 @@ export async function POST(request: Request) {
     });
   }
 
+  await supabase!.from("receipts").insert({
+    tenant_id: tenantId,
+    kind: "payout",
+    amount_cents: amountCents,
+    currency: "usd",
+    counterparty: "Your linked bank account",
+    reference: payout.id,
+  });
+
   return NextResponse.json({ payout: { id: payout.id, status: payout.status, arrivalDate: payout.arrival_date } });
 }

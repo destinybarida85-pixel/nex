@@ -113,7 +113,7 @@ export default function AssistantPage() {
 
       if (data.configured) {
         if (data.type === "question" && data.question) {
-          setMessages((prev) => [...prev, { role: "ai", text: data.question }]);
+          setMessages((prev) => [...prev, { role: "ai", text: data.question, options: data.options }]);
           setThinking(false);
           return;
         }

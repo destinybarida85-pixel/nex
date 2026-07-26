@@ -9,12 +9,14 @@ const baseSwatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
 
 type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url: string };
 type TenantDocument = { id: string; title: string; status: string };
-type Template = "clarity" | "ledger" | "atrium";
+type Template = "clarity" | "ledger" | "atrium" | "portfolio" | "landing";
 
 const templates: { id: Template; name: string; why: string }[] = [
   { id: "clarity", name: "Clarity", why: "Best for consulting & legal — a calm, centered page that puts the document and price front and center." },
   { id: "ledger", name: "Ledger", why: "Best for ongoing client relationships — a dashboard-style sidebar layout that feels like a real portal." },
   { id: "atrium", name: "Atrium", why: "Best if you have a strong header photo — a bold full-width banner up top for agencies and studios." },
+  { id: "portfolio", name: "Portfolio", why: "Best for creative & freelance work — a clean, minimal white page that reads like a design portfolio." },
+  { id: "landing", name: "Landing", why: "Best for a single ask — a simple, no-distractions page whose only job is getting the client to pay." },
 ];
 
 function readAsDataUrl(file: File): Promise<string> {
@@ -46,6 +48,7 @@ export default function WhiteLabelPage() {
   const [template, setTemplate] = useState<Template>("clarity");
   const [siteSlug, setSiteSlug] = useState("atlas-chambers");
   const [slugTouched, setSlugTouched] = useState(false);
+  const [customDomain, setCustomDomain] = useState("");
   const [sitePublished, setSitePublished] = useState(false);
   const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([]);
   const [selectedLinkId, setSelectedLinkId] = useState("");
@@ -84,6 +87,7 @@ export default function WhiteLabelPage() {
             setSlugTouched(true);
           }
           setSitePublished(!!data.tenant.site_published);
+          if (data.tenant.custom_domain) setCustomDomain(data.tenant.custom_domain);
           if (Array.isArray(data.tenant.site_document_ids)) setSelectedDocIds(data.tenant.site_document_ids);
           if (data.tenant.site_payment_link_id) setSelectedLinkId(data.tenant.site_payment_link_id);
         }
@@ -165,6 +169,7 @@ export default function WhiteLabelPage() {
           poweredByBadge: poweredBy,
           logoUrl: logoUrl || "",
           headerImageUrl: headerImageUrl || "",
+          customDomain: customDomain || "",
           siteSlug,
           siteTemplate: template,
           siteDocumentIds: selectedDocIds,
@@ -316,6 +321,21 @@ export default function WhiteLabelPage() {
                     setSiteSlug(slugify(e.target.value));
                   }}
                 />
+              </div>
+            </div>
+
+            <div className="field">
+              <label>Connect your own domain (e.g. destiny.mgt)</label>
+              <input
+                className="input font-mono text-[12.5px]"
+                placeholder="destiny.mgt"
+                value={customDomain}
+                onChange={(e) => setCustomDomain(e.target.value.toLowerCase())}
+              />
+              <div className="text-[11px] text-[var(--color-neutral-500)] leading-[1.6] mt-1">
+                Saving this reserves the domain on your account. To make it actually resolve, you still need to: buy the
+                domain if you haven&rsquo;t, add it under this project&rsquo;s Domains in Vercel, and point its DNS at
+                Vercel. Until then, your site stays reachable at the address above.
               </div>
             </div>
 

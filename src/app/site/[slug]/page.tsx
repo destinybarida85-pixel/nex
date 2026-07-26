@@ -9,7 +9,7 @@ type Site = {
   brandColor: string;
   logoUrl: string | null;
   headerImageUrl: string | null;
-  template: "clarity" | "ledger" | "atrium";
+  template: "clarity" | "ledger" | "atrium" | "portfolio" | "landing";
   poweredByBadge: boolean;
   documents: SiteDoc[];
   paymentLink: { title: string; amountCents: number; currency: string; url: string } | null;
@@ -220,6 +220,104 @@ function AtriumSite({ site }: { site: Site }) {
   );
 }
 
+function PortfolioSite({ site }: { site: Site }) {
+  const initial = site.name.trim().charAt(0).toUpperCase() || "A";
+  return (
+    <div className="min-h-screen" style={{ background: "#fafafa", color: "#181818" }}>
+      <header className="flex items-center gap-2.5 px-6 py-5 max-w-[860px] mx-auto">
+        {site.logoUrl ? (
+          <img src={site.logoUrl} alt={site.name} className="w-8 h-8 rounded-full object-cover" />
+        ) : (
+          <span className="w-8 h-8 rounded-full grid place-items-center font-medium text-[14px]" style={{ background: "#181818", color: "#fff" }}>
+            {initial}
+          </span>
+        )}
+        <span className="text-[14px] font-medium">{site.name}</span>
+        <div className="flex-1" />
+        {site.paymentLink && (
+          <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="text-[13px] px-4 py-2 rounded-full no-underline font-medium" style={{ background: "#181818", color: "#fff" }}>
+            Pay now
+          </a>
+        )}
+      </header>
+
+      <section className="max-w-[860px] mx-auto px-6 pt-10 pb-16 text-center flex flex-col items-center gap-4">
+        <h1 className="text-[32px] sm:text-[42px] leading-[1.15] font-medium m-0 tracking-[-0.01em]">
+          {site.name}, done right.
+        </h1>
+        <p className="text-[15px] leading-[1.6] max-w-[440px]" style={{ color: "#6b6b76" }}>
+          Real documents, real payments, all handled in one clean place.
+        </p>
+      </section>
+
+      <section className="max-w-[720px] mx-auto px-6 pb-16 flex flex-col gap-4">
+        {site.documents.map((d) => (
+          <div key={d.id} className="rounded-2xl p-6" style={{ background: "#fff", border: "1px solid #e6e6e6" }}>
+            <div className="text-[10.5px] uppercase tracking-[.08em]" style={{ color: "#9a9aa4" }}>Document</div>
+            <h2 className="text-[19px] font-medium mt-1 mb-3" style={{ color: "#181818" }}>{d.title}</h2>
+            <p className="text-[13.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#3a3a42" }}>{d.text}</p>
+          </div>
+        ))}
+        {site.paymentLink && (
+          <div className="rounded-2xl p-8 flex flex-col items-center text-center gap-3" style={{ background: "#181818", color: "#fff" }}>
+            <div className="text-[11px] uppercase tracking-[.08em]" style={{ color: "#9a9aa4" }}>{site.paymentLink.title}</div>
+            <div className="text-[30px] font-medium">
+              {(site.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: site.paymentLink.currency.toUpperCase() })}
+            </div>
+            <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="px-5 py-2.5 rounded-full no-underline text-[13.5px] font-medium" style={{ background: "#fff", color: "#181818" }}>
+              Pay now
+            </a>
+          </div>
+        )}
+      </section>
+
+      <footer className="max-w-[860px] mx-auto px-6 py-8 border-t flex items-center gap-3" style={{ borderColor: "#e6e6e6" }}>
+        <span className="text-[11.5px]" style={{ color: "#9a9aa4" }}>© {new Date().getFullYear()} {site.name}</span>
+        <div className="flex-1" />
+        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#9a9aa4" }}>Powered by Origin</span>}
+      </footer>
+    </div>
+  );
+}
+
+function LandingSite({ site }: { site: Site }) {
+  const priceLabel = site.paymentLink
+    ? (site.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: site.paymentLink.currency.toUpperCase() })
+    : "";
+  return (
+    <div className="min-h-screen grid place-items-center px-6" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
+      <div className="w-full max-w-[440px] flex flex-col items-center text-center gap-5 py-16">
+        {site.logoUrl ? (
+          <img src={site.logoUrl} alt={site.name} className="w-12 h-12 rounded-2xl object-cover" />
+        ) : (
+          <span className="w-12 h-12 rounded-2xl grid place-items-center text-[20px] font-medium" style={{ background: site.brandColor, color: "#0c0c10" }}>
+            {site.name.trim().charAt(0).toUpperCase() || "A"}
+          </span>
+        )}
+        <div className="text-[15px] font-medium">{site.name}</div>
+        {site.paymentLink ? (
+          <>
+            <h1 className="text-[26px] font-medium m-0">{site.paymentLink.title}</h1>
+            <div className="text-[40px] font-medium" style={{ color: site.brandColor }}>{priceLabel}</div>
+            <a
+              href={site.paymentLink.url}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full px-5 py-3.5 rounded-lg no-underline text-[14.5px] font-medium"
+              style={{ background: site.brandColor, color: "#0c0c10" }}
+            >
+              Pay {priceLabel} now
+            </a>
+            <div className="text-[11px]" style={{ color: "#6b6b76" }}>Secured by Stripe · one click, no account needed</div>
+          </>
+        ) : (
+          <div className="text-[13px]" style={{ color: "#9a9aa4" }}>No payment set up yet.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function PublicSitePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const [site, setSite] = useState<Site | null>(null);
@@ -250,5 +348,7 @@ export default function PublicSitePage({ params }: { params: Promise<{ slug: str
 
   if (site.template === "ledger") return <LedgerSite site={site} />;
   if (site.template === "atrium") return <AtriumSite site={site} />;
+  if (site.template === "portfolio") return <PortfolioSite site={site} />;
+  if (site.template === "landing") return <LandingSite site={site} />;
   return <ClaritySite site={site} />;
 }
