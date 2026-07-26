@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { IconCheckCircle, IconLock, IconDownload, IconEdit, IconChevronDown } from "@/components/icons";
+import { useRef, useState } from "react";
+import { IconCheckCircle, IconLock, IconDownload, IconEdit, IconChevronDown, IconCamera } from "@/components/icons";
 
 import Stamp from "./Stamp";
 import { demoDocument, type SignDocument } from "./document";
+import DocumentPaper from "@/components/document/DocumentPaper";
 import type { SignatureProof } from "@/app/sign/page";
 
 const audit = [
@@ -15,7 +16,7 @@ const audit = [
   { label: "Signed & sealed", meta: "Jul 21, 2026 · 08:45" },
 ];
 
-const stampColors = ["#9184d9", "#63c3b2", "#d9a05b", "#e0665f"];
+const stampColors = ["#9184d9", "#63c3b2", "#d9a05b", "#e0665f", "#5b8fd9", "#8a8a94", "#c96bb0", "#4fae7a"];
 
 const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
@@ -40,6 +41,21 @@ const stampTypes: { id: string; name: string; label: string; sub: string }[] = [
   { id: "embossing", name: "Embossing Seal", label: "EMBOSSED", sub: "OFFICIAL SEAL" },
 ];
 
+const positions: { id: "signature" | "header" | "footer"; label: string }[] = [
+  { id: "signature", label: "Next to signature" },
+  { id: "header", label: "In the document header" },
+  { id: "footer", label: "In the document footer" },
+];
+
+function readAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function CompleteStep({
   document = demoDocument,
   signature,
@@ -47,6 +63,7 @@ export default function CompleteStep({
   sealing,
   signed = true,
   applyStamp: applyStampOption = true,
+  accentColor,
 }: {
   document?: SignDocument;
   signature: string;
@@ -54,12 +71,17 @@ export default function CompleteStep({
   sealing: boolean;
   signed?: boolean;
   applyStamp?: boolean;
+  accentColor: string;
 }) {
   const [stampTypeId, setStampTypeId] = useState("official");
   const stampType = stampTypes.find((t) => t.id === stampTypeId) || stampTypes[0];
   const [stampLabel, setStampLabel] = useState(stampType.label);
   const [stampSub, setStampSub] = useState(stampType.sub);
   const [stampColor, setStampColor] = useState(stampColors[0]);
+  const [stampPosition, setStampPosition] = useState<"signature" | "header" | "footer">("signature");
+  const [stampImageUrl, setStampImageUrl] = useState<string | null>(null);
+  const [rightsConfirmed, setRightsConfirmed] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const [editingStamp, setEditingStamp] = useState(false);
   const [buyingCredits, setBuyingCredits] = useState(false);
   const [showAudit, setShowAudit] = useState(false);
@@ -72,6 +94,12 @@ export default function CompleteStep({
     setStampTypeId(id);
     setStampLabel(t.label);
     setStampSub(t.sub);
+  }
+
+  async function handleImageFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
+    setStampImageUrl(await readAsDataUrl(file));
   }
 
   async function buyCredits() {
@@ -88,6 +116,9 @@ export default function CompleteStep({
     }
     setBuyingCredits(false);
   }
+
+  const stampNode = !stampBlocked ? <Stamp label={stampLabel} sub={stampSub} color={stampColor} imageUrl={stampImageUrl} /> : null;
+  const embeddedStamp = showStampCard && stampPosition !== "signature" ? stampNode : null;
 
   return (
     <div className="flex flex-col items-center gap-5 text-center">
@@ -107,17 +138,14 @@ export default function CompleteStep({
       </div>
 
       <div className="print-area w-full flex flex-col gap-5 items-center text-center" style={{ padding: 4 }}>
-        <div className="card w-full text-left gap-3 p-5" style={{ background: "#f4f4f2" }}>
-          <h5 className="text-[15px] m-0" style={{ color: "#181818" }}>{document.title}</h5>
-          <div className="hr" style={{ margin: 0, borderColor: "rgba(0,0,0,0.1)" }} />
-          {document.sections.map((s) => (
-            <div key={s.heading}>
-              <h6 className="text-[11.5px] mb-1 m-0" style={{ color: "#5b4fb8" }}>{s.heading}</h6>
-              <p className="text-[11.5px] leading-[1.6] m-0" style={{ color: "#33333a", overflowWrap: "break-word", wordBreak: "break-word" }}>
-                {s.text}
-              </p>
-            </div>
-          ))}
+        <div className="rounded-xl overflow-hidden w-full">
+          <DocumentPaper
+            title={document.title}
+            sections={document.sections}
+            accentColor={accentColor}
+            headerRight={stampPosition === "header" ? embeddedStamp : undefined}
+            footerSlot={stampPosition === "footer" && embeddedStamp ? <div className="flex justify-center">{embeddedStamp}</div> : undefined}
+          />
         </div>
 
         {signed && (
@@ -160,7 +188,9 @@ export default function CompleteStep({
                     </div>
                   ) : (
                     <>
-                      <Stamp label={stampLabel} sub={stampSub} color={stampColor} />
+                      {stampPosition === "signature" ? stampNode : (
+                        <div className="text-[10.5px] text-[var(--color-neutral-500)] italic w-[108px]">Placed in the document {stampPosition}</div>
+                      )}
                       <button
                         className="btn btn-secondary text-[10.5px] no-print"
                         style={{ padding: "4px 9px" }}
@@ -176,32 +206,61 @@ export default function CompleteStep({
             </div>
 
             {editingStamp && !stampBlocked && showStampCard && (
-              <div className="no-print flex flex-col gap-2 p-3 rounded-lg border" style={{ borderColor: "var(--color-divider)" }}>
+              <div className="no-print flex flex-col gap-2.5 p-3 rounded-lg border" style={{ borderColor: "var(--color-divider)" }}>
                 <select className="input text-[12px]" value={stampTypeId} onChange={(e) => selectStampType(e.target.value)}>
                   {stampTypes.map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+                <select className="input text-[12px]" value={stampPosition} onChange={(e) => setStampPosition(e.target.value as typeof stampPosition)}>
+                  {positions.map((p) => (
+                    <option key={p.id} value={p.id}>{p.label}</option>
                   ))}
                 </select>
                 <div className="grid grid-cols-2 gap-2">
                   <input className="input text-[12px]" placeholder="Main text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 14))} />
                   <input className="input text-[12px]" placeholder="Sub text" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 20))} />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[11px] text-[var(--color-neutral-500)]">Color</span>
                   {stampColors.map((c) => (
                     <button
                       key={c}
                       aria-label={`Use ${c}`}
                       onClick={() => setStampColor(c)}
-                      className="w-[20px] h-[20px] rounded-md cursor-pointer"
+                      className="w-[18px] h-[18px] rounded-md cursor-pointer"
                       style={{ background: c, outline: stampColor === c ? "2px solid var(--color-text)" : "none", outlineOffset: 2 }}
                     />
                   ))}
-                  <button className="btn btn-secondary text-[11px] ml-auto" style={{ padding: "4px 9px" }} onClick={() => setEditingStamp(false)}>
-                    Done
-                  </button>
                 </div>
-                <div className="text-[10.5px] text-[var(--color-neutral-500)]">Pick a stamp type for sensible defaults, then customize the text and color.</div>
+
+                <div className="flex flex-col gap-1.5 pt-1.5 border-t" style={{ borderColor: "var(--color-divider)" }}>
+                  <label className="flex items-start gap-2 text-[11px] text-[var(--color-neutral-400)]">
+                    <input type="checkbox" checked={rightsConfirmed} onChange={(e) => setRightsConfirmed(e.target.checked)} className="mt-0.5" />
+                    I confirm I have the right to use the image I upload on this stamp.
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="btn btn-secondary text-[11px]"
+                      style={{ padding: "4px 9px" }}
+                      disabled={!rightsConfirmed}
+                      onClick={() => imageInputRef.current?.click()}
+                    >
+                      <IconCamera size={11} />
+                      {stampImageUrl ? "Replace image" : "Add image"}
+                    </button>
+                    {stampImageUrl && (
+                      <button className="btn btn-ghost text-[11px]" style={{ padding: "4px 9px" }} onClick={() => setStampImageUrl(null)}>
+                        Remove
+                      </button>
+                    )}
+                    <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageFile} />
+                  </div>
+                </div>
+
+                <button className="btn btn-secondary text-[11px] self-end" style={{ padding: "4px 9px" }} onClick={() => setEditingStamp(false)}>
+                  Done
+                </button>
               </div>
             )}
 

@@ -477,6 +477,43 @@ export default function WhiteLabelPage() {
                     <div className="text-[12px] font-medium mt-1">{companyName}, all in one branded portal.</div>
                   </div>
                 </div>
+              ) : template === "portfolio" ? (
+                <div style={{ background: "#fafafa", color: "#181818" }}>
+                  <div className="flex items-center gap-1.5 p-3">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="" className="w-5 h-5 rounded-full object-cover" />
+                    ) : (
+                      <span className="w-5 h-5 rounded-full grid place-items-center text-[9px] font-medium" style={{ background: "#181818", color: "#fff" }}>
+                        {companyName.trim().charAt(0).toUpperCase() || "A"}
+                      </span>
+                    )}
+                    <span className="text-[10.5px] font-medium">{companyName}</span>
+                    <div className="flex-1" />
+                    {selectedLinkId && (
+                      <span className="px-2 py-1 rounded-full text-[9px]" style={{ background: "#181818", color: "#fff" }}>Pay now</span>
+                    )}
+                  </div>
+                  <div className="p-3.5 flex flex-col items-center text-center gap-1">
+                    <div className="text-[12px] font-medium">{companyName}, done right.</div>
+                    <div className="text-[9.5px]" style={{ color: "#6b6b76" }}>Real documents, real payments, all in one clean place.</div>
+                  </div>
+                </div>
+              ) : template === "landing" ? (
+                <div className="grid place-items-center p-6" style={{ background: "#0c0c10", color: "#f4f4f7", minHeight: 130 }}>
+                  <div className="flex flex-col items-center gap-1.5 text-center">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="" className="w-7 h-7 rounded-xl object-cover" />
+                    ) : (
+                      <span className="w-7 h-7 rounded-xl grid place-items-center text-[11px] font-medium" style={{ background: tenantAccent, color: "#0c0c10" }}>
+                        {companyName.trim().charAt(0).toUpperCase() || "A"}
+                      </span>
+                    )}
+                    <span className="text-[9.5px]">{companyName}</span>
+                    {selectedLinkId && (
+                      <span className="px-3 py-1.5 rounded-md text-[10px] font-medium mt-1" style={{ background: tenantAccent, color: "#0c0c10" }}>Pay now</span>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <div className="flex bg-[var(--color-bg)]">
                   <div className="flex-1 p-3.5 flex flex-col gap-2.5 items-center text-center">
@@ -499,6 +536,11 @@ export default function WhiteLabelPage() {
             </div>
             <div className="text-[10.5px] text-[var(--color-neutral-500)]">
               {sitePublished ? "This is live — anyone with the link can see it." : "Publish to make this a real, reachable page for your clients."}
+            </div>
+            <div className="text-[10.5px] text-[var(--color-neutral-500)] leading-[1.6]">
+              <strong className="text-[var(--color-text)]">origin.app/site/{siteSlug}</strong> is your free included web address —
+              it works as soon as you publish, no domain purchase needed. Adding your own domain above is optional, for when
+              you want your own brand in the URL bar too.
             </div>
           </div>
         </div>

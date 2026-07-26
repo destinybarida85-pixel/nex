@@ -1,4 +1,16 @@
-export default function Stamp({ label, sub, color }: { label: string; sub: string; color?: string }) {
+export default function Stamp({
+  label,
+  sub,
+  color,
+  imageUrl,
+  size = 108,
+}: {
+  label: string;
+  sub: string;
+  color?: string;
+  imageUrl?: string | null;
+  size?: number;
+}) {
   const c = color || "var(--color-accent)";
   return (
     <div
@@ -8,8 +20,8 @@ export default function Stamp({ label, sub, color }: { label: string; sub: strin
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        width: 108,
-        height: 108,
+        width: size,
+        height: size,
         borderRadius: "50%",
         border: `2.5px solid ${c}`,
         boxShadow: `inset 0 0 0 4px color-mix(in srgb, ${c} 25%, transparent)`,
@@ -18,8 +30,12 @@ export default function Stamp({ label, sub, color }: { label: string; sub: strin
         opacity: 0.9,
         textAlign: "center",
         lineHeight: 1.2,
+        overflow: "hidden",
       }}
     >
+      {imageUrl ? (
+        <img src={imageUrl} alt="" style={{ width: "62%", height: "62%", objectFit: "contain", marginBottom: 2 }} />
+      ) : null}
       <span style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.06em" }}>{label}</span>
       <span style={{ fontSize: 8, letterSpacing: "0.04em", marginTop: 3, opacity: 0.85 }}>{sub}</span>
     </div>

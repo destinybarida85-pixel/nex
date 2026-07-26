@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { IconDocuments } from "@/components/icons";
 import { demoDocument, type SignDocument } from "./document";
+import DocumentPaper from "@/components/document/DocumentPaper";
+import { documentAccents } from "@/components/document/theme";
 
 export default function ReviewStep({
   onContinue,
@@ -11,6 +13,8 @@ export default function ReviewStep({
   onRequireSignatureChange,
   applyStamp = true,
   onApplyStampChange,
+  accentColor,
+  onAccentColorChange,
 }: {
   onContinue: () => void;
   document?: SignDocument;
@@ -18,6 +22,8 @@ export default function ReviewStep({
   onRequireSignatureChange?: (value: boolean) => void;
   applyStamp?: boolean;
   onApplyStampChange?: (value: boolean) => void;
+  accentColor: string;
+  onAccentColorChange: (color: string) => void;
 }) {
   const [reviewed, setReviewed] = useState(false);
 
@@ -33,19 +39,20 @@ export default function ReviewStep({
         </div>
       </div>
 
-      <div
-        className="rounded-xl p-7 flex flex-col gap-4 max-h-[320px] overflow-y-auto overflow-x-hidden min-w-0"
-        style={{ background: "#f4f4f2", boxShadow: "var(--shadow-sm)" }}
-      >
-        <h3 className="text-[17px] m-0" style={{ color: "#181818" }}>{document.title}</h3>
-        <div className="hr" style={{ margin: 0, borderColor: "rgba(0,0,0,0.1)" }} />
-        {document.sections.map((s) => (
-          <div key={s.heading} className="min-w-0">
-            <h5 className="text-[12.5px] mb-1" style={{ color: "#5b4fb8" }}>{s.heading}</h5>
-            <p className="text-[12.5px] leading-[1.65] m-0" style={{ color: "#33333a", overflowWrap: "break-word", wordBreak: "break-word" }}>
-              {s.text}
-            </p>
-          </div>
+      <div className="rounded-xl overflow-hidden max-h-[320px] overflow-y-auto">
+        <DocumentPaper title={document.title} sections={document.sections} accentColor={accentColor} big={false} />
+      </div>
+
+      <div className="flex items-center gap-1.5">
+        <span className="text-[11px] text-[var(--color-neutral-500)]">Document color</span>
+        {documentAccents.map((a) => (
+          <button
+            key={a.id}
+            aria-label={a.label}
+            onClick={() => onAccentColorChange(a.color)}
+            className="w-[18px] h-[18px] rounded-md cursor-pointer"
+            style={{ background: a.color, outline: accentColor === a.color ? "2px solid var(--color-text)" : "none", outlineOffset: 2 }}
+          />
         ))}
       </div>
 

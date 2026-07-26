@@ -8,6 +8,7 @@ import VerifyStep from "@/components/sign/VerifyStep";
 import SignStep from "@/components/sign/SignStep";
 import CompleteStep from "@/components/sign/CompleteStep";
 import { demoDocument, canonicalDocumentText, SIGN_DOCUMENT_STORAGE_KEY, type SignDocument } from "@/components/sign/document";
+import { documentAccents } from "@/components/document/theme";
 
 export type SignatureProof = {
   certificateId: string;
@@ -27,6 +28,7 @@ export default function SignPage() {
   const [signDocument, setSignDocument] = useState<SignDocument>(demoDocument);
   const [requireSignature, setRequireSignature] = useState(true);
   const [applyStamp, setApplyStamp] = useState(true);
+  const [accentColor, setAccentColor] = useState(documentAccents[0].color);
 
   useEffect(() => {
     try {
@@ -82,6 +84,9 @@ export default function SignPage() {
         <IconLogoMark size={26} />
         <span className="font-medium text-[16px] text-[var(--color-text)]">Origin</span>
         <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">e-signature</span>
+        <a href="/signatures" className="text-[12px] ml-3 no-underline" style={{ color: "var(--color-accent-300)" }}>
+          View history →
+        </a>
       </div>
 
       <div className="relative">
@@ -99,6 +104,8 @@ export default function SignPage() {
             onRequireSignatureChange={setRequireSignature}
             applyStamp={applyStamp}
             onApplyStampChange={setApplyStamp}
+            accentColor={accentColor}
+            onAccentColorChange={setAccentColor}
             onContinue={() => (requireSignature ? setStep(2) : skipToComplete())}
           />
         )}
@@ -112,6 +119,7 @@ export default function SignPage() {
             sealing={sealing}
             signed={requireSignature}
             applyStamp={applyStamp}
+            accentColor={accentColor}
           />
         )}
       </div>
