@@ -194,6 +194,16 @@ export function IconChevronUpDown({ size, className }: IconProps) {
     </svg>
   );
 }
+export function IconTemplates({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </svg>
+  );
+}
 export function IconChevronDown({ size, className }: IconProps) {
   return (
     <svg {...base(size)} className={className} strokeWidth={2}>

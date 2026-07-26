@@ -82,7 +82,7 @@ export default function DocumentPaper({
               </span>
               <div className="min-w-0 flex-1">
                 <div style={{ fontSize: 13.5 * f, fontWeight: 700, color: paperInk, marginBottom: 4 * f }}>{s.heading}</div>
-                <p style={{ fontSize: 13 * f, lineHeight: 1.75, color: "#3a3a44", margin: 0, overflowWrap: "break-word", wordBreak: "break-word" }}>{s.text}</p>
+                <p style={{ fontSize: 13 * f, lineHeight: 1.75, color: "#3a3a44", margin: 0, overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" }}>{s.text}</p>
               </div>
             </div>
           ))}
@@ -122,7 +122,7 @@ export default function DocumentPaper({
           {sections.map((s) => (
             <div key={s.heading} className="min-w-0" style={{ borderLeft: `2px solid ${accentColor}`, paddingLeft: 14 * f }}>
               <div style={{ fontSize: 12.5 * f, fontWeight: 600, color: paperInk, marginBottom: 5 * f }}>{s.heading}</div>
-              <p style={{ fontSize: 13 * f, lineHeight: 1.8, color: "#45454e", margin: 0, overflowWrap: "break-word", wordBreak: "break-word" }}>{s.text}</p>
+              <p style={{ fontSize: 13 * f, lineHeight: 1.8, color: "#45454e", margin: 0, overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" }}>{s.text}</p>
             </div>
           ))}
         </div>
@@ -177,7 +177,7 @@ export default function DocumentPaper({
             >
               {s.heading}
             </div>
-            <p style={{ fontSize: 13 * f, lineHeight: 1.75, color: "#3a3a44", margin: 0, overflowWrap: "break-word", wordBreak: "break-word" }}>
+            <p style={{ fontSize: 13 * f, lineHeight: 1.75, color: "#3a3a44", margin: 0, overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
               {s.text}
             </p>
           </div>

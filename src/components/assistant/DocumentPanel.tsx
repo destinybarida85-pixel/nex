@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IconDocuments, IconDownload, IconESign, IconCamera } from "@/components/icons";
+import { IconDocuments, IconDownload, IconESign, IconCamera, IconTemplates } from "@/components/icons";
 import { SIGN_DOCUMENT_STORAGE_KEY } from "@/components/sign/document";
 import DocumentPaper from "@/components/document/DocumentPaper";
 import { documentAccents, documentLayouts, type DocumentLayout } from "@/components/document/theme";
+import TemplatePicker from "@/components/document/TemplatePicker";
+import type { DocumentTemplate } from "@/components/document/templates";
 
 export type DocumentStep = { label: string; done: boolean };
 export type DocumentData = {
@@ -37,6 +39,7 @@ export default function DocumentPanel({
   const [accentColor, setAccentColor] = useState(documentAccents[0].color);
   const [layout, setLayout] = useState<DocumentLayout>("classic");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -71,6 +74,24 @@ export default function DocumentPanel({
     setLogoUrl(await readAsDataUrl(file));
   }
 
+  function applyTemplate(template: DocumentTemplate) {
+    setLayout(template.layout);
+    onUpdate({
+      title: template.title,
+      meta: template.meta,
+      status: "Draft",
+      statusTag: "tag-outline",
+      body: template.sections.map((s) => ({ heading: s.heading, text: s.text })),
+      steps: [
+        { label: "Drafted", done: true },
+        { label: "Sent for signature", done: false },
+        { label: "Signed & sealed", done: false },
+      ],
+    });
+    setEditing(false);
+    setPickerOpen(false);
+  }
+
   function sendForSignature() {
     try {
       sessionStorage.setItem(
@@ -96,10 +117,16 @@ export default function DocumentPanel({
         <IconDocuments size={16} className="text-[var(--color-accent)]" />
         <div className="card-title text-[14px]">Document</div>
         <span className={`tag ${shown.statusTag} ml-auto`}>{editing ? "Editing" : shown.status}</span>
+        <button className="btn btn-secondary text-[12px] no-print" onClick={() => setPickerOpen(true)}>
+          <IconTemplates size={13} />
+          Templates
+        </button>
         <button className="btn btn-icon btn-secondary" aria-label="Print document" onClick={() => window.print()}>
           <IconDownload size={14} />
         </button>
       </div>
+
+      {pickerOpen && <TemplatePicker onPick={applyTemplate} onClose={() => setPickerOpen(false)} />}
 
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 flex flex-col md:flex-row gap-6">
         {editing ? (
