@@ -3,6 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { IconPen } from "@/components/icons";
 
+const penColors = [
+  { id: "black", label: "Black", value: "#181818" },
+  { id: "blue", label: "Blue", value: "#1d4ed8" },
+  { id: "red", label: "Red", value: "#b91c1c" },
+];
+
 export default function SignStep({
   onContinue,
   onBack,
@@ -13,6 +19,7 @@ export default function SignStep({
   const [mode, setMode] = useState<"type" | "draw">("type");
   const [typedName, setTypedName] = useState("Halcyon Ventures");
   const [hasDrawn, setHasDrawn] = useState(false);
+  const [penColor, setPenColor] = useState(penColors[0].value);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawing = useRef(false);
 
@@ -21,11 +28,11 @@ export default function SignStep({
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    ctx.strokeStyle = "#e9e9ed";
-    ctx.lineWidth = 2.4;
+    ctx.strokeStyle = penColor;
+    ctx.lineWidth = 2.2;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-  }, [mode]);
+  }, [mode, penColor]);
 
   function point(e: React.PointerEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current!;
@@ -68,6 +75,22 @@ export default function SignStep({
     }
   }
 
+  const penPicker = (
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] text-[var(--color-neutral-500)]">Pen color</span>
+      {penColors.map((p) => (
+        <button
+          key={p.id}
+          type="button"
+          aria-label={p.label}
+          onClick={() => setPenColor(p.value)}
+          className="w-[18px] h-[18px] rounded-full cursor-pointer"
+          style={{ background: p.value, outline: penColor === p.value ? "2px solid var(--color-text)" : "none", outlineOffset: 2 }}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-3">
@@ -99,10 +122,11 @@ export default function SignStep({
           />
           <div
             className="rounded-xl flex items-center justify-center"
-            style={{ background: "var(--color-surface)", height: 120, boxShadow: "var(--shadow-sm)" }}
+            style={{ background: "#f4f4f2", height: 120, boxShadow: "var(--shadow-sm)" }}
           >
-            <span style={{ fontFamily: "cursive", fontSize: 34, color: "var(--color-text)" }}>{typedName || " "}</span>
+            <span style={{ fontFamily: "cursive", fontSize: 34, color: penColor }}>{typedName || " "}</span>
           </div>
+          {penPicker}
         </div>
       ) : (
         <div className="flex flex-col gap-2">
@@ -111,14 +135,14 @@ export default function SignStep({
             width={400}
             height={140}
             className="rounded-xl w-full cursor-crosshair touch-none"
-            style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-sm)", height: 140 }}
+            style={{ background: "#f4f4f2", boxShadow: "var(--shadow-sm)", height: 140 }}
             onPointerDown={start}
             onPointerMove={move}
             onPointerUp={end}
             onPointerLeave={end}
           />
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-[var(--color-neutral-500)]">Draw your signature above</span>
+            {penPicker}
             <button className="btn btn-ghost text-[12px]" onClick={clearCanvas}>Clear</button>
           </div>
         </div>

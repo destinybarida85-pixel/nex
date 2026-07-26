@@ -118,7 +118,8 @@ export default function CompleteStep({
   }
 
   const stampNode = !stampBlocked ? <Stamp label={stampLabel} sub={stampSub} color={stampColor} imageUrl={stampImageUrl} /> : null;
-  const embeddedStamp = showStampCard && stampPosition !== "signature" ? stampNode : null;
+  const embeddedStampNode = !stampBlocked ? <Stamp label={stampLabel} sub={stampSub} color={stampColor} imageUrl={stampImageUrl} size={72} /> : null;
+  const embeddedStamp = showStampCard && stampPosition !== "signature" ? embeddedStampNode : null;
 
   return (
     <div className="flex flex-col items-center gap-5 text-center">

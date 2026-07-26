@@ -36,10 +36,10 @@ export default function DocumentPaper({
         borderRadius: 10 * f,
       }}
     >
-      <div className="flex items-start justify-between gap-4" style={{ marginBottom: 22 * f }}>
-        <div className="flex items-center gap-2.5 min-w-0">
+      <div className="flex items-start justify-between gap-4 flex-wrap" style={{ marginBottom: 22 * f, rowGap: 12 * f }}>
+        <div className="flex items-center gap-2.5 min-w-0" style={{ flex: "1 1 auto" }}>
           {logoUrl ? (
-            <img src={logoUrl} alt="" style={{ width: 28 * f, height: 28 * f, borderRadius: 6 * f, objectFit: "cover" }} />
+            <img src={logoUrl} alt="" style={{ width: 28 * f, height: 28 * f, borderRadius: 6 * f, objectFit: "cover", flexShrink: 0 }} />
           ) : null}
           <div className="min-w-0">
             <h1 style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 21 * f, lineHeight: 1.25, margin: 0, fontWeight: 500, color: paperInk, overflowWrap: "break-word" }}>
@@ -50,7 +50,7 @@ export default function DocumentPaper({
             )}
           </div>
         </div>
-        {headerRight}
+        {headerRight && <div style={{ flexShrink: 0 }}>{headerRight}</div>}
       </div>
 
       <div style={{ borderTop: `1px solid ${paperRule}`, marginBottom: 22 * f }} />
