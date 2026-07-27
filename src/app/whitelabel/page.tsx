@@ -415,10 +415,15 @@ export default function WhiteLabelPage() {
               <span className="tag tag-outline text-[9.5px] ml-auto">{poweredBy ? "On" : "Off"}</span>
             </label>
             {!live && checked && (
-              <div className="p-2.5 rounded-lg text-[12px]" style={{ background: "color-mix(in srgb, #e0665f 15%, transparent)", color: "#e0665f" }}>
-                {hasSession
-                  ? tenantFetchError || "Couldn't load your account. Try reloading this page."
-                  : "You’re not signed in right now, so nothing here can be saved. Sign in, then reload this page."}
+              <div className="p-2.5 rounded-lg text-[12px] flex flex-col gap-1.5" style={{ background: "color-mix(in srgb, #e0665f 15%, transparent)", color: "#e0665f" }}>
+                <span>
+                  {hasSession
+                    ? tenantFetchError || "Couldn't load your account. Try reloading this page."
+                    : "You’re not signed in right now, so nothing here can be saved. Sign in, then reload this page."}
+                </span>
+                <span className="font-mono opacity-70" style={{ fontSize: 10 }}>
+                  diagnostic — session cookie: {typeof document !== "undefined" && document.cookie.includes("sb-") ? "present" : "missing"} · client session: {String(hasSession)}
+                </span>
               </div>
             )}
             {publishError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{publishError}</div>}
