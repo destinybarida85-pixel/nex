@@ -188,7 +188,11 @@ export default function WhiteLabelPage() {
         setPublishing(false);
         return;
       }
+      const wasPublished = sitePublished;
       setSitePublished(nextPublished);
+      if (nextPublished && !wasPublished) {
+        window.open(`/site/${siteSlug}`, "_blank", "noopener,noreferrer");
+      }
     }
     setPublishedAt(new Date().toLocaleTimeString());
     setPublishing(false);
