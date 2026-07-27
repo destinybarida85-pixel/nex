@@ -10,7 +10,7 @@ export async function GET() {
 
   const { data: documents, error: docsError } = await supabase!
     .from("documents")
-    .select("id, title, status, created_at")
+    .select("id, title, status, created_at, payment_link_id, payment_links(id, title, amount_cents, currency)")
     .eq("tenant_id", tenantId)
     .order("created_at", { ascending: false });
   if (docsError) return NextResponse.json({ error: docsError.message }, { status: 500 });
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   const { error, status, supabase, tenantId, userId } = await requireTenant();
   if (error) return NextResponse.json({ error }, { status });
 
-  const { title, text } = (await request.json()) as { title?: string; text?: string };
+  const { title, text, paymentLinkId } = (await request.json()) as { title?: string; text?: string; paymentLinkId?: string | null };
   if (!title?.trim() || !text?.trim()) {
     return NextResponse.json({ error: "Give the document a title and some content." }, { status: 400 });
   }
@@ -40,8 +40,9 @@ export async function POST(request: Request) {
       title: title.trim(),
       content: { text: text.trim() },
       status: "sent",
+      payment_link_id: paymentLinkId || null,
     })
-    .select("id, title, status, created_at")
+    .select("id, title, status, created_at, payment_link_id, payment_links(id, title, amount_cents, currency)")
     .single();
   if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
 

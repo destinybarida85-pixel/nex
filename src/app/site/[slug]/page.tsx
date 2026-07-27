@@ -3,7 +3,13 @@
 import { use, useEffect, useState } from "react";
 import { IconArrowRight, IconCheckCircle, IconShieldCheck, IconSparkle, IconDocuments } from "@/components/icons";
 
-type SiteDoc = { id: string; title: string; text: string; status: string };
+type SiteDoc = {
+  id: string;
+  title: string;
+  text: string;
+  status: string;
+  paymentLink: { title: string; amountCents: number; currency: string; url: string } | null;
+};
 type Site = {
   name: string;
   brandColor: string;
@@ -144,12 +150,31 @@ function DocumentsList({ site }: { site: Site }) {
           >
             <span style={{ color: site.brandColor }} className="flex-none"><IconDocuments size={15} /></span>
             <span className="text-[14px] font-medium flex-1">{d.title}</span>
+            {d.paymentLink && (
+              <span className="text-[11.5px] font-medium" style={{ color: site.brandColor }}>
+                {(d.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: d.paymentLink.currency.toUpperCase() })}
+              </span>
+            )}
             <span className="text-[10.5px] uppercase tracking-[.06em]" style={{ color: "#6b6b76" }}>{d.status}</span>
           </button>
           {openId === d.id && (
-            <p className="px-4 sm:px-5 pb-5 text-[13.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#c4c4cc" }}>
-              {d.text}
-            </p>
+            <div className="px-4 sm:px-5 pb-5 flex flex-col gap-4">
+              <p className="text-[13.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#c4c4cc" }}>
+                {d.text}
+              </p>
+              {d.paymentLink && (
+                <a
+                  href={d.paymentLink.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 self-start text-[13px] font-medium px-4 py-2.5 rounded-lg no-underline"
+                  style={{ background: site.brandColor, color: "#0c0c10" }}
+                >
+                  Pay {(d.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: d.paymentLink.currency.toUpperCase() })} for {d.paymentLink.title}
+                  <IconArrowRight size={14} />
+                </a>
+              )}
+            </div>
           )}
         </div>
       ))}
@@ -412,9 +437,28 @@ export function PortfolioSite({ site }: { site: Site }) {
         )}
         {site.documents.map((d) => (
           <div key={d.id} className="rounded-2xl p-7" style={{ background: "#fff", border: "1px solid #e4e4e0" }}>
-            <div className="text-[10.5px] uppercase tracking-[.08em]" style={{ color: "#9a9aa4" }}>Document</div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="text-[10.5px] uppercase tracking-[.08em]" style={{ color: "#9a9aa4" }}>Document</div>
+              {d.paymentLink && (
+                <div className="text-[13px] font-semibold" style={{ color: site.brandColor }}>
+                  {(d.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: d.paymentLink.currency.toUpperCase() })}
+                </div>
+              )}
+            </div>
             <h2 className="text-[21px] font-semibold mt-1 mb-3 tracking-[-0.01em]" style={{ color: "#141414" }}>{d.title}</h2>
             <p className="text-[13.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#45454e" }}>{d.text}</p>
+            {d.paymentLink && (
+              <a
+                href={d.paymentLink.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 mt-4 text-[13px] font-medium px-5 py-2.5 rounded-full no-underline"
+                style={{ background: "#141414", color: "#fff" }}
+              >
+                Pay for {d.paymentLink.title}
+                <IconArrowRight size={14} />
+              </a>
+            )}
           </div>
         ))}
         {site.paymentLink && (

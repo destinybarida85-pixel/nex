@@ -8,7 +8,7 @@ import { isBackendConfigured } from "@/lib/backendStatus";
 const baseSwatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
 
 type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url: string };
-type TenantDocument = { id: string; title: string; status: string };
+type TenantDocument = { id: string; title: string; status: string; payment_link_id: string | null };
 type Template = "clarity" | "ledger" | "atrium" | "portfolio" | "landing";
 
 const templates: { id: Template; name: string; why: string }[] = [
@@ -57,6 +57,7 @@ export default function WhiteLabelPage() {
   const [docFormOpen, setDocFormOpen] = useState(false);
   const [docTitle, setDocTitle] = useState("");
   const [docText, setDocText] = useState("");
+  const [docPaymentLinkId, setDocPaymentLinkId] = useState("");
   const [docSaving, setDocSaving] = useState(false);
   const [docError, setDocError] = useState("");
   const [live, setLive] = useState(false);
@@ -126,7 +127,7 @@ export default function WhiteLabelPage() {
     const res = await fetch("/api/documents", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: docTitle.trim(), text: docText.trim() }),
+      body: JSON.stringify({ title: docTitle.trim(), text: docText.trim(), paymentLinkId: docPaymentLinkId || null }),
     });
     const data = await res.json();
     if (!res.ok || data.error) {
@@ -139,7 +140,21 @@ export default function WhiteLabelPage() {
     setDocFormOpen(false);
     setDocTitle("");
     setDocText("");
+    setDocPaymentLinkId("");
     setDocSaving(false);
+  }
+
+  async function updateDocPaymentLink(docId: string, paymentLinkId: string) {
+    setDocuments((prev) => prev.map((d) => (d.id === docId ? { ...d, payment_link_id: paymentLinkId || null } : d)));
+    const res = await fetch(`/api/documents/${docId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentLinkId: paymentLinkId || null }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setDocError(data.error || "Couldn't attach that payment link. Try again.");
+    }
   }
 
   function toggleDoc(id: string) {
@@ -371,12 +386,31 @@ export default function WhiteLabelPage() {
             </div>
             <div className="field">
               <label>Documents to feature (their work, shown to clients)</label>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-2">
                 {documents.map((d) => (
-                  <label key={d.id} className="flex items-center gap-2 text-[12.5px] py-0.5">
-                    <input type="checkbox" checked={selectedDocIds.includes(d.id)} onChange={() => toggleDoc(d.id)} />
-                    {d.title}
-                  </label>
+                  <div key={d.id} className="flex items-center gap-2 text-[12.5px] py-0.5">
+                    <label className="flex items-center gap-2 flex-1 min-w-0">
+                      <input type="checkbox" checked={selectedDocIds.includes(d.id)} onChange={() => toggleDoc(d.id)} />
+                      <span className="truncate">{d.title}</span>
+                    </label>
+                    {paymentLinks.length > 0 ? (
+                      <select
+                        className="input text-[11px] flex-none"
+                        style={{ width: 150 }}
+                        value={d.payment_link_id || ""}
+                        onChange={(e) => updateDocPaymentLink(d.id, e.target.value)}
+                      >
+                        <option value="">No payment link</option>
+                        {paymentLinks.map((l) => (
+                          <option key={l.id} value={l.id}>
+                            {l.title} · {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="text-[10.5px] flex-none" style={{ color: "var(--color-neutral-500)" }}>No payment links yet</span>
+                    )}
+                  </div>
                 ))}
                 {documents.length === 0 && <div className="text-[11.5px] text-[var(--color-neutral-500)]">No documents yet.</div>}
               </div>
@@ -390,6 +424,16 @@ export default function WhiteLabelPage() {
                     value={docText}
                     onChange={(e) => setDocText(e.target.value)}
                   />
+                  {paymentLinks.length > 0 && (
+                    <select className="input text-[12.5px]" value={docPaymentLinkId} onChange={(e) => setDocPaymentLinkId(e.target.value)}>
+                      <option value="">No payment link attached</option>
+                      {paymentLinks.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          Attach: {l.title} · {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                   {docError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{docError}</div>}
                   <div className="flex gap-1.5">
                     <button className="btn btn-primary text-[12px] flex-none" onClick={createDocument} disabled={docSaving}>

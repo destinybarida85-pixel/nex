@@ -22,10 +22,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   if (!tenant || !tenant.site_published) return NextResponse.json({ error: "Site not found." }, { status: 404 });
 
   const documentIds: string[] = tenant.site_document_ids || [];
+  type DocRow = {
+    id: string;
+    title: string;
+    content: unknown;
+    status: string;
+    payment_links: { title: string; amount_cents: number; currency: string; url: string } | null;
+  };
   const [{ data: documents }, { data: paymentLink }] = await Promise.all([
     documentIds.length > 0
-      ? supabase.from("documents").select("id, title, content, status").in("id", documentIds)
-      : Promise.resolve({ data: [] as { id: string; title: string; content: unknown; status: string }[] }),
+      ? supabase
+          .from("documents")
+          .select("id, title, content, status, payment_links(title, amount_cents, currency, url)")
+          .in("id", documentIds)
+      : Promise.resolve({ data: [] as DocRow[] }),
     tenant.site_payment_link_id
       ? supabase.from("payment_links").select("title, amount_cents, currency, url").eq("id", tenant.site_payment_link_id).maybeSingle()
       : Promise.resolve({ data: null }),
@@ -40,7 +50,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
       headerImageUrl: tenant.header_image_url,
       template: tenant.site_template,
       poweredByBadge: tenant.powered_by_badge,
-      documents: (documents || []).map((d) => ({ id: d.id, title: d.title, text: (d.content as { text?: string })?.text ?? "", status: d.status })),
+      documents: ((documents as unknown as DocRow[]) || []).map((d) => ({
+        id: d.id,
+        title: d.title,
+        text: (d.content as { text?: string })?.text ?? "",
+        status: d.status,
+        paymentLink: d.payment_links
+          ? { title: d.payment_links.title, amountCents: d.payment_links.amount_cents, currency: d.payment_links.currency, url: d.payment_links.url }
+          : null,
+      })),
       paymentLink: paymentLink ? { title: paymentLink.title, amountCents: paymentLink.amount_cents, currency: paymentLink.currency, url: paymentLink.url } : null,
     },
   });
