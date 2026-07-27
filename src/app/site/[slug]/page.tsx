@@ -487,40 +487,79 @@ export function LandingSite({ site }: { site: Site }) {
   const priceLabel = site.paymentLink
     ? (site.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: site.paymentLink.currency.toUpperCase() })
     : "";
+  const initial = site.name.trim().charAt(0).toUpperCase() || "A";
   return (
-    <div className="min-h-screen grid place-items-center px-6 relative overflow-hidden" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
-      <div className="absolute w-[440px] max-w-none opacity-[0.07] pointer-events-none">
-        <LandingMark color={site.brandColor} />
-      </div>
-      <div className="relative w-full max-w-[460px] flex flex-col items-center text-center gap-6 py-20">
+    <div className="min-h-screen flex flex-col" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
+      <header className="flex items-center gap-2.5 px-6 sm:px-10 py-7 max-w-[1080px] mx-auto w-full">
         {site.logoUrl ? (
-          <img src={site.logoUrl} alt={site.name} className="w-14 h-14 rounded-2xl object-cover" />
+          <img src={site.logoUrl} alt={site.name} className="w-8 h-8 rounded-[9px] object-cover" />
         ) : (
-          <span className="w-14 h-14 rounded-2xl grid place-items-center text-[22px] font-medium" style={{ background: site.brandColor, color: "#0c0c10" }}>
-            {site.name.trim().charAt(0).toUpperCase() || "A"}
+          <span className="w-8 h-8 rounded-[9px] grid place-items-center font-medium text-[15px]" style={{ background: `color-mix(in srgb, ${site.brandColor} 22%, transparent)`, color: site.brandColor }}>
+            {initial}
           </span>
         )}
-        <div className="text-[13px] tracking-[.1em] uppercase font-medium" style={{ color: "#9a9aa4" }}>{site.name}</div>
-        {site.paymentLink ? (
-          <>
-            <h1 className="text-[30px] sm:text-[36px] font-semibold m-0 tracking-[-0.02em] leading-[1.15]">{site.paymentLink.title}</h1>
-            <div className="text-[56px] sm:text-[64px] font-semibold leading-none tracking-[-0.02em]" style={{ color: site.brandColor }}>{priceLabel}</div>
-            <a
-              href={site.paymentLink.url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full px-6 py-4 rounded-full no-underline text-[15px] font-medium mt-2"
-              style={{ background: site.brandColor, color: "#0c0c10" }}
+        <span className="text-[15px] font-medium">{site.name}</span>
+      </header>
+
+      <section className="flex-1 max-w-[1080px] mx-auto px-6 sm:px-10 pt-6 sm:pt-14 pb-16 w-full grid grid-cols-1 lg:grid-cols-[1.1fr_0.85fr] gap-12 items-start">
+        <div className="flex flex-col gap-6">
+          <span className="text-[11px] tracking-[.1em] uppercase font-medium" style={{ color: site.brandColor }}>Secure payment</span>
+          <h1 className="text-[36px] sm:text-[52px] leading-[1.05] font-semibold m-0 tracking-[-0.03em]">
+            {site.paymentLink ? site.paymentLink.title : `Pay ${site.name}`}
+          </h1>
+          <p className="text-[15px] leading-[1.7] max-w-[440px]" style={{ color: "#a3a3ad" }}>
+            A one-time secure payment to {site.name}, processed by Stripe. No account or sign-up needed — just pay and you&rsquo;re done.
+          </p>
+
+          {site.documents.length > 0 && (
+            <div className="flex flex-col gap-2.5 mt-2">
+              <span className="text-[11px] tracking-[.1em] uppercase font-medium" style={{ color: "#6b6b76" }}>Included</span>
+              {site.documents.map((d) => (
+                <div key={d.id} className="flex items-center gap-2.5 text-[13.5px]" style={{ color: "#c4c4cc" }}>
+                  <span className="flex-none" style={{ color: site.brandColor }}><IconCheckCircle size={15} /></span>
+                  {d.title}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="hidden lg:block w-[190px] mt-4 opacity-[0.28]"><LandingMark color={site.brandColor} /></div>
+        </div>
+
+        <div className="lg:sticky lg:top-14">
+          {site.paymentLink ? (
+            <div
+              className="rounded-2xl p-7 sm:p-8 flex flex-col gap-4"
+              style={{ background: "#141418", border: "1px solid #232329", boxShadow: `0 30px 60px -30px color-mix(in srgb, ${site.brandColor} 30%, transparent)` }}
             >
-              Pay {priceLabel} now
-              <IconArrowRight size={16} />
-            </a>
-            <div className="text-[11px]" style={{ color: "#6b6b76" }}>Secured by Stripe · one click, no account needed</div>
-          </>
-        ) : (
-          <div className="text-[13px]" style={{ color: "#9a9aa4" }}>No payment set up yet.</div>
-        )}
-      </div>
+              <div className="text-[11px] tracking-[.08em] uppercase" style={{ color: "#9a9aa4" }}>{site.paymentLink.title}</div>
+              <div className="text-[44px] sm:text-[52px] font-semibold leading-none tracking-[-0.02em]" style={{ color: site.brandColor }}>{priceLabel}</div>
+              <a
+                href={site.paymentLink.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 w-full px-6 py-4 rounded-full no-underline text-[15px] font-medium mt-2"
+                style={{ background: site.brandColor, color: "#0c0c10" }}
+              >
+                Pay {priceLabel} now
+                <IconArrowRight size={16} />
+              </a>
+              <div className="text-[11px] text-center" style={{ color: "#6b6b76" }}>Secured by Stripe · one click, no account needed</div>
+            </div>
+          ) : (
+            <div className="rounded-2xl p-7 sm:p-8 text-center flex flex-col gap-1.5" style={{ background: "#141418", border: "1px dashed #232329" }}>
+              <div className="text-[13.5px] font-medium">No payment set up yet</div>
+              <div className="text-[12.5px]" style={{ color: "#9a9aa4" }}>{site.name} hasn&rsquo;t attached a payment link to this page.</div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <footer className="max-w-[1080px] mx-auto px-6 sm:px-10 py-8 border-t flex items-center gap-3 w-full" style={{ borderColor: "#1c1c22" }}>
+        <span className="text-[12px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}</span>
+        <div className="flex-1" />
+        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Origin</span></span>}
+      </footer>
     </div>
   );
 }
