@@ -60,6 +60,7 @@ export default function WhiteLabelPage() {
   const [docSaving, setDocSaving] = useState(false);
   const [docError, setDocError] = useState("");
   const [live, setLive] = useState(false);
+  const [tenantFetchError, setTenantFetchError] = useState("");
   const [publishing, setPublishing] = useState(false);
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
   const [publishError, setPublishError] = useState("");
@@ -91,9 +92,11 @@ export default function WhiteLabelPage() {
           if (data.tenant.custom_domain) setCustomDomain(data.tenant.custom_domain);
           if (Array.isArray(data.tenant.site_document_ids)) setSelectedDocIds(data.tenant.site_document_ids);
           if (data.tenant.site_payment_link_id) setSelectedLinkId(data.tenant.site_payment_link_id);
+        } else {
+          setTenantFetchError(data.error || "Couldn't load your account.");
         }
       })
-      .catch(() => {});
+      .catch(() => setTenantFetchError("Couldn't reach the server. Check your connection and reload."));
     fetch("/api/stripe/payment-links")
       .then((r) => r.json())
       .then((data) => {
@@ -413,7 +416,9 @@ export default function WhiteLabelPage() {
             </label>
             {!live && checked && (
               <div className="p-2.5 rounded-lg text-[12px]" style={{ background: "color-mix(in srgb, #e0665f 15%, transparent)", color: "#e0665f" }}>
-                You&rsquo;re not signed in right now, so nothing here can be saved. Sign in, then reload this page.
+                {hasSession
+                  ? tenantFetchError || "Couldn't load your account. Try reloading this page."
+                  : "You’re not signed in right now, so nothing here can be saved. Sign in, then reload this page."}
               </div>
             )}
             {publishError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{publishError}</div>}
