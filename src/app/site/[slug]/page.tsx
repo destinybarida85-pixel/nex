@@ -21,6 +21,24 @@ const features = [
   { icon: IconCheckCircle, title: "Built for your brand", copy: "Your clients only ever see your name, your colors, your domain." },
 ];
 
+// A simple, original one-stroke illustration (no stock photography or real
+// likeness involved) — a figure reviewing and signing a document, echoing the
+// hand-drawn line-art hero style requested, in the tenant's own brand color.
+function HeroIllustration({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 260 260" fill="none" className="w-full h-auto">
+      <circle cx="130" cy="130" r="128" fill={color} opacity="0.12" />
+      <g stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="130" cy="76" r="26" />
+        <path d="M78 210c4-38 26-60 52-60s48 22 52 60" />
+        <rect x="150" y="140" width="60" height="76" rx="6" />
+        <path d="M164 158h32M164 174h32M164 190h20" />
+        <path d="M212 150l14-10M226 140l-6 14 14-2z" />
+      </g>
+    </svg>
+  );
+}
+
 function CheckoutCard({ site }: { site: Site }) {
   const { paymentLink: link, brandColor: color } = site;
   const priceLabel = link ? (link.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: link.currency.toUpperCase() }) : "";
@@ -220,58 +238,87 @@ function AtriumSite({ site }: { site: Site }) {
   );
 }
 
-function PortfolioSite({ site }: { site: Site }) {
+export function PortfolioSite({ site }: { site: Site }) {
   const initial = site.name.trim().charAt(0).toUpperCase() || "A";
   return (
-    <div className="min-h-screen" style={{ background: "#fafafa", color: "#181818" }}>
-      <header className="flex items-center gap-2.5 px-6 py-5 max-w-[860px] mx-auto">
-        {site.logoUrl ? (
-          <img src={site.logoUrl} alt={site.name} className="w-8 h-8 rounded-full object-cover" />
-        ) : (
-          <span className="w-8 h-8 rounded-full grid place-items-center font-medium text-[14px]" style={{ background: "#181818", color: "#fff" }}>
-            {initial}
-          </span>
-        )}
-        <span className="text-[14px] font-medium">{site.name}</span>
+    <div className="min-h-screen" style={{ background: "#f4f4f2", color: "#141414" }}>
+      <header className="flex items-center gap-8 px-6 sm:px-10 py-6 max-w-[1120px] mx-auto">
+        <div className="flex items-center gap-2.5">
+          {site.logoUrl ? (
+            <img src={site.logoUrl} alt={site.name} className="w-8 h-8 rounded-full object-cover" />
+          ) : (
+            <span className="w-8 h-8 rounded-full grid place-items-center font-medium text-[14px]" style={{ background: "#141414", color: "#fff" }}>
+              {initial}
+            </span>
+          )}
+          <span className="text-[14.5px] font-semibold tracking-[-0.01em]">{site.name}</span>
+        </div>
+        <nav className="hidden sm:flex items-center gap-6 text-[13px]" style={{ color: "#6b6b76" }}>
+          <span>Work</span>
+          <span>Documents</span>
+          <span>Contact</span>
+        </nav>
         <div className="flex-1" />
         {site.paymentLink && (
-          <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="text-[13px] px-4 py-2 rounded-full no-underline font-medium" style={{ background: "#181818", color: "#fff" }}>
-            Pay now
+          <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="text-[13px] px-4 py-2 rounded-full no-underline font-medium border" style={{ borderColor: "#141414", color: "#141414" }}>
+            Pay now ↗
           </a>
         )}
       </header>
 
-      <section className="max-w-[860px] mx-auto px-6 pt-10 pb-16 text-center flex flex-col items-center gap-4">
-        <h1 className="text-[32px] sm:text-[42px] leading-[1.15] font-medium m-0 tracking-[-0.01em]">
-          {site.name}, done right.
-        </h1>
-        <p className="text-[15px] leading-[1.6] max-w-[440px]" style={{ color: "#6b6b76" }}>
-          Real documents, real payments, all handled in one clean place.
-        </p>
+      <section className="max-w-[1120px] mx-auto px-6 sm:px-10 pt-8 sm:pt-16 pb-20 grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-10 items-center">
+        <div className="flex flex-col gap-5">
+          <span className="text-[11px] tracking-[.1em] uppercase font-medium" style={{ color: site.brandColor }}>Client portal</span>
+          <h1 className="text-[52px] sm:text-[72px] leading-[0.95] font-bold m-0 tracking-[-0.03em]">
+            Hello.
+          </h1>
+          <p className="text-[16px] leading-[1.6] max-w-[420px]" style={{ color: "#5a5a63" }}>
+            It&rsquo;s {site.name} — your documents, your agreements, and your payments, all handled here in one real,
+            branded place.
+          </p>
+          {site.paymentLink && (
+            <a
+              href={site.paymentLink.url}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 self-start text-[14px] font-medium px-6 py-3.5 rounded-full no-underline mt-2"
+              style={{ background: "#141414", color: "#fff" }}
+            >
+              Pay {(site.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: site.paymentLink.currency.toUpperCase() })} now
+              <IconArrowRight size={15} />
+            </a>
+          )}
+        </div>
+        <div className="max-w-[300px] mx-auto md:max-w-none">
+          <HeroIllustration color={site.brandColor} />
+        </div>
       </section>
 
-      <section className="max-w-[720px] mx-auto px-6 pb-16 flex flex-col gap-4">
+      <section className="max-w-[900px] mx-auto px-6 sm:px-10 pb-20 flex flex-col gap-4">
+        {site.documents.length > 0 && (
+          <div className="text-[11px] tracking-[.1em] uppercase font-medium mb-1" style={{ color: "#9a9aa4" }}>Documents</div>
+        )}
         {site.documents.map((d) => (
-          <div key={d.id} className="rounded-2xl p-6" style={{ background: "#fff", border: "1px solid #e6e6e6" }}>
+          <div key={d.id} className="rounded-2xl p-7" style={{ background: "#fff", border: "1px solid #e4e4e0" }}>
             <div className="text-[10.5px] uppercase tracking-[.08em]" style={{ color: "#9a9aa4" }}>Document</div>
-            <h2 className="text-[19px] font-medium mt-1 mb-3" style={{ color: "#181818" }}>{d.title}</h2>
-            <p className="text-[13.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#3a3a42" }}>{d.text}</p>
+            <h2 className="text-[21px] font-semibold mt-1 mb-3 tracking-[-0.01em]" style={{ color: "#141414" }}>{d.title}</h2>
+            <p className="text-[13.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#45454e" }}>{d.text}</p>
           </div>
         ))}
         {site.paymentLink && (
-          <div className="rounded-2xl p-8 flex flex-col items-center text-center gap-3" style={{ background: "#181818", color: "#fff" }}>
+          <div className="rounded-2xl p-9 flex flex-col items-center text-center gap-3 mt-2" style={{ background: "#141414", color: "#fff" }}>
             <div className="text-[11px] uppercase tracking-[.08em]" style={{ color: "#9a9aa4" }}>{site.paymentLink.title}</div>
-            <div className="text-[30px] font-medium">
+            <div className="text-[36px] font-bold">
               {(site.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: site.paymentLink.currency.toUpperCase() })}
             </div>
-            <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="px-5 py-2.5 rounded-full no-underline text-[13.5px] font-medium" style={{ background: "#fff", color: "#181818" }}>
+            <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="px-6 py-3 rounded-full no-underline text-[13.5px] font-medium" style={{ background: "#fff", color: "#141414" }}>
               Pay now
             </a>
           </div>
         )}
       </section>
 
-      <footer className="max-w-[860px] mx-auto px-6 py-8 border-t flex items-center gap-3" style={{ borderColor: "#e6e6e6" }}>
+      <footer className="max-w-[1120px] mx-auto px-6 sm:px-10 py-8 border-t flex items-center gap-3" style={{ borderColor: "#e4e4e0" }}>
         <span className="text-[11.5px]" style={{ color: "#9a9aa4" }}>© {new Date().getFullYear()} {site.name}</span>
         <div className="flex-1" />
         {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#9a9aa4" }}>Powered by Origin</span>}
