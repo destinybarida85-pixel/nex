@@ -1,21 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconInvoices, IconMail, IconDownload } from "@/components/icons";
 import InvoiceTemplate from "@/components/templates/InvoiceTemplate";
 import EmailTemplate from "@/components/templates/EmailTemplate";
+import { useHasSession } from "@/lib/useSession";
+import { isBackendConfigured } from "@/lib/backendStatus";
 
-const tenants = [
-  { name: "Atlas Chambers", color: "#63c3b2" },
-  { name: "Brightfield Academy", color: "#d9a05b" },
-  { name: "Cascade Relief", color: "#7fa3e8" },
-  { name: "Meridian Studio", color: "#9184d9" },
-];
+const sampleSwatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#9184d9"];
 
 export default function TemplatesPage() {
+  const { hasSession, checked } = useHasSession();
   const [mode, setMode] = useState<"invoice" | "email">("invoice");
-  const [tenant, setTenant] = useState(tenants[0]);
+  const [live, setLive] = useState(false);
+  const [tenantName, setTenantName] = useState("Atlas Chambers");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [accent, setAccent] = useState(sampleSwatches[0]);
   const [poweredBy, setPoweredBy] = useState(false);
+
+  useEffect(() => {
+    if (!checked || !isBackendConfigured || !hasSession) return;
+    fetch("/api/tenant")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.tenant) {
+          setLive(true);
+          if (data.tenant.name) setTenantName(data.tenant.name);
+          if (data.tenant.brand_color) setAccent(data.tenant.brand_color);
+          if (data.tenant.logo_url) setLogoUrl(data.tenant.logo_url);
+          setPoweredBy(!!data.tenant.powered_by_badge);
+        }
+      })
+      .catch(() => {});
+  }, [checked, hasSession]);
+
+  const swatches = live && !sampleSwatches.includes(accent) ? [accent, ...sampleSwatches] : sampleSwatches;
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -25,6 +44,13 @@ export default function TemplatesPage() {
           <div className="text-muted text-xs mt-0.5">
             Every client-facing document and email carries the tenant&rsquo;s logo, color and domain. Origin stays invisible.
           </div>
+          {!live && (
+            <div className="text-[11.5px] mt-1.5" style={{ color: "var(--color-neutral-500)" }}>
+              {checked && !hasSession
+                ? "Showing a sample business — sign in to preview these with your own name, logo and color."
+                : "Loading your branding…"}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-4 flex-wrap">
@@ -42,23 +68,23 @@ export default function TemplatesPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11.5px] text-[var(--color-neutral-500)]">Tenant</span>
+            <span className="text-[11.5px] text-[var(--color-neutral-500)]">Accent color</span>
             <div className="flex gap-1.5">
-              {tenants.map((t) => (
+              {swatches.map((color) => (
                 <button
-                  key={t.name}
-                  aria-label={t.name}
-                  onClick={() => setTenant(t)}
+                  key={color}
+                  aria-label={`Use ${color}`}
+                  onClick={() => setAccent(color)}
                   className="w-6 h-6 rounded-lg cursor-pointer"
                   style={{
-                    background: t.color,
-                    outline: tenant.name === t.name ? "2px solid var(--color-text)" : "none",
+                    background: color,
+                    outline: accent === color ? "2px solid var(--color-text)" : "none",
                     outlineOffset: 2,
                   }}
                 />
               ))}
             </div>
-            <span className="text-[12px] text-[var(--color-neutral-400)]">{tenant.name}</span>
+            <span className="text-[12px] text-[var(--color-neutral-400)]">{tenantName}</span>
           </div>
 
           <label className="radio gap-2 text-[12.5px] ml-2">
@@ -79,9 +105,9 @@ export default function TemplatesPage() {
           style={{ background: "var(--color-neutral-900)", boxShadow: "var(--shadow-sm)" }}
         >
           {mode === "invoice" ? (
-            <InvoiceTemplate tenantName={tenant.name} tenantAccent={tenant.color} poweredBy={poweredBy} />
+            <InvoiceTemplate tenantName={tenantName} tenantAccent={accent} poweredBy={poweredBy} logoUrl={logoUrl} />
           ) : (
-            <EmailTemplate tenantName={tenant.name} tenantAccent={tenant.color} poweredBy={poweredBy} />
+            <EmailTemplate tenantName={tenantName} tenantAccent={accent} poweredBy={poweredBy} logoUrl={logoUrl} />
           )}
         </div>
       </div>

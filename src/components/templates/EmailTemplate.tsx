@@ -1,4 +1,14 @@
-export default function EmailTemplate({ tenantName, tenantAccent, poweredBy }: { tenantName: string; tenantAccent: string; poweredBy: boolean }) {
+export default function EmailTemplate({
+  tenantName,
+  tenantAccent,
+  poweredBy,
+  logoUrl,
+}: {
+  tenantName: string;
+  tenantAccent: string;
+  poweredBy: boolean;
+  logoUrl?: string | null;
+}) {
   return (
     <div
       className="rounded-xl overflow-hidden mx-auto border border-[var(--color-divider)] flex-none"
@@ -21,12 +31,16 @@ export default function EmailTemplate({ tenantName, tenantAccent, poweredBy }: {
 
       <div className="p-10 flex flex-col gap-6" style={{ background: "#f5f5f7", color: "#1a1a1f" }}>
         <div className="flex items-center gap-2.5">
-          <span
-            className="w-8 h-8 rounded-[8px] grid place-items-center font-semibold text-[13px]"
-            style={{ background: tenantAccent, color: "#fff" }}
-          >
-            {tenantName.charAt(0)}
-          </span>
+          {logoUrl ? (
+            <img src={logoUrl} alt="" className="w-8 h-8 rounded-[8px] object-cover" />
+          ) : (
+            <span
+              className="w-8 h-8 rounded-[8px] grid place-items-center font-semibold text-[13px]"
+              style={{ background: tenantAccent, color: "#fff" }}
+            >
+              {tenantName.charAt(0)}
+            </span>
+          )}
           <span className="font-medium text-[15px]">{tenantName}</span>
         </div>
 

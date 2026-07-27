@@ -4,7 +4,17 @@ const lineItems = [
   { desc: "Rush delivery fee", qty: 1, rate: "$400.00", amount: "$400.00" },
 ];
 
-export default function InvoiceTemplate({ tenantName, tenantAccent, poweredBy }: { tenantName: string; tenantAccent: string; poweredBy: boolean }) {
+export default function InvoiceTemplate({
+  tenantName,
+  tenantAccent,
+  poweredBy,
+  logoUrl,
+}: {
+  tenantName: string;
+  tenantAccent: string;
+  poweredBy: boolean;
+  logoUrl?: string | null;
+}) {
   return (
     <div
       className="rounded-xl overflow-hidden mx-auto flex-none"
@@ -13,12 +23,16 @@ export default function InvoiceTemplate({ tenantName, tenantAccent, poweredBy }:
       <div className="p-10 flex flex-col gap-8">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <span
-              className="w-9 h-9 rounded-[9px] grid place-items-center font-semibold text-[15px]"
-              style={{ background: tenantAccent, color: "#fff" }}
-            >
-              {tenantName.charAt(0)}
-            </span>
+            {logoUrl ? (
+              <img src={logoUrl} alt="" className="w-9 h-9 rounded-[9px] object-cover" />
+            ) : (
+              <span
+                className="w-9 h-9 rounded-[9px] grid place-items-center font-semibold text-[15px]"
+                style={{ background: tenantAccent, color: "#fff" }}
+              >
+                {tenantName.charAt(0)}
+              </span>
+            )}
             <span className="font-medium text-[16px]">{tenantName}</span>
           </div>
           <div className="text-right">
