@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export default function EmailTemplate({
   tenantName,
   tenantAccent,
@@ -9,6 +13,11 @@ export default function EmailTemplate({
   poweredBy: boolean;
   logoUrl?: string | null;
 }) {
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
+  const signUrl = origin ? `${origin}/sign` : "/sign";
+  const signUrlLabel = signUrl.replace(/^https?:\/\//, "");
+
   return (
     <div
       className="rounded-xl overflow-hidden mx-auto border border-[var(--color-divider)] flex-none"
@@ -53,7 +62,7 @@ export default function EmailTemplate({
         </div>
 
         <a
-          href="/sign"
+          href={signUrl}
           className="self-start px-6 py-3 rounded-lg font-medium text-[13.5px] no-underline"
           style={{ background: tenantAccent, color: "#fff" }}
         >
@@ -61,7 +70,10 @@ export default function EmailTemplate({
         </a>
 
         <p className="m-0 text-[12px]" style={{ color: "#6b6b76" }}>
-          Or copy this link into your browser: <span style={{ color: tenantAccent }}>app.origin.io/sign/8f21-40a9</span>
+          Or copy this link into your browser:{" "}
+          <a href={signUrl} style={{ color: tenantAccent }}>
+            {signUrlLabel}
+          </a>
         </p>
 
         <div className="pt-5 flex flex-col gap-1 text-[11px]" style={{ borderTop: "1px solid #e4e4ea", color: "#9a9aa6" }}>
