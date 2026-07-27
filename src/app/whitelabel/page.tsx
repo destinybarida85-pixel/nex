@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { IconGlobe, IconCamera, IconCheckCircle } from "@/components/icons";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import { ClaritySite, LedgerSite, AtriumSite, PortfolioSite, LandingSite, type Site } from "../site/[slug]/page";
 
 const baseSwatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
 
@@ -216,6 +217,34 @@ export default function WhiteLabelPage() {
   }
 
   const selectedLink = paymentLinks.find((l) => l.id === selectedLinkId);
+
+  // The real Site shape, built from current (possibly unsaved) form state, so the
+  // preview panel below renders the exact same template components the public site
+  // uses — never a hand-copied mockup that can drift out of sync with them.
+  const previewSite: Site = {
+    name: companyName || "Your Business",
+    brandColor: tenantAccent,
+    logoUrl,
+    headerImageUrl,
+    template,
+    poweredByBadge: poweredBy,
+    documents: selectedDocIds
+      .map((id) => documents.find((d) => d.id === id))
+      .filter((d): d is TenantDocument => !!d)
+      .map((d) => {
+        const link = paymentLinks.find((l) => l.id === d.payment_link_id);
+        return {
+          id: d.id,
+          title: d.title,
+          text: "",
+          status: d.status,
+          paymentLink: link ? { title: link.title, amountCents: link.amount_cents, currency: link.currency, url: link.url } : null,
+        };
+      }),
+    paymentLink: selectedLink ? { title: selectedLink.title, amountCents: selectedLink.amount_cents, currency: selectedLink.currency, url: selectedLink.url } : null,
+  };
+  const PreviewSiteComponent =
+    template === "ledger" ? LedgerSite : template === "atrium" ? AtriumSite : template === "portfolio" ? PortfolioSite : template === "landing" ? LandingSite : ClaritySite;
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -515,102 +544,11 @@ export default function WhiteLabelPage() {
                 <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
                 <span className="ml-2.5 font-mono text-[10.5px] text-[var(--color-neutral-500)]">origin.app/site/{siteSlug}</span>
               </div>
-
-              {template === "ledger" ? (
-                <div className="flex" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
-                  <div className="w-[110px] flex-none p-3 border-r flex flex-col gap-1" style={{ borderColor: "#1c1c22" }}>
-                    <div className="flex items-center gap-1.5 pb-2">
-                      {logoUrl ? <img src={logoUrl} alt="" className="w-4 h-4 rounded object-cover" /> : <span className="w-4 h-4 rounded grid place-items-center text-[8px]" style={{ background: tenantAccent, color: "#0c0c10" }}>{companyName.charAt(0)}</span>}
-                      <span className="text-[10px] font-medium truncate">{companyName}</span>
-                    </div>
-                    <span className="px-1.5 py-1 rounded text-[9px]" style={{ color: tenantAccent, background: `color-mix(in srgb, ${tenantAccent} 14%, transparent)` }}>Overview</span>
-                    <span className="px-1.5 py-1 text-[9px]" style={{ color: "#9a9aa4" }}>Documents</span>
-                  </div>
-                  <div className="flex-1 p-3.5 flex flex-col gap-2">
-                    <div className="text-[11px] font-medium">Welcome back.</div>
-                    {selectedDocIds.slice(0, 2).map((id) => (
-                      <div key={id} className="text-[9.5px] p-1.5 rounded" style={{ background: "#141418" }}>{documents.find((d) => d.id === id)?.title}</div>
-                    ))}
-                  </div>
+              <div style={{ height: 400, overflow: "hidden", position: "relative" }}>
+                <div style={{ transform: "scale(0.42)", transformOrigin: "top left", width: "238%", pointerEvents: "none" }}>
+                  <PreviewSiteComponent site={previewSite} />
                 </div>
-              ) : template === "atrium" ? (
-                <div style={{ background: "#0c0c10", color: "#f4f4f7" }}>
-                  <div
-                    className="h-[70px]"
-                    style={headerImageUrl ? { backgroundImage: `url(${headerImageUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : { background: `linear-gradient(160deg, color-mix(in srgb, ${tenantAccent} 30%, transparent), transparent)` }}
-                  />
-                  <div className="p-3.5 flex flex-col gap-1.5">
-                    <div className="flex items-center gap-1.5">
-                      {logoUrl ? <img src={logoUrl} alt="" className="w-4 h-4 rounded object-cover" /> : <span className="w-4 h-4 rounded grid place-items-center text-[8px]" style={{ background: tenantAccent, color: "#0c0c10" }}>{companyName.charAt(0)}</span>}
-                      <span className="text-[10px] font-medium">{companyName}</span>
-                    </div>
-                    <div className="text-[12px] font-medium mt-1">{companyName}, all in one branded portal.</div>
-                  </div>
-                </div>
-              ) : template === "portfolio" ? (
-                <div style={{ background: "#f4f4f2", color: "#141414" }}>
-                  <div className="flex items-center gap-3 p-3">
-                    {logoUrl ? (
-                      <img src={logoUrl} alt="" className="w-5 h-5 rounded-full object-cover" />
-                    ) : (
-                      <span className="w-5 h-5 rounded-full grid place-items-center text-[9px] font-medium" style={{ background: "#141414", color: "#fff" }}>
-                        {companyName.trim().charAt(0).toUpperCase() || "A"}
-                      </span>
-                    )}
-                    <span className="text-[10.5px] font-semibold">{companyName}</span>
-                    <div className="flex-1" />
-                    {selectedLinkId && (
-                      <span className="px-2 py-1 rounded-full text-[9px] border" style={{ borderColor: "#141414", color: "#141414" }}>Pay now ↗</span>
-                    )}
-                  </div>
-                  <div className="p-3.5 flex flex-col gap-1">
-                    <span className="text-[8.5px] tracking-[.1em] uppercase font-medium" style={{ color: tenantAccent }}>Client portal</span>
-                    <div className="text-[22px] font-bold tracking-[-0.02em]">Hello.</div>
-                    <div className="text-[9px] max-w-[180px]" style={{ color: "#5a5a63" }}>It&rsquo;s {companyName} — your documents and payments, all in one place.</div>
-                  </div>
-                </div>
-              ) : template === "landing" ? (
-                <div className="flex flex-col items-center justify-center p-6 gap-2" style={{ background: "#0c0c10", color: "#f4f4f7", height: 200 }}>
-                  {logoUrl ? (
-                    <img src={logoUrl} alt="" className="w-9 h-9 rounded-xl object-cover" />
-                  ) : (
-                    <span className="w-9 h-9 rounded-xl grid place-items-center text-[13px] font-medium" style={{ background: tenantAccent, color: "#0c0c10" }}>
-                      {companyName.trim().charAt(0).toUpperCase() || "A"}
-                    </span>
-                  )}
-                  <span className="text-[11px] font-medium">{companyName}</span>
-                  {selectedLink ? (
-                    <>
-                      <span className="text-[15px] font-medium mt-1" style={{ color: tenantAccent }}>
-                        {(selectedLink.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: selectedLink.currency.toUpperCase() })}
-                      </span>
-                      <span className="px-4 py-2 rounded-md text-[10.5px] font-medium" style={{ background: tenantAccent, color: "#0c0c10" }}>Pay now</span>
-                    </>
-                  ) : (
-                    <span className="text-[10px] text-center max-w-[220px]" style={{ color: "#6b6b76" }}>
-                      Select a payment link below to show a real price and "Pay now" button here.
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <div className="flex bg-[var(--color-bg)]">
-                  <div className="flex-1 p-3.5 flex flex-col gap-2.5 items-center text-center">
-                    {logoUrl ? (
-                      <img src={logoUrl} alt="" className="w-6 h-6 rounded-md object-cover" />
-                    ) : (
-                      <span className="w-6 h-6 rounded-md grid place-items-center text-[11px] font-medium" style={{ background: `color-mix(in srgb, ${tenantAccent} 18%, transparent)`, color: tenantAccent }}>
-                        {companyName.trim().charAt(0).toUpperCase() || "A"}
-                      </span>
-                    )}
-                    <div className="text-[15px] font-semibold tracking-[-0.02em]">Everything, in one calm place.</div>
-                    {selectedLinkId && (
-                      <span className="px-3 py-1.5 rounded-full text-[10px]" style={{ background: tenantAccent, color: "#0c0c10" }}>
-                        Pay now
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
             <div className="text-[10.5px] text-[var(--color-neutral-500)]">
               {sitePublished ? "This is live — anyone with the link can see it." : "Publish to make this a real, reachable page for your clients."}

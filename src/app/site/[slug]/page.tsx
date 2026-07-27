@@ -3,14 +3,14 @@
 import { use, useEffect, useState } from "react";
 import { IconArrowRight, IconCheckCircle, IconShieldCheck, IconSparkle, IconDocuments } from "@/components/icons";
 
-type SiteDoc = {
+export type SiteDoc = {
   id: string;
   title: string;
   text: string;
   status: string;
   paymentLink: { title: string; amountCents: number; currency: string; url: string } | null;
 };
-type Site = {
+export type Site = {
   name: string;
   brandColor: string;
   logoUrl: string | null;
@@ -182,7 +182,7 @@ function DocumentsList({ site }: { site: Site }) {
   );
 }
 
-function ClaritySite({ site }: { site: Site }) {
+export function ClaritySite({ site }: { site: Site }) {
   const initial = site.name.trim().charAt(0).toUpperCase() || "A";
   return (
     <div className="min-h-screen" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
@@ -264,7 +264,7 @@ function ClaritySite({ site }: { site: Site }) {
   );
 }
 
-function LedgerSite({ site }: { site: Site }) {
+export function LedgerSite({ site }: { site: Site }) {
   const initial = site.name.trim().charAt(0).toUpperCase() || "A";
   return (
     <div className="min-h-screen flex" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
@@ -313,7 +313,7 @@ function LedgerSite({ site }: { site: Site }) {
   );
 }
 
-function AtriumSite({ site }: { site: Site }) {
+export function AtriumSite({ site }: { site: Site }) {
   const initial = site.name.trim().charAt(0).toUpperCase() || "A";
   return (
     <div className="min-h-screen" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
@@ -483,7 +483,7 @@ export function PortfolioSite({ site }: { site: Site }) {
   );
 }
 
-function LandingSite({ site }: { site: Site }) {
+export function LandingSite({ site }: { site: Site }) {
   const priceLabel = site.paymentLink
     ? (site.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: site.paymentLink.currency.toUpperCase() })
     : "";
