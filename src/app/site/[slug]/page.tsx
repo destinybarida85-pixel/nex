@@ -296,8 +296,8 @@ function AtriumSite({ site }: { site: Site }) {
         {site.headerImageUrl ? (
           <img src={site.headerImageUrl} alt="" className="w-full h-[380px] sm:h-[480px] object-cover" />
         ) : (
-          <div className="w-full h-[340px] sm:h-[420px] relative overflow-hidden" style={{ background: `linear-gradient(160deg, color-mix(in srgb, ${site.brandColor} 30%, transparent), transparent)` }}>
-            <div className="absolute -right-10 -top-10 w-[220px] opacity-30"><AtriumMark color={site.brandColor} /></div>
+          <div className="w-full h-[380px] sm:h-[460px] relative overflow-hidden" style={{ background: `radial-gradient(120% 100% at 82% 20%, color-mix(in srgb, ${site.brandColor} 34%, transparent), transparent), linear-gradient(160deg, color-mix(in srgb, ${site.brandColor} 16%, transparent), transparent)` }}>
+            <div className="hidden sm:block absolute right-6 lg:right-16 top-1/2 -translate-y-1/2 w-[260px] opacity-[0.45]"><AtriumMark color={site.brandColor} /></div>
           </div>
         )}
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(12,12,16,.55) 0%, transparent 32%, #0c0c10 100%)" }} />
@@ -322,6 +322,9 @@ function AtriumSite({ site }: { site: Site }) {
           <h1 className="text-[42px] sm:text-[60px] leading-[1.0] font-semibold m-0 tracking-[-0.03em] max-w-[680px]">
             {site.name}, all in one branded portal.
           </h1>
+          <p className="text-[15px] mt-4 max-w-[440px] leading-[1.6]" style={{ color: "#c4c4cc" }}>
+            Your documents, agreements, and payments with {site.name} — all in one place, built and hosted for you.
+          </p>
         </div>
       </div>
       <div className="max-w-[860px] mx-auto px-6 sm:px-10 py-16 flex flex-col gap-6">
@@ -330,6 +333,13 @@ function AtriumSite({ site }: { site: Site }) {
         )}
         <DocumentsList site={site} />
         {site.paymentLink && <CheckoutCard site={site} />}
+        {site.documents.length === 0 && !site.paymentLink && (
+          <div className="rounded-2xl p-8 text-center" style={{ background: "#141418", border: "1px dashed #232329" }}>
+            <div className="text-[13.5px]" style={{ color: "#9a9aa4" }}>
+              Documents and payment links will show up here as soon as {site.name} adds them.
+            </div>
+          </div>
+        )}
       </div>
       <footer className="max-w-[1080px] mx-auto px-6 sm:px-10 py-8 border-t flex items-center gap-3" style={{ borderColor: "#1c1c22" }}>
         <span className="text-[12px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}</span>
