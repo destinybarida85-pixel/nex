@@ -495,24 +495,25 @@ export default function WhiteLabelPage() {
                   </div>
                 </div>
               ) : template === "portfolio" ? (
-                <div style={{ background: "#fafafa", color: "#181818" }}>
-                  <div className="flex items-center gap-1.5 p-3">
+                <div style={{ background: "#f4f4f2", color: "#141414" }}>
+                  <div className="flex items-center gap-3 p-3">
                     {logoUrl ? (
                       <img src={logoUrl} alt="" className="w-5 h-5 rounded-full object-cover" />
                     ) : (
-                      <span className="w-5 h-5 rounded-full grid place-items-center text-[9px] font-medium" style={{ background: "#181818", color: "#fff" }}>
+                      <span className="w-5 h-5 rounded-full grid place-items-center text-[9px] font-medium" style={{ background: "#141414", color: "#fff" }}>
                         {companyName.trim().charAt(0).toUpperCase() || "A"}
                       </span>
                     )}
-                    <span className="text-[10.5px] font-medium">{companyName}</span>
+                    <span className="text-[10.5px] font-semibold">{companyName}</span>
                     <div className="flex-1" />
                     {selectedLinkId && (
-                      <span className="px-2 py-1 rounded-full text-[9px]" style={{ background: "#181818", color: "#fff" }}>Pay now</span>
+                      <span className="px-2 py-1 rounded-full text-[9px] border" style={{ borderColor: "#141414", color: "#141414" }}>Pay now ↗</span>
                     )}
                   </div>
-                  <div className="p-3.5 flex flex-col items-center text-center gap-1">
-                    <div className="text-[12px] font-medium">{companyName}, done right.</div>
-                    <div className="text-[9.5px]" style={{ color: "#6b6b76" }}>Real documents, real payments, all in one clean place.</div>
+                  <div className="p-3.5 flex flex-col gap-1">
+                    <span className="text-[8.5px] tracking-[.1em] uppercase font-medium" style={{ color: tenantAccent }}>Client portal</span>
+                    <div className="text-[22px] font-bold tracking-[-0.02em]">Hello.</div>
+                    <div className="text-[9px] max-w-[180px]" style={{ color: "#5a5a63" }}>It&rsquo;s {companyName} — your documents and payments, all in one place.</div>
                   </div>
                 </div>
               ) : template === "landing" ? (
@@ -548,9 +549,9 @@ export default function WhiteLabelPage() {
                         {companyName.trim().charAt(0).toUpperCase() || "A"}
                       </span>
                     )}
-                    <div className="text-[12px] font-medium">Everything {companyName} clients need, in one place.</div>
+                    <div className="text-[15px] font-semibold tracking-[-0.02em]">Everything, in one calm place.</div>
                     {selectedLinkId && (
-                      <span className="px-2.5 py-1 rounded-md text-[10px]" style={{ background: tenantAccent, color: "#0c0c10" }}>
+                      <span className="px-3 py-1.5 rounded-full text-[10px]" style={{ background: tenantAccent, color: "#0c0c10" }}>
                         Pay now
                       </span>
                     )}
