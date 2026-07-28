@@ -74,12 +74,16 @@ export async function POST(request: Request) {
     // No session cookie present — proceed as an anonymous signer.
   }
 
-  let { data: doc } = await supabase
-    .from("documents")
-    .select("id, tenant_id")
-    .eq("title", documentTitle)
-    .eq("content_hash", documentHash)
-    .maybeSingle();
+  // Match an existing document by title+content so a shared link (an external
+  // signer completing a document a business already sent) finds and updates
+  // that same row rather than creating a duplicate. But when the person here
+  // has their own tenant, scope the match to their own documents only —
+  // otherwise two unrelated businesses drafting from the same unedited
+  // starter template (identical title+content) would collide onto the same
+  // document and signature chain, which is a real cross-tenant leak.
+  let docQuery = supabase.from("documents").select("id, tenant_id").eq("title", documentTitle).eq("content_hash", documentHash);
+  if (authorTenantId) docQuery = docQuery.eq("tenant_id", authorTenantId);
+  let { data: doc } = await docQuery.maybeSingle();
 
   if (!doc) {
     const { data: inserted, error: insertError } = await supabase
