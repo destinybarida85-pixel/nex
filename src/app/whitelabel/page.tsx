@@ -20,13 +20,13 @@ const templates: { id: Template; name: string; why: string }[] = [
   { id: "landing", name: "Landing", why: "Best for a single ask — a simple, no-distractions page whose only job is getting the client to pay." },
 ];
 
-function readAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+async function uploadImage(file: File): Promise<string> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch("/api/upload", { method: "POST", body: form });
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error || "Upload failed.");
+  return data.url as string;
 }
 
 function slugify(input: string) {
@@ -46,6 +46,9 @@ export default function WhiteLabelPage() {
   const [domain, setDomain] = useState("portal.atlaschambers.com");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [headerImageUrl, setHeaderImageUrl] = useState<string | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [headerUploading, setHeaderUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const [template, setTemplate] = useState<Template>("clarity");
   const [siteSlug, setSiteSlug] = useState("atlas-chambers");
   const [slugTouched, setSlugTouched] = useState(false);
@@ -165,13 +168,29 @@ export default function WhiteLabelPage() {
   async function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith("image/")) return;
-    setLogoUrl(await readAsDataUrl(file));
+    setUploadError("");
+    setLogoUploading(true);
+    try {
+      setLogoUrl(await uploadImage(file));
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Couldn't upload that logo.");
+    } finally {
+      setLogoUploading(false);
+    }
   }
 
   async function handleHeaderFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith("image/")) return;
-    setHeaderImageUrl(await readAsDataUrl(file));
+    setUploadError("");
+    setHeaderUploading(true);
+    try {
+      setHeaderImageUrl(await uploadImage(file));
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Couldn't upload that header image.");
+    } finally {
+      setHeaderUploading(false);
+    }
   }
 
   async function publishBranding(publish?: boolean) {
@@ -276,13 +295,13 @@ export default function WhiteLabelPage() {
                   </span>
                 )}
                 <div className="text-xs text-[var(--color-neutral-400)] flex-1">
-                  {logoUrl ? "Custom logo uploaded" : "No logo yet — using your initial"}
+                  {logoUploading ? "Uploading…" : logoUrl ? "Custom logo uploaded" : "No logo yet — using your initial"}
                 </div>
-                <button className="btn btn-secondary text-[11.5px] flex-none" onClick={() => logoInputRef.current?.click()}>
+                <button className="btn btn-secondary text-[11.5px] flex-none" onClick={() => logoInputRef.current?.click()} disabled={logoUploading}>
                   <IconCamera size={12} />
-                  Upload
+                  {logoUploading ? "Uploading…" : "Upload"}
                 </button>
-                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFile} />
+                <input ref={logoInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" className="hidden" onChange={handleLogoFile} />
               </div>
             </div>
             <div className="field">
@@ -296,14 +315,15 @@ export default function WhiteLabelPage() {
                   </div>
                 )}
                 <div className="text-xs text-[var(--color-neutral-400)] flex-1">
-                  {headerImageUrl ? "Banner uploaded" : "Used by the Atrium template"}
+                  {headerUploading ? "Uploading…" : headerImageUrl ? "Banner uploaded" : "Used by the Atrium template"}
                 </div>
-                <button className="btn btn-secondary text-[11.5px] flex-none" onClick={() => headerInputRef.current?.click()}>
+                <button className="btn btn-secondary text-[11.5px] flex-none" onClick={() => headerInputRef.current?.click()} disabled={headerUploading}>
                   <IconCamera size={12} />
-                  Upload
+                  {headerUploading ? "Uploading…" : "Upload"}
                 </button>
-                <input ref={headerInputRef} type="file" accept="image/*" className="hidden" onChange={handleHeaderFile} />
+                <input ref={headerInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" className="hidden" onChange={handleHeaderFile} />
               </div>
+              {uploadError && <div className="text-[11.5px] mt-1.5" style={{ color: "var(--color-accent-300)" }}>{uploadError}</div>}
             </div>
             <div className="field">
               <label>Brand color</label>
