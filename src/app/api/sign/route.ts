@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { hashDocument, hashSignature, computeRecordHash, formatCertificateId } from "@/lib/signatureProof";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient as createSessionClient } from "@/lib/supabase/server";
 import { createNotification } from "@/lib/notify";
 
 const isConfigured = !!(
@@ -52,6 +53,27 @@ export async function POST(request: Request) {
 
   const supabase = createAdminClient();
 
+  // Best-effort: if whoever is completing this signature is signed into their own
+  // Origin account (e.g. the business owner sending or testing their own document),
+  // attribute the resulting document to their tenant so it can show up in their
+  // document list, be featured on their white-label site, and charge stamp credits
+  // correctly. External signers with no Origin account simply have no session here
+  // — /sign is intentionally reachable without one — and the document stays
+  // unattributed, same as before.
+  let authorTenantId: string | null = null;
+  try {
+    const sessionClient = await createSessionClient();
+    const {
+      data: { user },
+    } = await sessionClient.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase.from("profiles").select("tenant_id").eq("id", user.id).maybeSingle();
+      authorTenantId = profile?.tenant_id ?? null;
+    }
+  } catch {
+    // No session cookie present — proceed as an anonymous signer.
+  }
+
   let { data: doc } = await supabase
     .from("documents")
     .select("id, tenant_id")
@@ -62,7 +84,7 @@ export async function POST(request: Request) {
   if (!doc) {
     const { data: inserted, error: insertError } = await supabase
       .from("documents")
-      .insert({ title: documentTitle, content: { text: documentContent }, content_hash: documentHash, status: "sent" })
+      .insert({ title: documentTitle, content: { text: documentContent }, content_hash: documentHash, status: "sent", tenant_id: authorTenantId })
       .select("id, tenant_id")
       .single();
     if (insertError) {
