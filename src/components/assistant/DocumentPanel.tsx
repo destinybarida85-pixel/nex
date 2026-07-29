@@ -130,41 +130,19 @@ export default function DocumentPanel({
 
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 flex flex-col md:flex-row gap-6">
         {editing ? (
-          <div
-            className="flex-1 min-w-0 max-w-[620px] rounded-xl p-6 md:p-9 flex flex-col gap-5"
-            style={{ background: "#ffffff", boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)" }}
-          >
-            <div className="text-center pt-1">
-              <input
-                className="input text-[19px] text-center font-medium"
-                style={{ background: "transparent", border: "none", color: "#181818" }}
-                value={draft.title}
-                onChange={(e) => setDraft((prev) => ({ ...prev, title: e.target.value }))}
-              />
-              <input
-                className="input text-[12px] text-center mt-1"
-                style={{ background: "transparent", border: "none", color: "#5a5a63" }}
-                value={draft.meta}
-                onChange={(e) => setDraft((prev) => ({ ...prev, meta: e.target.value }))}
-              />
-            </div>
-            <div className="hr" style={{ borderColor: "rgba(0,0,0,0.1)" }} />
-            {draft.body.map((section, i) => (
-              <div key={i} className="min-w-0">
-                <input
-                  className="input text-[13px] mb-1.5 font-medium"
-                  style={{ color: accentColor }}
-                  value={section.heading}
-                  onChange={(e) => updateSection(i, "heading", e.target.value)}
-                />
-                <textarea
-                  className="input text-[13px] leading-[1.7]"
-                  style={{ minHeight: 90 }}
-                  value={section.text}
-                  onChange={(e) => updateSection(i, "text", e.target.value)}
-                />
-              </div>
-            ))}
+          <div className="flex-1 min-w-0 max-w-[620px]">
+            <DocumentPaper
+              title={draft.title}
+              meta={draft.meta}
+              sections={draft.body}
+              accentColor={accentColor}
+              layout={layout}
+              logoUrl={logoUrl}
+              editable
+              onTitleChange={(v) => setDraft((prev) => ({ ...prev, title: v }))}
+              onMetaChange={(v) => setDraft((prev) => ({ ...prev, meta: v }))}
+              onSectionChange={updateSection}
+            />
           </div>
         ) : (
           <div className="flex-1 min-w-0 max-w-[620px] print-area">
