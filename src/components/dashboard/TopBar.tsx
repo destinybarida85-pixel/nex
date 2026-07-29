@@ -33,6 +33,7 @@ function timeAgo(iso: string) {
 
 export default function TopBar() {
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [initials, setInitials] = useState("");
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -46,11 +47,23 @@ export default function TopBar() {
   const { hasSession, checked } = useHasSession();
 
   useEffect(() => {
-    setAvatar(localStorage.getItem("origin-avatar"));
-    const onUpdate = () => setAvatar(localStorage.getItem("origin-avatar"));
+    if (!checked || !isBackendConfigured || !hasSession) return;
+    function load() {
+      fetch("/api/me")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.configured && !data.error) {
+            setAvatar(data.avatarUrl || null);
+            setInitials(data.fullName?.trim() ? data.fullName.trim().slice(0, 2).toUpperCase() : "");
+          }
+        })
+        .catch(() => {});
+    }
+    load();
+    const onUpdate = () => load();
     window.addEventListener("origin-avatar-updated", onUpdate);
     return () => window.removeEventListener("origin-avatar-updated", onUpdate);
-  }, []);
+  }, [checked, hasSession]);
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
@@ -243,7 +256,7 @@ export default function TopBar() {
             : { background: "linear-gradient(135deg, var(--color-accent-2-600), var(--color-accent-900))", color: "var(--color-accent-100)" }
         }
       >
-        {!avatar && "AO"}
+        {!avatar && initials}
       </a>
     </header>
   );
