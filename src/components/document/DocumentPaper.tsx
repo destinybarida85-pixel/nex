@@ -3,6 +3,14 @@ import { paperBg, paperInk, paperMuted, paperRule, type DocumentLayout } from ".
 
 export type DocumentSection = { heading: string; text: string };
 
+// Stable, module-level component — never redefined during a parent re-render,
+// which matters here: a component type recreated inside another component's
+// render body gets remounted by React on every render (a new function
+// reference is a new "type" as far as reconciliation is concerned), which
+// tears down and rebuilds the underlying <input>/<textarea> DOM node on every
+// keystroke. That silently drops focus and can even scramble cursor position
+// mid-type. Keeping this at module scope is what keeps the same DOM node
+// alive across renders.
 function EditableText({
   as,
   value,
@@ -28,6 +36,12 @@ function EditableText({
   if (as === "textarea") {
     return (
       <textarea
+        ref={(el) => {
+          if (el) {
+            el.style.height = "auto";
+            el.style.height = `${el.scrollHeight}px`;
+          }
+        }}
         value={value}
         onChange={(e) => {
           onChange(e.target.value);
@@ -76,28 +90,28 @@ export default function DocumentPaper({
 }) {
   const f = big ? 1 : 0.86;
 
-  const Title = ({ style }: { style: React.CSSProperties }) =>
+  const titleNode = (style: React.CSSProperties) =>
     editable && onTitleChange ? (
       <EditableText as="input" value={title} onChange={onTitleChange} style={style} placeholder="Document title" />
     ) : (
       <h1 style={{ ...style, margin: style.margin ?? 0 }}>{title}</h1>
     );
 
-  const Meta = ({ style }: { style: React.CSSProperties }) =>
+  const metaNode = (style: React.CSSProperties) =>
     editable && onMetaChange ? (
       <EditableText as="input" value={meta || ""} onChange={onMetaChange} style={style} placeholder="Subtitle or reference" />
     ) : meta ? (
       <div style={style}>{meta}</div>
     ) : null;
 
-  const Heading = ({ index, style }: { index: number; style: React.CSSProperties }) =>
+  const headingNode = (index: number, style: React.CSSProperties) =>
     editable && onSectionChange ? (
       <EditableText as="input" value={sections[index].heading} onChange={(v) => onSectionChange(index, "heading", v)} style={style} placeholder="Section heading" />
     ) : (
       <div style={style}>{sections[index].heading}</div>
     );
 
-  const Body = ({ index, style }: { index: number; style: React.CSSProperties }) =>
+  const bodyNode = (index: number, style: React.CSSProperties) =>
     editable && onSectionChange ? (
       <EditableText as="textarea" value={sections[index].text} onChange={(v) => onSectionChange(index, "text", v)} style={style} placeholder="Section content" />
     ) : (
@@ -129,8 +143,8 @@ export default function DocumentPaper({
                 Document
               </span>
             </div>
-            <Title style={{ fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 24 * f, lineHeight: 1.2, margin: `${10 * f}px 0 0`, fontWeight: 800, color: paperInk, overflowWrap: "break-word" }} />
-            <Meta style={{ fontSize: 11.5 * f, color: paperMuted, marginTop: 4 * f, overflowWrap: "break-word" }} />
+            {titleNode({ fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 24 * f, lineHeight: 1.2, margin: `${10 * f}px 0 0`, fontWeight: 800, color: paperInk, overflowWrap: "break-word" })}
+            {metaNode({ fontSize: 11.5 * f, color: paperMuted, marginTop: 4 * f, overflowWrap: "break-word" })}
           </div>
           {headerRight && <div style={{ flexShrink: 0 }}>{headerRight}</div>}
         </div>
@@ -155,8 +169,8 @@ export default function DocumentPaper({
                 {i + 1}
               </span>
               <div className="min-w-0 flex-1">
-                <Heading index={i} style={{ fontSize: 13.5 * f, fontWeight: 700, color: paperInk, marginBottom: 4 * f }} />
-                <Body index={i} style={{ fontSize: 13 * f, lineHeight: 1.75, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" }} />
+                {headingNode(i, { fontSize: 13.5 * f, fontWeight: 700, color: paperInk, marginBottom: 4 * f })}
+                {bodyNode(i, { fontSize: 13 * f, lineHeight: 1.75, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
               </div>
             </div>
           ))}
@@ -184,8 +198,8 @@ export default function DocumentPaper({
               {logoUrl ? <img src={logoUrl} alt="" style={{ width: 22 * f, height: 22 * f, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} /> : null}
               <span style={{ fontSize: 10 * f, letterSpacing: "0.1em", textTransform: "uppercase", color: paperMuted }}>Document</span>
             </div>
-            <Title style={{ fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 26 * f, lineHeight: 1.15, margin: 0, fontWeight: 500, color: paperInk, letterSpacing: "-0.01em", overflowWrap: "break-word" }} />
-            <Meta style={{ fontSize: 11.5 * f, color: paperMuted, marginTop: 6 * f, overflowWrap: "break-word" }} />
+            {titleNode({ fontFamily: "system-ui, -apple-system, sans-serif", fontSize: 26 * f, lineHeight: 1.15, margin: 0, fontWeight: 500, color: paperInk, letterSpacing: "-0.01em", overflowWrap: "break-word" })}
+            {metaNode({ fontSize: 11.5 * f, color: paperMuted, marginTop: 6 * f, overflowWrap: "break-word" })}
           </div>
           {headerRight && <div style={{ flexShrink: 0 }}>{headerRight}</div>}
         </div>
@@ -193,8 +207,8 @@ export default function DocumentPaper({
         <div className="flex flex-col" style={{ gap: 24 * f }}>
           {sections.map((s, i) => (
             <div key={i} className="min-w-0" style={{ borderLeft: `2px solid ${accentColor}`, paddingLeft: 14 * f }}>
-              <Heading index={i} style={{ fontSize: 12.5 * f, fontWeight: 600, color: paperInk, marginBottom: 5 * f }} />
-              <Body index={i} style={{ fontSize: 13 * f, lineHeight: 1.8, color: "#45454e", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" }} />
+              {headingNode(i, { fontSize: 12.5 * f, fontWeight: 600, color: paperInk, marginBottom: 5 * f })}
+              {bodyNode(i, { fontSize: 13 * f, lineHeight: 1.8, color: "#45454e", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
             </div>
           ))}
         </div>
@@ -221,8 +235,8 @@ export default function DocumentPaper({
             <img src={logoUrl} alt="" style={{ width: 28 * f, height: 28 * f, borderRadius: 6 * f, objectFit: "cover", flexShrink: 0 }} />
           ) : null}
           <div className="min-w-0" style={{ flex: "1 1 auto" }}>
-            <Title style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 21 * f, lineHeight: 1.25, margin: 0, fontWeight: 500, color: paperInk, overflowWrap: "break-word" }} />
-            <Meta style={{ fontSize: 11.5 * f, color: paperMuted, marginTop: 3 * f, overflowWrap: "break-word" }} />
+            {titleNode({ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 21 * f, lineHeight: 1.25, margin: 0, fontWeight: 500, color: paperInk, overflowWrap: "break-word" })}
+            {metaNode({ fontSize: 11.5 * f, color: paperMuted, marginTop: 3 * f, overflowWrap: "break-word" })}
           </div>
         </div>
         {headerRight && <div style={{ flexShrink: 0 }}>{headerRight}</div>}
@@ -233,18 +247,15 @@ export default function DocumentPaper({
       <div className="flex flex-col" style={{ gap: 18 * f }}>
         {sections.map((s, i) => (
           <div key={i} className="min-w-0">
-            <Heading
-              index={i}
-              style={{
-                fontSize: 10.5 * f,
-                letterSpacing: "0.07em",
-                textTransform: "uppercase",
-                fontWeight: 600,
-                color: accentColor,
-                marginBottom: 5 * f,
-              }}
-            />
-            <Body index={i} style={{ fontSize: 13 * f, lineHeight: 1.75, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" }} />
+            {headingNode(i, {
+              fontSize: 10.5 * f,
+              letterSpacing: "0.07em",
+              textTransform: "uppercase",
+              fontWeight: 600,
+              color: accentColor,
+              marginBottom: 5 * f,
+            })}
+            {bodyNode(i, { fontSize: 13 * f, lineHeight: 1.75, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
           </div>
         ))}
       </div>
