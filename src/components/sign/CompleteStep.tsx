@@ -6,6 +6,7 @@ import { IconCheckCircle, IconLock, IconDownload, IconEdit, IconChevronDown, Ico
 import Stamp from "./Stamp";
 import { demoDocument, type SignDocument } from "./document";
 import DocumentPaper from "@/components/document/DocumentPaper";
+import SignatureBlock from "@/components/document/SignatureBlock";
 import type { DocumentLayout } from "@/components/document/theme";
 import type { SignatureProof } from "@/app/sign/page";
 
@@ -60,6 +61,7 @@ function readAsDataUrl(file: File): Promise<string> {
 export default function CompleteStep({
   document = demoDocument,
   signature,
+  signerName,
   proof,
   sealing,
   signed = true,
@@ -69,6 +71,7 @@ export default function CompleteStep({
 }: {
   document?: SignDocument;
   signature: string;
+  signerName?: string;
   proof: SignatureProof | null;
   sealing: boolean;
   signed?: boolean;
@@ -124,6 +127,20 @@ export default function CompleteStep({
   const embeddedStampNode = !stampBlocked ? <Stamp label={stampLabel} sub={stampSub} color={stampColor} imageUrl={stampImageUrl} size={72} /> : null;
   const embeddedStamp = showStampCard && stampPosition !== "signature" ? embeddedStampNode : null;
 
+  const signedDateLabel = proof?.signedAt
+    ? new Date(proof.signedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    : undefined;
+  const signatureBlockNode =
+    signed && signature ? <SignatureBlock signature={signature} signerName={signerName || "Signed electronically"} dateLabel={signedDateLabel} /> : null;
+
+  const footerSlot =
+    signatureBlockNode || (stampPosition === "footer" && embeddedStamp) ? (
+      <div className="flex items-end justify-between gap-4 flex-wrap">
+        <div>{signatureBlockNode}</div>
+        {stampPosition === "footer" && embeddedStamp}
+      </div>
+    ) : undefined;
+
   return (
     <div className="flex flex-col items-center gap-5 text-center">
       <span
@@ -149,7 +166,7 @@ export default function CompleteStep({
             accentColor={accentColor}
             layout={layout}
             headerRight={stampPosition === "header" ? embeddedStamp : undefined}
-            footerSlot={stampPosition === "footer" && embeddedStamp ? <div className="flex justify-center">{embeddedStamp}</div> : undefined}
+            footerSlot={footerSlot}
           />
         </div>
 
@@ -165,11 +182,6 @@ export default function CompleteStep({
                       : `Certificate ID: ${proof?.certificateId ?? "unavailable"}`}
                   </span>
                 </div>
-                {signature.startsWith("data:") ? (
-                  <img src={signature} alt="Signature" className="h-10 self-start" />
-                ) : (
-                  <span style={{ fontFamily: "cursive", fontSize: 22 }}>{signature}</span>
-                )}
                 {proof && (
                   <div className="text-[9.5px] font-mono text-[var(--color-neutral-600)] break-all">
                     SHA-256: {proof.recordHash}

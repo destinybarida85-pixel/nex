@@ -23,6 +23,7 @@ export type SignatureProof = {
 export default function SignPage() {
   const [step, setStep] = useState(1);
   const [signature, setSignature] = useState("");
+  const [signerFullName, setSignerFullName] = useState("");
   const [proof, setProof] = useState<SignatureProof | null>(null);
   const [sealing, setSealing] = useState(false);
   const [signDocument, setSignDocument] = useState<SignDocument>(demoDocument);
@@ -46,8 +47,9 @@ export default function SignPage() {
     setStep(4);
   }
 
-  async function completeSigning(sig: string) {
+  async function completeSigning(sig: string, fullName: string) {
     setSignature(sig);
+    setSignerFullName(fullName);
     setStep(4);
     setSealing(true);
     try {
@@ -57,7 +59,7 @@ export default function SignPage() {
         body: JSON.stringify({
           documentTitle: signDocument.title,
           documentContent: canonicalDocumentText(signDocument),
-          signerName: signDocument.signerName,
+          signerName: fullName || signDocument.signerName,
           signerEmail: signDocument.signerEmail,
           signatureData: sig,
           skipStamp: !applyStamp,
@@ -118,6 +120,7 @@ export default function SignPage() {
           <CompleteStep
             document={signDocument}
             signature={signature}
+            signerName={signerFullName || signDocument.signerName}
             proof={proof}
             sealing={sealing}
             signed={requireSignature}

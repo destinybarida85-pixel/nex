@@ -13,7 +13,7 @@ export default function SignStep({
   onContinue,
   onBack,
 }: {
-  onContinue: (signature: string) => void;
+  onContinue: (signature: string, fullName: string) => void;
   onBack: () => void;
 }) {
   const [mode, setMode] = useState<"type" | "draw">("type");
@@ -65,13 +65,14 @@ export default function SignStep({
     setHasDrawn(false);
   }
 
-  const canSign = mode === "type" ? typedName.trim().length > 1 : hasDrawn;
+  const canSign = typedName.trim().length > 1 && (mode === "type" || hasDrawn);
 
   function adopt() {
+    const fullName = typedName.trim();
     if (mode === "type") {
-      onContinue(typedName.trim());
+      onContinue(fullName, fullName);
     } else {
-      onContinue(canvasRef.current?.toDataURL() ?? "signature");
+      onContinue(canvasRef.current?.toDataURL() ?? "signature", fullName);
     }
   }
 
@@ -129,7 +130,13 @@ export default function SignStep({
           {penPicker}
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
+          <input
+            className="input"
+            value={typedName}
+            onChange={(e) => setTypedName(e.target.value)}
+            placeholder="Your full name (printed under the signature)"
+          />
           <canvas
             ref={canvasRef}
             width={400}
