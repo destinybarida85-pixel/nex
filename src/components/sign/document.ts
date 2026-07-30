@@ -1,3 +1,5 @@
+import type { DocumentLayout } from "@/components/document/theme";
+
 export type SignSection = { heading: string; text: string };
 export type SignDocument = {
   title: string;
@@ -5,6 +7,9 @@ export type SignDocument = {
   signerName: string;
   signerEmail: string;
   sections: SignSection[];
+  logoUrl?: string | null;
+  accentColor?: string;
+  layout?: DocumentLayout;
 };
 
 export const demoDocument: SignDocument = {

@@ -165,6 +165,7 @@ export default function CompleteStep({
             sections={document.sections}
             accentColor={accentColor}
             layout={layout}
+            logoUrl={document.logoUrl}
             headerRight={stampPosition === "header" ? embeddedStamp : undefined}
             footerSlot={footerSlot}
           />

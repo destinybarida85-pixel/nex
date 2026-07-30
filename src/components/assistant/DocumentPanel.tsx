@@ -102,6 +102,9 @@ export default function DocumentPanel({
           signerName: "Signer",
           signerEmail: "signer@example.com",
           sections: document.body,
+          logoUrl,
+          accentColor,
+          layout,
         })
       );
     } catch {

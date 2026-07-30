@@ -35,7 +35,12 @@ export default function SignPage() {
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem(SIGN_DOCUMENT_STORAGE_KEY);
-      if (stored) setSignDocument(JSON.parse(stored));
+      if (stored) {
+        const parsed = JSON.parse(stored) as SignDocument;
+        setSignDocument(parsed);
+        if (parsed.accentColor) setAccentColor(parsed.accentColor);
+        if (parsed.layout) setLayout(parsed.layout);
+      }
     } catch {
       // Malformed/missing storage — stay on the demo document.
     }
