@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { paperBg, paperInk, paperMuted, paperRule, type DocumentLayout } from "./theme";
+import { paperBg, paperInk, paperMuted, paperRule, monoStack, type DocumentLayout } from "./theme";
 
 export type DocumentSection = { heading: string; text: string };
 
@@ -214,6 +214,63 @@ export default function DocumentPaper({
         </div>
 
         {footerSlot && <div style={{ marginTop: 30 * f }}>{footerSlot}</div>}
+      </div>
+    );
+  }
+
+  if (layout === "dossier") {
+    const metaLines = (meta || "").split("·").map((s) => s.trim()).filter(Boolean);
+    return (
+      <div
+        className={`w-full ${className}`}
+        style={{ background: "#fdfdfc", color: "#0a0a0a", fontFamily: monoStack, padding: `${46 * f}px ${48 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 6 * f }}
+      >
+        <div className="flex items-start justify-between gap-4 flex-wrap" style={{ marginBottom: 46 * f, rowGap: 12 * f }}>
+          <div className="flex items-center gap-2">
+            {logoUrl ? (
+              <img src={logoUrl} alt="" style={{ width: 20 * f, height: 20 * f, borderRadius: 4 * f, objectFit: "cover", flexShrink: 0 }} />
+            ) : (
+              <span style={{ width: 8 * f, height: 8 * f, borderRadius: "50%", background: accentColor, flexShrink: 0 }} />
+            )}
+            <span style={{ fontSize: 9.5 * f, letterSpacing: "0.06em", textTransform: "uppercase", color: paperMuted }}>{"// document"}</span>
+          </div>
+          {headerRight && <div style={{ flexShrink: 0 }}>{headerRight}</div>}
+        </div>
+
+        {titleNode({ fontFamily: monoStack, fontSize: 30 * f, lineHeight: 1.08, margin: 0, fontWeight: 700, letterSpacing: "-0.01em", textTransform: "uppercase", color: "#0a0a0a", overflowWrap: "break-word", maxWidth: `${560 * f}px` })}
+
+        <div style={{ borderTop: "1.5px solid #0a0a0a", marginTop: 24 * f, marginBottom: 30 * f }} />
+
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_2.4fr]" style={{ gap: 32 * f }}>
+          <div className="min-w-0">
+            <div style={{ fontSize: 9.5 * f, letterSpacing: "0.08em", textTransform: "uppercase", color: paperMuted, marginBottom: 8 * f }}>Reference</div>
+            {editable && onMetaChange ? (
+              metaNode({ fontSize: 11.5 * f, color: "#0a0a0a", lineHeight: 1.6, overflowWrap: "break-word" })
+            ) : metaLines.length > 0 ? (
+              <div className="flex flex-col" style={{ gap: 2 * f }}>
+                {metaLines.map((line, i) => (
+                  <span key={i} style={{ fontSize: 11.5 * f, color: "#0a0a0a", lineHeight: 1.6, overflowWrap: "break-word" }}>{line}</span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="flex flex-col min-w-0" style={{ gap: 26 * f }}>
+            {sections.map((s, i) => (
+              <div key={i} className="min-w-0">
+                {headingNode(i, { fontSize: 12 * f, fontWeight: 700, letterSpacing: "0.01em", textTransform: "uppercase", color: "#0a0a0a", marginBottom: 8 * f })}
+                {bodyNode(i, { fontSize: 12 * f, lineHeight: 1.85, color: "#3a3a3a", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {footerSlot && (
+          <>
+            <div style={{ borderTop: "1px solid rgba(0,0,0,0.12)", marginTop: 34 * f, marginBottom: 22 * f }} />
+            {footerSlot}
+          </>
+        )}
       </div>
     );
   }
