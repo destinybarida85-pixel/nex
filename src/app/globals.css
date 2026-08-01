@@ -313,8 +313,28 @@ textarea.input { min-height: 90px; resize: vertical; }
   body * { visibility: hidden; }
   .print-area, .print-area * { visibility: visible; }
   .print-area {
-    position: absolute; inset: 0; width: 100%; margin: 0; padding: 0;
+    /* fixed, not absolute: this is often nested inside a position:relative card
+       (e.g. the signing flow's modal-style container), and absolute positioning
+       would resolve against that nearest ancestor instead of the actual page,
+       leaving a block of blank space above the content when printed. Fixed
+       positioning anchors to the page regardless of ancestor positioning. */
+    position: fixed; inset: 0; width: 100%; margin: 0; padding: 0;
     background: #fff !important; color: #1a1a1f !important; box-shadow: none !important;
+    /* Cards inside print-area (e.g. the signing certificate/audit card) are
+       themed with these custom properties for the app's dark UI. Redefining
+       them here — rather than patching every component individually — makes
+       every var(--color-*) reference underneath resolve to print-safe light
+       values automatically, instead of printing dark cards with light text
+       on a white page. */
+    --color-bg: #ffffff;
+    --color-surface: #f5f5f6;
+    --color-text: #1a1a1f;
+    --color-accent: #6552c8;
+    --color-divider: rgba(0, 0, 0, 0.12);
+    --color-neutral-400: #45454e;
+    --color-neutral-500: #6b6b76;
+    --color-neutral-600: #86868f;
+    --color-neutral-700: #b0b0b8;
   }
   .no-print { display: none !important; }
 }
