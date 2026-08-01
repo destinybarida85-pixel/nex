@@ -15,6 +15,7 @@ type FetchedDoc = {
   accentColor: string | null;
   logoUrl: string | null;
   status: string;
+  createdAt: string;
 };
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -75,6 +76,7 @@ export default function SignByIdPage({ params }: { params: Promise<{ id: string 
     logoUrl: doc.logoUrl,
     accentColor: doc.accentColor || documentAccents[0].color,
     layout: doc.layout || "classic",
+    createdAt: doc.createdAt,
   };
 
   if (doc.status === "signed") {

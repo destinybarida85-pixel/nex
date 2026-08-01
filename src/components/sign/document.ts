@@ -10,6 +10,11 @@ export type SignDocument = {
   logoUrl?: string | null;
   accentColor?: string;
   layout?: DocumentLayout;
+  /** Real timestamp the document row was created — only present for a real
+   *  persisted document (the /sign/[id] shareable-link flow), never
+   *  fabricated for the demo/session-storage flow. Powers the one real
+   *  "Drafted" audit trail entry we can actually back with data. */
+  createdAt?: string;
 };
 
 export const demoDocument: SignDocument = {

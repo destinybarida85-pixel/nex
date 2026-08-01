@@ -10,14 +10,6 @@ import SignatureBlock from "@/components/document/SignatureBlock";
 import type { DocumentLayout } from "@/components/document/theme";
 import type { SignatureProof } from "./SignFlow";
 
-const audit = [
-  { label: "Drafted", meta: "Jul 18, 2026 · 09:14" },
-  { label: "Sent to signer", meta: "Jul 18, 2026 · 09:16" },
-  { label: "Viewed by Halcyon Ventures", meta: "Jul 21, 2026 · 08:42" },
-  { label: "Identity verified · OTP", meta: "Jul 21, 2026 · 08:44" },
-  { label: "Signed & sealed", meta: "Jul 21, 2026 · 08:45" },
-];
-
 const stampColors = ["#c81e1e", "#9184d9", "#63c3b2", "#d9a05b", "#5b8fd9", "#8a8a94", "#c96bb0", "#4fae7a"];
 
 const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -179,6 +171,19 @@ export default function CompleteStep({
   const signatureBlockNode =
     signed && signature ? <SignatureBlock signature={signature} signerName={signerName || "Signed electronically"} dateLabel={signedDateLabel} /> : null;
 
+  // Only two events are ever actually tracked — when the document row was
+  // created and when it was signed. Everything else this used to show
+  // ("Sent to signer", "Viewed by...", "Identity verified · OTP") was
+  // fabricated and didn't correspond to anything the app does, including an
+  // OTP step that no longer exists in this flow at all.
+  function formatAuditTime(iso: string) {
+    const d = new Date(iso);
+    return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} · ${d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`;
+  }
+  const audit: { label: string; meta: string }[] = [];
+  if (document.createdAt) audit.push({ label: "Drafted", meta: formatAuditTime(document.createdAt) });
+  if (proof?.signedAt) audit.push({ label: "Signed & sealed", meta: formatAuditTime(proof.signedAt) });
+
   const footerSlot =
     signatureBlockNode || footerStamp ? (
       <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -328,30 +333,32 @@ export default function CompleteStep({
           </div>
         )}
 
-        <div className="card elev-sm w-full text-left no-print">
-          <button
-            className="w-full flex items-center gap-2 p-4 cursor-pointer"
-            style={{ background: "transparent", border: "none", color: "inherit" }}
-            onClick={() => setShowAudit((v) => !v)}
-          >
-            <span className="card-title text-[13px]">Audit trail</span>
-            <span className="text-[11px] text-[var(--color-neutral-500)] ml-auto">{showAudit ? "Hide" : "Show"}</span>
-            <span style={{ transform: showAudit ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
-              <IconChevronDown size={13} className="text-[var(--color-neutral-500)]" />
-            </span>
-          </button>
-          {showAudit && (
-            <div className="flex flex-col gap-2.5 px-4 pb-4">
-              {audit.map((a) => (
-                <div key={a.label} className="flex items-center gap-2.5 text-[12px]">
-                  <span className="w-[7px] h-[7px] rounded-full flex-none" style={{ background: "var(--color-accent)" }} />
-                  <span className="flex-1">{a.label}</span>
-                  <span className="text-[var(--color-neutral-500)] font-mono text-[10.5px]">{a.meta}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {audit.length > 0 && (
+          <div className="card elev-sm w-full text-left no-print">
+            <button
+              className="w-full flex items-center gap-2 p-4 cursor-pointer"
+              style={{ background: "transparent", border: "none", color: "inherit" }}
+              onClick={() => setShowAudit((v) => !v)}
+            >
+              <span className="card-title text-[13px]">Audit trail</span>
+              <span className="text-[11px] text-[var(--color-neutral-500)] ml-auto">{showAudit ? "Hide" : "Show"}</span>
+              <span style={{ transform: showAudit ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
+                <IconChevronDown size={13} className="text-[var(--color-neutral-500)]" />
+              </span>
+            </button>
+            {showAudit && (
+              <div className="flex flex-col gap-2.5 px-4 pb-4">
+                {audit.map((a) => (
+                  <div key={a.label} className="flex items-center gap-2.5 text-[12px]">
+                    <span className="w-[7px] h-[7px] rounded-full flex-none" style={{ background: "var(--color-accent)" }} />
+                    <span className="flex-1">{a.label}</span>
+                    <span className="text-[var(--color-neutral-500)] font-mono text-[10.5px]">{a.meta}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <button className="btn btn-primary btn-block" onClick={() => window.print()}>

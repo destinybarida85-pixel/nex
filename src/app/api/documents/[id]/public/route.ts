@@ -14,7 +14,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   const { data: document, error } = await supabase
     .from("documents")
-    .select("id, title, content, status")
+    .select("id, title, content, status, created_at")
     .eq("id", id)
     .maybeSingle();
 
@@ -41,6 +41,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       accentColor: content?.accentColor ?? null,
       logoUrl: content?.logoUrl ?? null,
       status: document.status,
+      createdAt: document.created_at,
     },
   });
 }
