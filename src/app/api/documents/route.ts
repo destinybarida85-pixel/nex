@@ -27,10 +27,24 @@ export async function POST(request: Request) {
   const { error, status, supabase, tenantId, userId } = await requireTenant();
   if (error) return NextResponse.json({ error }, { status });
 
-  const { title, text, paymentLinkId } = (await request.json()) as { title?: string; text?: string; paymentLinkId?: string | null };
-  if (!title?.trim() || !text?.trim()) {
+  const { title, text, sections, paymentLinkId, layout, accentColor, logoUrl } = (await request.json()) as {
+    title?: string;
+    text?: string;
+    sections?: { heading: string; text: string }[];
+    paymentLinkId?: string | null;
+    layout?: string;
+    accentColor?: string;
+    logoUrl?: string | null;
+  };
+  const hasSections = Array.isArray(sections) && sections.length > 0;
+  if (!title?.trim() || (!text?.trim() && !hasSections)) {
     return NextResponse.json({ error: "Give the document a title and some content." }, { status: 400 });
   }
+
+  const content: Record<string, unknown> = hasSections ? { sections } : { text: text!.trim() };
+  if (layout) content.layout = layout;
+  if (accentColor) content.accentColor = accentColor;
+  if (logoUrl) content.logoUrl = logoUrl;
 
   const { data: document, error: insertError } = await supabase!
     .from("documents")
@@ -38,7 +52,7 @@ export async function POST(request: Request) {
       tenant_id: tenantId,
       created_by: userId,
       title: title.trim(),
-      content: { text: text.trim() },
+      content,
       status: "sent",
       payment_link_id: paymentLinkId || null,
     })

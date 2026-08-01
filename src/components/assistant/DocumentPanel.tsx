@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IconDocuments, IconDownload, IconESign, IconCamera, IconTemplates } from "@/components/icons";
-import { SIGN_DOCUMENT_STORAGE_KEY } from "@/components/sign/document";
+import { IconDocuments, IconDownload, IconESign, IconCamera, IconTemplates, IconCheckCircle } from "@/components/icons";
 import DocumentPaper from "@/components/document/DocumentPaper";
 import { documentAccents, documentLayouts, type DocumentLayout } from "@/components/document/theme";
 import TemplatePicker from "@/components/document/TemplatePicker";
@@ -18,15 +17,6 @@ export type DocumentData = {
   steps: DocumentStep[];
 };
 
-function readAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
 export default function DocumentPanel({
   document,
   onUpdate,
@@ -39,7 +29,12 @@ export default function DocumentPanel({
   const [accentColor, setAccentColor] = useState(documentAccents[0].color);
   const [layout, setLayout] = useState<DocumentLayout>("classic");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
+  const [sentLink, setSentLink] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -71,7 +66,20 @@ export default function DocumentPanel({
   async function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith("image/")) return;
-    setLogoUrl(await readAsDataUrl(file));
+    setLogoUploading(true);
+    setSendError("");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Upload failed.");
+      setLogoUrl(data.url);
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : "Couldn't upload that logo.");
+    } finally {
+      setLogoUploading(false);
+    }
   }
 
   function applyTemplate(template: DocumentTemplate) {
@@ -92,23 +100,35 @@ export default function DocumentPanel({
     setPickerOpen(false);
   }
 
-  function sendForSignature() {
+  async function sendForSignature() {
+    setSending(true);
+    setSendError("");
+    setSentLink(null);
+    setLinkCopied(false);
     try {
-      sessionStorage.setItem(
-        SIGN_DOCUMENT_STORAGE_KEY,
-        JSON.stringify({
-          title: document.title,
-          sentBy: "Origin AI draft",
-          signerName: "Signer",
-          signerEmail: "signer@example.com",
-          sections: document.body,
-          logoUrl,
-          accentColor,
-          layout,
-        })
-      );
+      const res = await fetch("/api/documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: document.title, sections: document.body, layout, accentColor, logoUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't create a shareable link.");
+      setSentLink(`${window.location.origin}/sign/${data.document.id}`);
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : "Couldn't create a shareable link.");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function copyLink() {
+    if (!sentLink) return;
+    try {
+      await navigator.clipboard.writeText(sentLink);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
     } catch {
-      // sessionStorage unavailable — /sign falls back to its own demo document.
+      // Clipboard API unavailable — the link is still shown and selectable.
     }
   }
 
@@ -191,12 +211,14 @@ export default function DocumentPanel({
               ))}
             </div>
             <div className="flex items-center gap-2 pt-1">
-              <span className="text-[11px] text-[var(--color-neutral-500)] flex-1">{logoUrl ? "Logo added" : "No letterhead logo (optional)"}</span>
-              <button className="btn btn-secondary text-[10.5px] flex-none" onClick={() => logoInputRef.current?.click()}>
+              <span className="text-[11px] text-[var(--color-neutral-500)] flex-1">
+                {logoUploading ? "Uploading…" : logoUrl ? "Logo added" : "No letterhead logo (optional)"}
+              </span>
+              <button className="btn btn-secondary text-[10.5px] flex-none" onClick={() => logoInputRef.current?.click()} disabled={logoUploading}>
                 <IconCamera size={11} />
-                {logoUrl ? "Replace" : "Add"}
+                {logoUploading ? "…" : logoUrl ? "Replace" : "Add"}
               </button>
-              <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFile} />
+              <input ref={logoInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" className="hidden" onChange={handleLogoFile} />
             </div>
           </div>
 
@@ -211,10 +233,28 @@ export default function DocumentPanel({
             </>
           ) : (
             <>
-              <a href="/sign" className="btn btn-primary btn-block text-[12.5px]" onClick={sendForSignature}>
+              <button className="btn btn-primary btn-block text-[12.5px]" onClick={sendForSignature} disabled={sending}>
                 <IconESign size={14} />
-                Send for signature
-              </a>
+                {sending ? "Creating link…" : "Send for signature"}
+              </button>
+              {sendError && <div className="text-[11px]" style={{ color: "var(--color-accent-300)" }}>{sendError}</div>}
+              {sentLink && (
+                <div className="card elev-sm gap-2 p-3">
+                  <div className="flex items-center gap-1.5 text-[11.5px] font-medium" style={{ color: "#63c3b2" }}>
+                    <IconCheckCircle size={13} />
+                    Real link — anyone who opens it can review and sign
+                  </div>
+                  <div className="text-[10.5px] font-mono break-all" style={{ color: "var(--color-neutral-400)" }}>{sentLink}</div>
+                  <div className="flex gap-1.5">
+                    <button className="btn btn-secondary text-[11px] flex-1" onClick={copyLink}>
+                      {linkCopied ? "Copied!" : "Copy link"}
+                    </button>
+                    <a href={sentLink} target="_blank" rel="noopener noreferrer" className="btn btn-ghost text-[11px] flex-1">
+                      Open
+                    </a>
+                  </div>
+                </div>
+              )}
               <button className="btn btn-secondary btn-block text-[12.5px]" onClick={startEditing}>
                 Edit document
               </button>

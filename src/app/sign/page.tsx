@@ -1,144 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IconLogoMark } from "@/components/icons";
-import SignStepper from "@/components/sign/SignStepper";
-import ReviewStep from "@/components/sign/ReviewStep";
-import VerifyStep from "@/components/sign/VerifyStep";
-import SignStep from "@/components/sign/SignStep";
-import CompleteStep from "@/components/sign/CompleteStep";
-import { demoDocument, canonicalDocumentText, SIGN_DOCUMENT_STORAGE_KEY, type SignDocument } from "@/components/sign/document";
-import { documentAccents, type DocumentLayout } from "@/components/document/theme";
+import SignFlow from "@/components/sign/SignFlow";
+import { demoDocument, SIGN_DOCUMENT_STORAGE_KEY, type SignDocument } from "@/components/sign/document";
 
-export type SignatureProof = {
-  certificateId: string;
-  recordHash: string;
-  documentHash: string;
-  signedAt: string;
-  persisted: boolean;
-  stampApplied: boolean;
-  stampCreditsRemaining: number | null;
-};
-
+// The demo/preview path: loads whatever the AI Assistant last staged in this
+// same browser tab's sessionStorage (or the built-in demo document if
+// nothing's staged). Not a real shareable document — for a real link anyone
+// can open, see /sign/[id].
 export default function SignPage() {
-  const [step, setStep] = useState(1);
-  const [signature, setSignature] = useState("");
-  const [signerFullName, setSignerFullName] = useState("");
-  const [proof, setProof] = useState<SignatureProof | null>(null);
-  const [sealing, setSealing] = useState(false);
   const [signDocument, setSignDocument] = useState<SignDocument>(demoDocument);
-  const [requireSignature, setRequireSignature] = useState(true);
-  const [applyStamp, setApplyStamp] = useState(true);
-  const [accentColor, setAccentColor] = useState(documentAccents[0].color);
-  const [layout, setLayout] = useState<DocumentLayout>("classic");
 
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem(SIGN_DOCUMENT_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as SignDocument;
-        setSignDocument(parsed);
-        if (parsed.accentColor) setAccentColor(parsed.accentColor);
-        if (parsed.layout) setLayout(parsed.layout);
-      }
+      if (stored) setSignDocument(JSON.parse(stored));
     } catch {
       // Malformed/missing storage — stay on the demo document.
     }
   }, []);
 
-  function skipToComplete() {
-    setSignature("");
-    setProof(null);
-    setStep(4);
-  }
-
-  async function completeSigning(sig: string, fullName: string) {
-    setSignature(sig);
-    setSignerFullName(fullName);
-    setStep(4);
-    setSealing(true);
-    try {
-      const res = await fetch("/api/sign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          documentTitle: signDocument.title,
-          documentContent: canonicalDocumentText(signDocument),
-          signerName: fullName || signDocument.signerName,
-          signerEmail: signDocument.signerEmail,
-          signatureData: sig,
-          skipStamp: !applyStamp,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) setProof(data);
-    } catch {
-      // Network/API failure: CompleteStep falls back to showing the signature
-      // itself without a certificate, rather than a broken or fake one.
-    } finally {
-      setSealing(false);
-    }
-  }
-
-  return (
-    <div className="relative min-h-screen bg-[var(--color-neutral-900)] flex flex-col items-center py-12 px-4 overflow-hidden">
-      <div className="nx-grid-bg absolute inset-0 pointer-events-none" />
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(720px 420px at 50% -8%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent)" }}
-      />
-
-      <div className="relative flex items-center gap-2.5 mb-8">
-        <IconLogoMark size={26} />
-        <span className="font-medium text-[16px] text-[var(--color-text)]">Origin</span>
-        <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">e-signature</span>
-        <a href="/signatures" className="text-[12px] ml-3 no-underline" style={{ color: "var(--color-accent-300)" }}>
-          View history →
-        </a>
-      </div>
-
-      <div className="relative">
-        <SignStepper current={step} skippedSigning={!requireSignature} />
-      </div>
-
-      <div
-        className="relative w-full max-w-[440px] mt-8 p-8 rounded-2xl bg-[var(--color-bg)] text-[var(--color-text)]"
-        style={{ boxShadow: "var(--shadow-lg), 0 40px 80px -30px color-mix(in srgb, var(--color-accent) 25%, transparent)" }}
-      >
-        {step === 1 && (
-          <ReviewStep
-            document={signDocument}
-            requireSignature={requireSignature}
-            onRequireSignatureChange={setRequireSignature}
-            applyStamp={applyStamp}
-            onApplyStampChange={setApplyStamp}
-            accentColor={accentColor}
-            onAccentColorChange={setAccentColor}
-            layout={layout}
-            onLayoutChange={setLayout}
-            onContinue={() => (requireSignature ? setStep(2) : skipToComplete())}
-          />
-        )}
-        {step === 2 && <VerifyStep onContinue={() => setStep(3)} onBack={() => setStep(1)} />}
-        {step === 3 && <SignStep onContinue={completeSigning} onBack={() => setStep(2)} />}
-        {step === 4 && (
-          <CompleteStep
-            document={signDocument}
-            signature={signature}
-            signerName={signerFullName || signDocument.signerName}
-            proof={proof}
-            sealing={sealing}
-            signed={requireSignature}
-            applyStamp={applyStamp}
-            accentColor={accentColor}
-            layout={layout}
-          />
-        )}
-      </div>
-
-      <div className="relative text-[11px] text-[var(--color-neutral-600)] mt-6 flex items-center gap-2">
-        Protected by tamper-evident hash-chained signatures · Audit trail retained for 7 years
-      </div>
-    </div>
-  );
+  return <SignFlow document={signDocument} />;
 }

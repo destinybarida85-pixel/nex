@@ -10,14 +10,16 @@ const penColors = [
 ];
 
 export default function SignStep({
+  documentTitle,
   onContinue,
   onBack,
 }: {
+  documentTitle?: string;
   onContinue: (signature: string, fullName: string) => void;
   onBack: () => void;
 }) {
   const [mode, setMode] = useState<"type" | "draw">("type");
-  const [typedName, setTypedName] = useState("Halcyon Ventures");
+  const [typedName, setTypedName] = useState("");
   const [hasDrawn, setHasDrawn] = useState(false);
   const [penColor, setPenColor] = useState(penColors[0].value);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -98,7 +100,7 @@ export default function SignStep({
         <IconPen size={18} className="text-[var(--color-accent)]" />
         <div>
           <h4 className="m-0 text-[18px]">Adopt your signature</h4>
-          <div className="text-[12px] text-[var(--color-neutral-500)] mt-0.5">MSA · Halcyon Ventures</div>
+          {documentTitle && <div className="text-[12px] text-[var(--color-neutral-500)] mt-0.5">{documentTitle}</div>}
         </div>
       </div>
 

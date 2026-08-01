@@ -11,16 +11,23 @@ const isConfigured = !!(
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { documentTitle, documentContent, signerName, signerEmail, signatureData, skipStamp } = body as {
+  const { documentId, documentTitle, documentContent, signerName, signatureData, skipStamp } = body as {
+    documentId?: string;
     documentTitle: string;
     documentContent: string;
     signerName: string;
-    signerEmail: string;
+    signerEmail?: string;
     signatureData: string;
     skipStamp?: boolean;
   };
+  // Deliberately optional: a real shareable link (/sign/[id]) has no way to
+  // know in advance who's about to open it, and there's no real identity
+  // verification in this flow to require an email for anyway — that was a
+  // decorative "we sent you a code" step that never actually sent or
+  // checked anything, and has been removed.
+  const signerEmail: string = body.signerEmail || "";
 
-  if (!documentContent || !signerName || !signerEmail || !signatureData) {
+  if (!documentContent || !signerName || !signatureData) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
   }
 
@@ -74,27 +81,43 @@ export async function POST(request: Request) {
     // No session cookie present — proceed as an anonymous signer.
   }
 
-  // Match an existing document by title+content so a shared link (an external
-  // signer completing a document a business already sent) finds and updates
-  // that same row rather than creating a duplicate. But when the person here
-  // has their own tenant, scope the match to their own documents only —
-  // otherwise two unrelated businesses drafting from the same unedited
-  // starter template (identical title+content) would collide onto the same
-  // document and signature chain, which is a real cross-tenant leak.
-  let docQuery = supabase.from("documents").select("id, tenant_id").eq("title", documentTitle).eq("content_hash", documentHash);
-  if (authorTenantId) docQuery = docQuery.eq("tenant_id", authorTenantId);
-  let { data: doc } = await docQuery.maybeSingle();
+  let doc: { id: string; tenant_id: string | null } | null = null;
 
-  if (!doc) {
-    const { data: inserted, error: insertError } = await supabase
-      .from("documents")
-      .insert({ title: documentTitle, content: { text: documentContent }, content_hash: documentHash, status: "sent", tenant_id: authorTenantId })
-      .select("id, tenant_id")
-      .single();
-    if (insertError) {
-      return NextResponse.json({ error: insertError.message }, { status: 500 });
+  if (documentId) {
+    // A real shareable link (/sign/[id]) — this is the exact document, no
+    // guessing needed. Keep content_hash in sync so the tamper-evident
+    // record still reflects what was actually signed.
+    const { data: existing, error: findError } = await supabase.from("documents").select("id, tenant_id").eq("id", documentId).maybeSingle();
+    if (findError || !existing) {
+      return NextResponse.json({ error: "That document no longer exists." }, { status: 404 });
     }
-    doc = inserted;
+    await supabase.from("documents").update({ content_hash: documentHash }).eq("id", documentId);
+    doc = existing;
+  } else {
+    // No real id (the sessionStorage-only demo/preview path) — match an
+    // existing document by title+content so re-completing the same demo
+    // flow finds and updates that same row rather than creating a
+    // duplicate each time. When the person here has their own tenant,
+    // scope the match to their own documents only — otherwise two
+    // unrelated businesses drafting from the same unedited starter
+    // template (identical title+content) would collide onto the same
+    // document and signature chain, which is a real cross-tenant leak.
+    let docQuery = supabase.from("documents").select("id, tenant_id").eq("title", documentTitle).eq("content_hash", documentHash);
+    if (authorTenantId) docQuery = docQuery.eq("tenant_id", authorTenantId);
+    const { data: matched } = await docQuery.maybeSingle();
+    doc = matched;
+
+    if (!doc) {
+      const { data: inserted, error: insertError } = await supabase
+        .from("documents")
+        .insert({ title: documentTitle, content: { text: documentContent }, content_hash: documentHash, status: "sent", tenant_id: authorTenantId })
+        .select("id, tenant_id")
+        .single();
+      if (insertError) {
+        return NextResponse.json({ error: insertError.message }, { status: 500 });
+      }
+      doc = inserted;
+    }
   }
 
   const { data: previous } = await supabase

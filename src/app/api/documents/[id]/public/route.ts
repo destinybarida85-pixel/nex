@@ -18,15 +18,28 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     .eq("id", id)
     .maybeSingle();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  // A malformed id (e.g. a mistyped or partial link) fails at the database
+  // level with an "invalid input syntax for uuid" error, not a clean "no
+  // rows" — without this check that surfaces as a raw 500 instead of the
+  // same honest "not found" a real-but-missing id gets below.
+  if (error) {
+    if (error.code === "22P02") return NextResponse.json({ error: "Document not found." }, { status: 404 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   if (!document) return NextResponse.json({ error: "Document not found." }, { status: 404 });
+
+  const content = document.content as { text?: string; sections?: { heading: string; text: string }[]; layout?: string; accentColor?: string; logoUrl?: string };
 
   return NextResponse.json({
     configured: true,
     document: {
       id: document.id,
       title: document.title,
-      text: (document.content as { text?: string })?.text ?? "",
+      text: content?.text ?? "",
+      sections: content?.sections ?? null,
+      layout: content?.layout ?? null,
+      accentColor: content?.accentColor ?? null,
+      logoUrl: content?.logoUrl ?? null,
       status: document.status,
     },
   });

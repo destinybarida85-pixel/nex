@@ -8,7 +8,7 @@ import { demoDocument, type SignDocument } from "./document";
 import DocumentPaper from "@/components/document/DocumentPaper";
 import SignatureBlock from "@/components/document/SignatureBlock";
 import type { DocumentLayout } from "@/components/document/theme";
-import type { SignatureProof } from "@/app/sign/page";
+import type { SignatureProof } from "./SignFlow";
 
 const audit = [
   { label: "Drafted", meta: "Jul 18, 2026 · 09:14" },

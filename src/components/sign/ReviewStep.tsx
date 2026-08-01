@@ -38,7 +38,7 @@ export default function ReviewStep({
         <div>
           <h4 className="m-0 text-[18px]">{document.title}</h4>
           <div className="text-[12px] text-[var(--color-neutral-500)] mt-0.5">
-            Sent by {document.sentBy} · Requires your signature
+            {document.sentBy ? `Sent by ${document.sentBy} · ` : ""}Requires your signature
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function ReviewStep({
       </div>
 
       <button className="btn btn-primary btn-block" disabled={!reviewed} onClick={onContinue}>
-        {requireSignature ? "Continue to verification" : "Mark as reviewed & complete"}
+        {requireSignature ? "Continue to signing" : "Mark as reviewed & complete"}
       </button>
     </div>
   );

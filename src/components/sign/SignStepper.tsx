@@ -1,13 +1,13 @@
 import { IconCheckCircle } from "@/components/icons";
 
-const steps = ["Review", "Verify", "Sign", "Complete"];
+const steps = ["Review", "Sign", "Complete"];
 
 export default function SignStepper({ current, skippedSigning }: { current: number; skippedSigning?: boolean }) {
   return (
     <div className="flex items-center gap-2 max-w-[420px] mx-auto w-full">
       {steps.map((label, i) => {
         const index = i + 1;
-        const skipped = skippedSigning && (index === 2 || index === 3);
+        const skipped = skippedSigning && index === 2;
         const done = index < current && !skipped;
         const active = index === current;
         return (
