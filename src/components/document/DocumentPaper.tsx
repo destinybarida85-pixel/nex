@@ -67,6 +67,7 @@ export default function DocumentPaper({
   layout = "classic",
   headerRight,
   footerSlot,
+  overlay,
   className = "",
   editable = false,
   onTitleChange,
@@ -82,6 +83,11 @@ export default function DocumentPaper({
   layout?: DocumentLayout;
   headerRight?: ReactNode;
   footerSlot?: ReactNode;
+  /** Free-floating content positioned by the caller (e.g. a draggable stamp
+   *  placed anywhere on the page) — rendered over the whole paper, which is
+   *  why this wraps every layout in position:relative rather than each
+   *  branch handling its own positioning context. */
+  overlay?: ReactNode;
   className?: string;
   editable?: boolean;
   onTitleChange?: (v: string) => void;
@@ -118,8 +124,10 @@ export default function DocumentPaper({
       <p style={{ ...style, margin: 0 }}>{sections[index].text}</p>
     );
 
+  let content: ReactNode;
+
   if (layout === "modern") {
-    return (
+    content = (
       <div
         className={`w-full ${className}`}
         style={{ background: paperBg, color: paperInk, padding: `${40 * f}px ${44 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 10 * f }}
@@ -187,7 +195,7 @@ export default function DocumentPaper({
   }
 
   if (layout === "minimal") {
-    return (
+    content = (
       <div
         className={`w-full ${className}`}
         style={{ background: paperBg, color: paperInk, padding: `${44 * f}px ${46 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 10 * f }}
@@ -220,7 +228,7 @@ export default function DocumentPaper({
 
   if (layout === "dossier") {
     const metaLines = (meta || "").split("·").map((s) => s.trim()).filter(Boolean);
-    return (
+    content = (
       <div
         className={`w-full ${className}`}
         style={{ background: "#fdfdfc", color: "#0a0a0a", fontFamily: monoStack, padding: `${46 * f}px ${48 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 6 * f }}
@@ -275,7 +283,7 @@ export default function DocumentPaper({
     );
   }
 
-  return (
+  content = (
     <div
       className={`w-full ${className}`}
       style={{
@@ -322,6 +330,13 @@ export default function DocumentPaper({
           {footerSlot}
         </>
       )}
+    </div>
+  );
+
+  return (
+    <div style={{ position: "relative" }}>
+      {content}
+      {overlay}
     </div>
   );
 }

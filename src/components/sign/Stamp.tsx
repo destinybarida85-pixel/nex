@@ -25,7 +25,7 @@ export default function Stamp({
   return (
     <div
       className="pointer-events-none select-none"
-      style={{ width: size, height: size, transform: "rotate(-9deg)", opacity: 0.92 }}
+      style={{ width: size, height: size, transform: "rotate(-9deg)", opacity: 0.95, mixBlendMode: "multiply" }}
     >
       <svg viewBox="0 0 200 200" width="100%" height="100%">
         <defs>
@@ -36,8 +36,8 @@ export default function Stamp({
           </clipPath>
         </defs>
 
-        <circle cx={cx} cy={cy} r={94} fill="none" stroke={c} strokeWidth={3.5} />
-        <circle cx={cx} cy={cy} r={84} fill="none" stroke={c} strokeWidth={1.2} strokeDasharray="1.5 3.5" opacity={0.75} />
+        <circle cx={cx} cy={cy} r={94} fill="none" stroke={c} strokeWidth={5.5} />
+        <circle cx={cx} cy={cy} r={82} fill="none" stroke={c} strokeWidth={1.4} strokeDasharray="1.5 3.5" opacity={0.75} />
 
         {imageUrl ? (
           <image href={imageUrl} x={cx - 46} y={cy - 46} width={92} height={92} preserveAspectRatio="xMidYMid slice" clipPath={`url(#clip-${uid})`} />
@@ -48,7 +48,7 @@ export default function Stamp({
           </g>
         )}
 
-        <text fontSize={19} fontWeight={700} letterSpacing="2.5" fill={c} style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
+        <text fontSize={20} fontWeight={800} letterSpacing="2.5" fill={c} style={{ fontFamily: "'Arial Black', system-ui, -apple-system, sans-serif" }}>
           <textPath href={`#top-${uid}`} startOffset="50%" textAnchor="middle">
             {label}
           </textPath>

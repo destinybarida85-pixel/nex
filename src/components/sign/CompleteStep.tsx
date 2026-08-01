@@ -18,7 +18,7 @@ const audit = [
   { label: "Signed & sealed", meta: "Jul 21, 2026 · 08:45" },
 ];
 
-const stampColors = ["#9184d9", "#63c3b2", "#d9a05b", "#e0665f", "#5b8fd9", "#8a8a94", "#c96bb0", "#4fae7a"];
+const stampColors = ["#c81e1e", "#9184d9", "#63c3b2", "#d9a05b", "#5b8fd9", "#8a8a94", "#c96bb0", "#4fae7a"];
 
 const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
@@ -43,10 +43,11 @@ const stampTypes: { id: string; name: string; label: string; sub: string }[] = [
   { id: "embossing", name: "Embossing Seal", label: "EMBOSSED", sub: "OFFICIAL SEAL" },
 ];
 
-const positions: { id: "signature" | "header" | "footer"; label: string }[] = [
-  { id: "signature", label: "Next to signature" },
+type StampPosition = "footer" | "header" | "custom";
+const positions: { id: StampPosition; label: string }[] = [
+  { id: "footer", label: "Next to the signature" },
   { id: "header", label: "In the document header" },
-  { id: "footer", label: "In the document footer" },
+  { id: "custom", label: "Anywhere — drag to place" },
 ];
 
 function readAsDataUrl(file: File): Promise<string> {
@@ -84,7 +85,10 @@ export default function CompleteStep({
   const [stampLabel, setStampLabel] = useState(stampType.label);
   const [stampSub, setStampSub] = useState(stampType.sub);
   const [stampColor, setStampColor] = useState(stampColors[0]);
-  const [stampPosition, setStampPosition] = useState<"signature" | "header" | "footer">("signature");
+  const [stampPosition, setStampPosition] = useState<StampPosition>("footer");
+  const [stampX, setStampX] = useState(82);
+  const [stampY, setStampY] = useState(90);
+  const [dragging, setDragging] = useState(false);
   const [stampImageUrl, setStampImageUrl] = useState<string | null>(null);
   const [rightsConfirmed, setRightsConfirmed] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -93,7 +97,7 @@ export default function CompleteStep({
   const [showAudit, setShowAudit] = useState(false);
 
   const stampBlocked = signed && applyStampOption && proof && !proof.stampApplied;
-  const showStampCard = signed && applyStampOption;
+  const showStamp = signed && applyStampOption;
 
   function selectStampType(id: string) {
     const t = stampTypes.find((s) => s.id === id) || stampTypes[0];
@@ -123,9 +127,51 @@ export default function CompleteStep({
     setBuyingCredits(false);
   }
 
-  const stampNode = !stampBlocked ? <Stamp label={stampLabel} sub={stampSub} color={stampColor} imageUrl={stampImageUrl} /> : null;
-  const embeddedStampNode = !stampBlocked ? <Stamp label={stampLabel} sub={stampSub} color={stampColor} imageUrl={stampImageUrl} size={72} /> : null;
-  const embeddedStamp = showStampCard && stampPosition !== "signature" ? embeddedStampNode : null;
+  function clampPercent(v: number) {
+    return Math.max(8, Math.min(92, v));
+  }
+
+  function stampPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    if (stampPosition !== "custom" || !editingStamp) return;
+    e.preventDefault();
+    setDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  function stampPointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!dragging) return;
+    const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+    if (!rect) return;
+    setStampX(clampPercent(((e.clientX - rect.left) / rect.width) * 100));
+    setStampY(clampPercent(((e.clientY - rect.top) / rect.height) * 100));
+  }
+
+  function stampPointerUp() {
+    setDragging(false);
+  }
+
+  const embeddedStampNode = showStamp && !stampBlocked ? <Stamp label={stampLabel} sub={stampSub} color={stampColor} imageUrl={stampImageUrl} size={72} /> : null;
+
+  const headerStamp = stampPosition === "header" ? embeddedStampNode : null;
+  const footerStamp = stampPosition === "footer" ? embeddedStampNode : null;
+  const overlayStamp =
+    stampPosition === "custom" && embeddedStampNode ? (
+      <div
+        onPointerDown={stampPointerDown}
+        onPointerMove={stampPointerMove}
+        onPointerUp={stampPointerUp}
+        style={{
+          position: "absolute",
+          left: `${stampX}%`,
+          top: `${stampY}%`,
+          transform: "translate(-50%, -50%)",
+          touchAction: "none",
+          cursor: editingStamp ? (dragging ? "grabbing" : "grab") : "default",
+        }}
+      >
+        {embeddedStampNode}
+      </div>
+    ) : null;
 
   const signedDateLabel = proof?.signedAt
     ? new Date(proof.signedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
@@ -134,10 +180,10 @@ export default function CompleteStep({
     signed && signature ? <SignatureBlock signature={signature} signerName={signerName || "Signed electronically"} dateLabel={signedDateLabel} /> : null;
 
   const footerSlot =
-    signatureBlockNode || (stampPosition === "footer" && embeddedStamp) ? (
+    signatureBlockNode || footerStamp ? (
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>{signatureBlockNode}</div>
-        {stampPosition === "footer" && embeddedStamp}
+        {footerStamp}
       </div>
     ) : undefined;
 
@@ -166,75 +212,66 @@ export default function CompleteStep({
             accentColor={accentColor}
             layout={layout}
             logoUrl={document.logoUrl}
-            headerRight={stampPosition === "header" ? embeddedStamp : undefined}
+            headerRight={headerStamp}
             footerSlot={footerSlot}
+            overlay={overlayStamp}
           />
         </div>
 
         {signed && (
           <div className="card elev-sm w-full text-left gap-2.5 p-4 relative overflow-visible">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex flex-col gap-2.5 flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <IconLock size={13} className="text-[var(--color-accent)]" />
-                  <span className="text-[12px] font-mono text-[var(--color-neutral-400)]">
-                    {sealing
-                      ? "Computing certificate…"
-                      : `Certificate ID: ${proof?.certificateId ?? "unavailable"}`}
-                  </span>
-                </div>
-                {proof && (
-                  <div className="text-[9.5px] font-mono text-[var(--color-neutral-600)] break-all">
-                    SHA-256: {proof.recordHash}
-                  </div>
+            <div className="flex items-center gap-2">
+              <IconLock size={13} className="text-[var(--color-accent)]" />
+              <span className="text-[12px] font-mono text-[var(--color-neutral-400)]">
+                {sealing ? "Sealing…" : "Signed & sealed"}
+              </span>
+            </div>
+            {proof && (
+              <div className="text-[9.5px] font-mono text-[var(--color-neutral-600)] break-all">
+                SHA-256: {proof.recordHash}
+              </div>
+            )}
+
+            {showStamp && (
+              <div className="no-print flex items-center justify-between gap-3 flex-wrap pt-2 mt-1 border-t" style={{ borderColor: "var(--color-divider)" }}>
+                {stampBlocked ? (
+                  <>
+                    <span className="text-[11px] text-[var(--color-neutral-500)]">Out of stamp credits — the seal is skipped on this document.</span>
+                    <button className="btn btn-primary text-[10.5px] flex-none" onClick={buyCredits} disabled={buyingCredits}>
+                      {buyingCredits ? "…" : "Buy 10 credits · $9"}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[11px] text-[var(--color-neutral-500)]">
+                      Stamp is live on the document — {positions.find((p) => p.id === stampPosition)?.label.toLowerCase()}.
+                    </span>
+                    <button className="btn btn-secondary text-[10.5px] flex-none" onClick={() => setEditingStamp((v) => !v)}>
+                      <IconEdit size={11} />
+                      {editingStamp ? "Close" : "Edit stamp"}
+                    </button>
+                  </>
                 )}
               </div>
+            )}
 
-              {showStampCard && (
-                <div className="flex-none -mt-2 -mr-1 flex flex-col items-center gap-1.5">
-                  {stampBlocked ? (
-                    <div className="flex flex-col items-center gap-1.5 w-[108px]">
-                      <div
-                        className="w-[108px] h-[108px] rounded-full grid place-items-center text-center p-2"
-                        style={{ border: "2.5px dashed var(--color-neutral-700)", color: "var(--color-neutral-500)" }}
-                      >
-                        <span className="text-[10px] leading-[1.4]">Out of stamp credits</span>
-                      </div>
-                      <button className="btn btn-primary text-[10.5px] no-print" style={{ padding: "5px 10px" }} onClick={buyCredits} disabled={buyingCredits}>
-                        {buyingCredits ? "…" : "Buy 10 credits · $9"}
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      {stampPosition === "signature" ? stampNode : (
-                        <div className="text-[10.5px] text-[var(--color-neutral-500)] italic w-[108px]">Placed in the document {stampPosition}</div>
-                      )}
-                      <button
-                        className="btn btn-secondary text-[10.5px] no-print"
-                        style={{ padding: "4px 9px" }}
-                        onClick={() => setEditingStamp((v) => !v)}
-                      >
-                        <IconEdit size={11} />
-                        Edit stamp
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {editingStamp && !stampBlocked && showStampCard && (
+            {editingStamp && !stampBlocked && showStamp && (
               <div className="no-print flex flex-col gap-2.5 p-3 rounded-lg border" style={{ borderColor: "var(--color-divider)" }}>
                 <select className="input text-[12px]" value={stampTypeId} onChange={(e) => selectStampType(e.target.value)}>
                   {stampTypes.map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}
                 </select>
-                <select className="input text-[12px]" value={stampPosition} onChange={(e) => setStampPosition(e.target.value as typeof stampPosition)}>
+                <select className="input text-[12px]" value={stampPosition} onChange={(e) => setStampPosition(e.target.value as StampPosition)}>
                   {positions.map((p) => (
                     <option key={p.id} value={p.id}>{p.label}</option>
                   ))}
                 </select>
+                {stampPosition === "custom" && (
+                  <div className="text-[11px] italic" style={{ color: "var(--color-accent-300)" }}>
+                    Drag the stamp on the document above to place it anywhere on the page.
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-2">
                   <input className="input text-[12px]" placeholder="Main text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 14))} />
                   <input className="input text-[12px]" placeholder="Sub text" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 20))} />
@@ -282,7 +319,7 @@ export default function CompleteStep({
               </div>
             )}
 
-            {showStampCard && proof && !stampBlocked && proof.stampCreditsRemaining !== null && (
+            {showStamp && proof && !stampBlocked && proof.stampCreditsRemaining !== null && (
               <div className="text-[10.5px] no-print text-[var(--color-neutral-500)]">
                 {proof.stampCreditsRemaining} stamp {proof.stampCreditsRemaining === 1 ? "credit" : "credits"} left ·{" "}
                 <a href="/stamps" style={{ color: "var(--color-accent-300)" }}>view stamp history</a>
