@@ -5,6 +5,8 @@ import { IconGlobe, IconCamera, IconCheckCircle } from "@/components/icons";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import { ClaritySite, LedgerSite, AtriumSite, PortfolioSite, LandingSite, type Site } from "../site/[slug]/page";
+import Sidebar from "@/components/dashboard/Sidebar";
+import TopBar from "@/components/dashboard/TopBar";
 
 const baseSwatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
 
@@ -266,8 +268,11 @@ export default function WhiteLabelPage() {
     template === "ledger" ? LedgerSite : template === "atrium" ? AtriumSite : template === "portfolio" ? PortfolioSite : template === "landing" ? LandingSite : ClaritySite;
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
-      <div className="max-w-[1240px] mx-auto p-4 sm:p-[22px_26px] flex flex-col gap-4">
+    <div className="flex min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+      <Sidebar active="White-label" />
+      <div className="flex-1 flex flex-col min-w-0">
+        <TopBar />
+        <div className="max-w-[1240px] mx-auto w-full p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-4">
         <div>
           <h4 className="m-0 text-[19px]">White-label</h4>
           <div className="text-muted text-xs mt-0.5">
@@ -579,6 +584,7 @@ export default function WhiteLabelPage() {
               you want your own brand in the URL bar too.
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

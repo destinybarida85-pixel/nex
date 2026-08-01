@@ -292,7 +292,11 @@ textarea.input { min-height: 90px; resize: vertical; }
 
 /* — dialog — */
 .dialog-backdrop {
-  position: fixed; inset: 0; display: grid; place-items: center;
+  /* z-index is load-bearing: without it this fixed backdrop sits at the same
+     stacking level as any positioned content behind it, so a later-in-DOM
+     positioned element (e.g. the document paper, which is position:relative to
+     host the draggable stamp overlay) paints straight over the open modal. */
+  position: fixed; inset: 0; z-index: 100; display: grid; place-items: center;
   padding: var(--space-4);
   background: color-mix(in srgb, var(--color-neutral-900) 50%, transparent);
 }

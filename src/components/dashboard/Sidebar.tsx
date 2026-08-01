@@ -6,9 +6,9 @@ import { isBackendConfigured } from "@/lib/backendStatus";
 import {
   IconLogoMark,
   IconChevronUpDown,
+  IconChevronDown,
   IconDashboard,
   IconAnalytics,
-  IconCalendar,
   IconWallet,
   IconPayments,
   IconInvoices,
@@ -21,25 +21,33 @@ import {
   IconSparkle,
   IconSettings,
   IconGlobe,
-  IconApi,
+  IconTemplates,
   IconMenu,
   IconX,
 } from "@/components/icons";
 
-const primaryNav = [
+const COLLAPSE_KEY = "origin-sidebar-collapsed";
+
+type NavItem = { label: string; icon: React.ComponentType<{ size?: number }>; href: string; badge?: string };
+
+// Grouped so the sidebar reads as a short list of jobs-to-be-done rather than
+// a flat dump of every route. Calendar and API Center were deliberately removed:
+// both were static shells with no real data behind them, and API key management
+// already lives (for real) inside Settings — keeping them here made the menu
+// look fuller than the product actually is.
+const primaryNav: NavItem[] = [
   { label: "Dashboard", icon: IconDashboard, href: "/dashboard" },
-  { label: "Analytics", icon: IconAnalytics, href: "/analytics" },
-  { label: "Calendar", icon: IconCalendar, href: "/calendar" },
+  { label: "AI Assistant", icon: IconSparkle, href: "/assistant", badge: "New" },
 ];
 
-const moneyNav = [
+const moneyNav: NavItem[] = [
   { label: "Business Wallet", icon: IconWallet, href: "/wallet" },
   { label: "Payments", icon: IconPayments, href: "/payments" },
   { label: "Invoices", icon: IconInvoices, href: "/invoices" },
   { label: "Payroll", icon: IconPayroll, href: "/payroll" },
 ];
 
-const workNav = [
+const workNav: NavItem[] = [
   { label: "Documents", icon: IconDocuments, href: "/assistant" },
   { label: "E-Signatures", icon: IconESign, href: "/sign" },
   { label: "Projects", icon: IconProjects, href: "/projects" },
@@ -47,31 +55,38 @@ const workNav = [
   { label: "Employees", icon: IconEmployees, href: "/employees" },
 ];
 
-const bottomNav = [
+// Promoted out of the bottom drawer — white-label is a headline feature, not a
+// footnote, so it gets its own visible group instead of being buried under
+// settings-style links.
+const brandNav: NavItem[] = [
+  { label: "White-label", icon: IconGlobe, href: "/whitelabel" },
+  { label: "Templates", icon: IconTemplates, href: "/templates" },
+];
+
+const bottomNav: NavItem[] = [
+  { label: "Analytics", icon: IconAnalytics, href: "/analytics" },
   { label: "Settings", icon: IconSettings, href: "/settings" },
   { label: "Billing", icon: IconPayments, href: "/billing" },
-  { label: "White-label", icon: IconGlobe, href: "/whitelabel" },
-  { label: "API Center", icon: IconApi, href: "/api-docs" },
 ];
 
 function NavLink({
   label,
   icon: Icon,
   href,
+  badge,
   active,
+  collapsed,
   onNavigate,
-}: {
-  label: string;
-  icon: React.ComponentType<{ size?: number }>;
-  href: string;
-  active: boolean;
-  onNavigate?: () => void;
-}) {
+}: NavItem & { active: boolean; collapsed: boolean; onNavigate?: () => void }) {
   return (
     <a
       href={href}
       onClick={onNavigate}
-      className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13.5px] no-underline transition-colors"
+      title={collapsed ? label : undefined}
+      aria-label={label}
+      className={`flex items-center gap-2.5 py-[7px] rounded-lg text-[13.5px] no-underline transition-colors ${
+        collapsed ? "justify-center px-0" : "px-2.5"
+      }`}
       style={
         active
           ? { color: "var(--color-accent-300)", background: "color-mix(in srgb, var(--color-accent-900) 65%, transparent)" }
@@ -79,62 +94,89 @@ function NavLink({
       }
     >
       <Icon size={16} />
-      {label}
+      {!collapsed && label}
+      {!collapsed && badge && <span className="tag tag-accent ml-auto text-[9.5px] px-[7px] py-[1px]">{badge}</span>}
     </a>
   );
 }
 
-function SidebarContent({ active, onNavigate, tenantName }: { active: string; onNavigate?: () => void; tenantName: string }) {
+function SectionLabel({ children, collapsed }: { children: React.ReactNode; collapsed: boolean }) {
+  if (collapsed) return <div className="h-px my-2.5 mx-2" style={{ background: "var(--color-divider)" }} />;
+  return (
+    <div className="text-[10px] tracking-[.1em] uppercase text-[var(--color-neutral-600)] px-2.5 pt-3.5 pb-[5px]">
+      {children}
+    </div>
+  );
+}
+
+function SidebarContent({
+  active,
+  onNavigate,
+  tenantName,
+  collapsed = false,
+}: {
+  active: string;
+  onNavigate?: () => void;
+  tenantName: string;
+  collapsed?: boolean;
+}) {
+  const groups: { label: string | null; items: NavItem[] }[] = [
+    { label: null, items: primaryNav },
+    { label: "Money", items: moneyNav },
+    { label: "Work", items: workNav },
+    { label: "Brand", items: brandNav },
+  ];
+
   return (
     <>
-      <div className="flex items-center gap-2.5 px-2 pb-4">
+      <div className={`flex items-center gap-2.5 pb-4 ${collapsed ? "justify-center px-0" : "px-2"}`}>
         <IconLogoMark size={26} />
-        <div className="font-medium text-[16px] tracking-[-0.01em]">Origin</div>
+        {!collapsed && <div className="font-medium text-[16px] tracking-[-0.01em]">Origin</div>}
       </div>
 
-      <button className="flex items-center gap-2 mx-1 mb-[18px] px-2.5 py-2 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-text)] text-[12.5px] cursor-pointer text-left hover:border-[var(--color-neutral-600)] transition-colors">
-        <span className="w-[18px] h-[18px] rounded-[5px] bg-[var(--color-accent-900)] text-[var(--color-accent-300)] grid place-items-center text-[10px] font-semibold">
+      <button
+        title={collapsed ? tenantName : undefined}
+        className={`flex items-center gap-2 mb-[18px] py-2 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-text)] text-[12.5px] cursor-pointer text-left hover:border-[var(--color-neutral-600)] transition-colors ${
+          collapsed ? "justify-center px-0 mx-0" : "mx-1 px-2.5"
+        }`}
+      >
+        <span className="w-[18px] h-[18px] rounded-[5px] bg-[var(--color-accent-900)] text-[var(--color-accent-300)] grid place-items-center text-[10px] font-semibold flex-none">
           {tenantName.charAt(0).toUpperCase()}
         </span>
-        <span className="flex-1 truncate">{tenantName}</span>
-        <IconChevronUpDown size={12} className="opacity-50" />
+        {!collapsed && (
+          <>
+            <span className="flex-1 truncate">{tenantName}</span>
+            <IconChevronUpDown size={12} className="opacity-50" />
+          </>
+        )}
       </button>
 
       <nav className="flex flex-col gap-0.5 flex-1">
-        {primaryNav.map((item) => (
-          <NavLink key={item.label} {...item} active={item.label === active} onNavigate={onNavigate} />
+        {groups.map((group, gi) => (
+          <div key={group.label ?? `group-${gi}`} className="flex flex-col gap-0.5">
+            {group.label && <SectionLabel collapsed={collapsed}>{group.label}</SectionLabel>}
+            {group.items.map((item) => (
+              <NavLink
+                key={item.label}
+                {...item}
+                active={item.label === active}
+                collapsed={collapsed}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </div>
         ))}
-        <div className="text-[10px] tracking-[.1em] uppercase text-[var(--color-neutral-600)] px-2.5 pt-3.5 pb-[5px]">
-          Money
-        </div>
-        {moneyNav.map((item) => (
-          <NavLink key={item.label} {...item} active={item.label === active} onNavigate={onNavigate} />
-        ))}
-        <div className="text-[10px] tracking-[.1em] uppercase text-[var(--color-neutral-600)] px-2.5 pt-3.5 pb-[5px]">
-          Work
-        </div>
-        {workNav.map((item) => (
-          <NavLink key={item.label} {...item} active={item.label === active} onNavigate={onNavigate} />
-        ))}
-        <a
-          href="/assistant"
-          onClick={onNavigate}
-          className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13.5px] no-underline mt-3 transition-colors"
-          style={
-            active === "AI Assistant"
-              ? { color: "var(--color-accent-300)", background: "color-mix(in srgb, var(--color-accent-900) 65%, transparent)" }
-              : { color: "var(--color-neutral-400)" }
-          }
-        >
-          <IconSparkle size={16} />
-          AI Assistant
-          <span className="tag tag-accent ml-auto text-[9.5px] px-[7px] py-[1px]">New</span>
-        </a>
       </nav>
 
       <div className="flex flex-col gap-0.5 pt-3 border-t border-[var(--color-divider)]">
         {bottomNav.map((item) => (
-          <NavLink key={item.label} {...item} active={item.label === active} onNavigate={onNavigate} />
+          <NavLink
+            key={item.label}
+            {...item}
+            active={item.label === active}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
         ))}
       </div>
     </>
@@ -143,8 +185,31 @@ function SidebarContent({ active, onNavigate, tenantName }: { active: string; on
 
 export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
   const [open, setOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const { hasSession, checked } = useHasSession();
   const [tenantName, setTenantName] = useState("Meridian Studio");
+
+  // Read persisted state after mount rather than during render, so the server
+  // and first client render agree (localStorage isn't available server-side).
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(COLLAPSE_KEY) === "1") setCollapsed(true);
+    } catch {
+      // Private mode / storage disabled — just stay expanded.
+    }
+  }, []);
+
+  function toggleCollapsed() {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0");
+      } catch {
+        // Non-fatal: the toggle still works for this session.
+      }
+      return next;
+    });
+  }
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
@@ -170,8 +235,31 @@ export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
         </button>
       </div>
 
-      <aside className="hidden md:flex w-[236px] flex-none flex-col p-[18px_14px_14px] border-r border-[var(--color-divider)] min-h-screen">
-        <SidebarContent active={active} tenantName={tenantName} />
+      <aside
+        className={`hidden md:flex flex-none flex-col border-r border-[var(--color-divider)] min-h-screen relative transition-[width] duration-200 ${
+          collapsed ? "w-[68px] p-[18px_10px_14px]" : "w-[236px] p-[18px_14px_14px]"
+        }`}
+      >
+        <SidebarContent active={active} tenantName={tenantName} collapsed={collapsed} />
+
+        <button
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? "Expand menu" : "Minimize menu"}
+          title={collapsed ? "Expand menu" : "Minimize menu"}
+          className="absolute -right-3 top-7 w-6 h-6 rounded-full grid place-items-center cursor-pointer transition-colors"
+          style={{
+            background: "var(--color-surface)",
+            border: "1px solid var(--color-divider)",
+            color: "var(--color-neutral-400)",
+          }}
+        >
+          <span
+            className="grid place-items-center transition-transform duration-200"
+            style={{ transform: collapsed ? "rotate(-90deg)" : "rotate(90deg)" }}
+          >
+            <IconChevronDown size={13} />
+          </span>
+        </button>
       </aside>
 
       {open && (

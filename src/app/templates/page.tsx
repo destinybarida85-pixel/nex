@@ -6,6 +6,8 @@ import InvoiceTemplate from "@/components/templates/InvoiceTemplate";
 import EmailTemplate from "@/components/templates/EmailTemplate";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import Sidebar from "@/components/dashboard/Sidebar";
+import TopBar from "@/components/dashboard/TopBar";
 
 const sampleSwatches = ["#63c3b2", "#d9a05b", "#7fa3e8", "#9184d9"];
 
@@ -37,8 +39,11 @@ export default function TemplatesPage() {
   const swatches = live && !sampleSwatches.includes(accent) ? [accent, ...sampleSwatches] : sampleSwatches;
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
-      <div className="max-w-[1160px] mx-auto p-[26px_24px] flex flex-col gap-5">
+    <div className="flex min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+      <Sidebar active="Templates" />
+      <div className="flex-1 flex flex-col min-w-0">
+        <TopBar />
+        <div className="max-w-[1160px] mx-auto w-full p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5">
         <div>
           <h4 className="m-0 text-[19px]">Branded templates</h4>
           <div className="text-muted text-xs mt-0.5">
@@ -109,6 +114,7 @@ export default function TemplatesPage() {
           ) : (
             <EmailTemplate tenantName={tenantName} tenantAccent={accent} poweredBy={poweredBy} logoUrl={logoUrl} />
           )}
+        </div>
         </div>
       </div>
     </div>
