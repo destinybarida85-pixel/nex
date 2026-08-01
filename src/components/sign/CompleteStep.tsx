@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { IconCheckCircle, IconLock, IconDownload, IconEdit, IconChevronDown, IconCamera } from "@/components/icons";
+import { IconCheckCircle, IconDownload, IconEdit, IconChevronDown, IconCamera } from "@/components/icons";
 
 import Stamp from "./Stamp";
 import { demoDocument, type SignDocument } from "./document";
@@ -220,20 +220,8 @@ export default function CompleteStep({
 
         {signed && (
           <div className="card elev-sm w-full text-left gap-2.5 p-4 relative overflow-visible">
-            <div className="flex items-center gap-2">
-              <IconLock size={13} className="text-[var(--color-accent)]" />
-              <span className="text-[12px] font-mono text-[var(--color-neutral-400)]">
-                {sealing ? "Sealing…" : "Signed & sealed"}
-              </span>
-            </div>
-            {proof && (
-              <div className="text-[9.5px] font-mono text-[var(--color-neutral-600)] break-all">
-                SHA-256: {proof.recordHash}
-              </div>
-            )}
-
             {showStamp && (
-              <div className="no-print flex items-center justify-between gap-3 flex-wrap pt-2 mt-1 border-t" style={{ borderColor: "var(--color-divider)" }}>
+              <div className="no-print flex items-center justify-between gap-3 flex-wrap">
                 {stampBlocked ? (
                   <>
                     <span className="text-[11px] text-[var(--color-neutral-500)]">Out of stamp credits — the seal is skipped on this document.</span>
