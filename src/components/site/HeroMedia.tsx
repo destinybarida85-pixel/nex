@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import HeroScene from "@/components/site/HeroScene";
+import ProductFrame from "@/components/site/ProductFrame";
 
 // Drop-in slot for the hero visual.
 //
@@ -11,8 +11,9 @@ import HeroScene from "@/components/site/HeroScene";
 //   public/hero/hero.mp4     ← preferred: a short silent loop (Wavespeed etc.)
 //   public/hero/hero.webp    ← or a still image
 //
-// With neither present it falls back to HeroScene, the built-in animated
-// product loop, so the page is never broken while the asset is being made.
+// With neither present it falls back to ProductFrame — the real product UI
+// rendered live — so the page is never broken while an asset is being made,
+// and stays sharp at any size.
 // The probe runs client-side because /public is served statically and there is
 // nothing to ask the server about at build time.
 const VIDEO_SRC = "/hero/hero.mp4";
@@ -56,7 +57,7 @@ export default function HeroMedia() {
   }, []);
 
   if (slot === "checking" || slot === "fallback") {
-    return <HeroScene />;
+    return <ProductFrame />;
   }
 
   return (
