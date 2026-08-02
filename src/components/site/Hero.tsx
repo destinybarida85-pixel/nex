@@ -1,4 +1,4 @@
-import HeroScene from "@/components/site/HeroScene";
+import HeroMedia from "@/components/site/HeroMedia";
 
 export default function Hero() {
   return (
@@ -30,9 +30,10 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* The 4D act: Origin's real loop — draft, sign, pay, land — playing out live. */}
+      {/* Origin's real loop — draft, sign, pay, land — playing out live, or a
+          supplied hero asset if one has been dropped into public/hero/. */}
       <div className="relative max-w-[1000px] mx-auto px-6 pb-8">
-        <HeroScene />
+        <HeroMedia />
         <div className="flex items-center justify-center gap-2 -mt-2">
           <span className="text-[11px] tracking-[.06em] uppercase text-[var(--color-neutral-600)]">
             Draft · Sign · Pay · Land — one continuous flow
