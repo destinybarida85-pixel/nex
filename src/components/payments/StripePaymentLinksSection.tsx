@@ -179,7 +179,7 @@ export default function StripePaymentLinksSection() {
               <th>Type</th>
               <th>Uses</th>
               <th>Status</th>
-              <th>Link</th>
+              <th>Links</th>
             </tr>
           </thead>
           <tbody>
@@ -202,9 +202,13 @@ export default function StripePaymentLinksSection() {
                 <td>
                   <span className={`tag ${l.status === "active" ? "tag-accent" : "tag-outline"}`}>{l.status}</span>
                 </td>
-                <td>
-                  <a href={l.url} target="_blank" rel="noreferrer" className="text-[11.5px] font-mono" style={{ color: "var(--color-accent-300)" }}>
-                    Open ↗
+                <td className="whitespace-nowrap">
+                  <a href={l.url} target="_blank" rel="noreferrer" className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>
+                    Checkout ↗
+                  </a>
+                  <span className="text-[var(--color-neutral-600)] mx-1.5">·</span>
+                  <a href={`/invoice/${l.id}`} target="_blank" rel="noreferrer" className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>
+                    Invoice ↗
                   </a>
                 </td>
               </tr>
@@ -215,7 +219,8 @@ export default function StripePaymentLinksSection() {
 
       <div className="flex items-center gap-1.5 text-[10.5px] text-[var(--color-neutral-500)]">
         <IconCheckCircle size={11} />
-        These are genuine Stripe checkout links. Payments settle directly to your Stripe account.
+        Genuine Stripe checkout links — money settles directly to your Stripe account. &ldquo;Invoice&rdquo; is the
+        branded page to email a client; see <a href="/invoices" style={{ color: "var(--color-accent-300)" }}>Invoices</a>.
       </div>
     </div>
   );

@@ -5,7 +5,8 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
-import { IconSparkle, IconInvoices } from "@/components/icons";
+import SendInvoice from "@/components/invoices/SendInvoice";
+import { IconSparkle, IconInvoices, IconMail } from "@/components/icons";
 
 const demoInvoices = [
   { number: "INV-2041", client: "Halcyon Ventures", amount: "$18,500.00", due: "Jul 21, 2026", status: "Paid", statusTag: "tag-neutral" },
@@ -31,14 +32,32 @@ type PaymentEvent = {
   payment_links: { title: string; currency: string } | { title: string; currency: string }[];
 };
 
+type SendableInvoice = {
+  id: string;
+  title: string;
+  amount_cents: number;
+  currency: string;
+  kind: "one_time" | "recurring";
+  interval: string | null;
+  uses_count: number;
+  status: string;
+  created_at: string;
+};
+
 function linkInfo(e: PaymentEvent) {
   return Array.isArray(e.payment_links) ? e.payment_links[0] : e.payment_links;
+}
+
+function money(cents: number, currency: string) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: currency.toUpperCase() }).format(cents / 100);
 }
 
 export default function InvoicesPage() {
   const { hasSession, checked } = useHasSession();
   const [live, setLive] = useState(false);
   const [events, setEvents] = useState<PaymentEvent[]>([]);
+  const [sendable, setSendable] = useState<SendableInvoice[]>([]);
+  const [tenantName, setTenantName] = useState("");
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
@@ -48,6 +67,8 @@ export default function InvoicesPage() {
         if (data.configured) {
           setLive(true);
           if (data.events) setEvents(data.events);
+          if (data.links) setSendable(data.links);
+          if (data.tenantName) setTenantName(data.tenantName);
         }
       })
       .catch(() => {});
@@ -113,14 +134,74 @@ export default function InvoicesPage() {
           </div>
 
           {live && (
-            <div className="text-[11px] text-[var(--color-neutral-500)]">
-              Origin doesn&rsquo;t yet generate net-terms invoices with due dates — this list shows real payments
-              already collected through your payment links. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Manage payment links →</a>
+            <div className="card elev-sm p-[16px_18px] gap-3">
+              <div className="flex items-center gap-2 flex-wrap">
+                <IconMail size={14} className="text-[var(--color-accent)]" />
+                <div className="card-title text-sm">Send an invoice</div>
+                <div className="flex-1" />
+                <a href="/payments" className="btn btn-secondary text-[12px]">
+                  <IconInvoices size={13} />
+                  New invoice
+                </a>
+              </div>
+              <div className="text-[11.5px] text-[var(--color-neutral-500)]">
+                Each one has its own web page your client can open and pay from. Email the link, or paste it into
+                a message — Origin doesn&rsquo;t send the email for you yet, so &ldquo;Email this invoice&rdquo;
+                opens your own mail app with everything already written.
+              </div>
+
+              {sendable.length === 0 ? (
+                <div className="text-[12.5px] text-[var(--color-neutral-500)] py-2">
+                  No invoices yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create one →</a>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2.5">
+                  {sendable.map((inv) => {
+                    const paid = inv.uses_count > 0;
+                    return (
+                      <div
+                        key={inv.id}
+                        className="flex flex-col gap-2.5 p-3 rounded-lg"
+                        style={{ background: "var(--color-bg)" }}
+                      >
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <div className="min-w-0">
+                            <div className="text-[13px] truncate">{inv.title}</div>
+                            <div className="text-[11px] text-[var(--color-neutral-500)] font-mono">
+                              INV-{inv.id.slice(0, 8).toUpperCase()}
+                            </div>
+                          </div>
+                          <div className="flex-1" />
+                          <div className="text-[13.5px]">
+                            {money(inv.amount_cents, inv.currency)}
+                            {inv.kind === "recurring" && inv.interval ? `/${inv.interval}` : ""}
+                          </div>
+                          <span className={`tag ${paid ? "tag-accent" : "tag-outline"}`}>
+                            {paid ? "Paid" : inv.status === "active" ? "Unpaid" : "Archived"}
+                          </span>
+                        </div>
+                        <SendInvoice
+                          invoiceId={inv.id}
+                          title={inv.title}
+                          amountLabel={money(inv.amount_cents, inv.currency)}
+                          senderName={tenantName || "us"}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
           <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
-            <div className="card-title text-sm">All invoices</div>
+            <div className="card-title text-sm">{live ? "Payments received" : "All invoices"}</div>
+            {live && (
+              <div className="text-[11px] text-[var(--color-neutral-500)] -mt-1">
+                Real money already collected. Origin doesn&rsquo;t track net-terms due dates yet, so the date
+                column is when payment landed.
+              </div>
+            )}
             {rows.length === 0 ? (
               <div className="text-[12.5px] text-[var(--color-neutral-500)] p-4 text-center">
                 No payments yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create a payment link →</a>
@@ -132,7 +213,7 @@ export default function InvoicesPage() {
                     <th>Invoice</th>
                     <th>Client</th>
                     <th>Amount</th>
-                    <th>Due date</th>
+                    <th>{live ? "Paid on" : "Due date"}</th>
                     <th>Status</th>
                   </tr>
                 </thead>
