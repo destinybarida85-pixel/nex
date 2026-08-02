@@ -3,6 +3,7 @@ import { hashDocument, hashSignature, computeRecordHash, formatCertificateId } f
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient as createSessionClient } from "@/lib/supabase/server";
 import { createNotification } from "@/lib/notify";
+import { isMissingColumn } from "@/lib/twoPartySigning";
 
 const isConfigured = !!(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -81,13 +82,24 @@ export async function POST(request: Request) {
     // No session cookie present — proceed as an anonymous signer.
   }
 
-  let doc: { id: string; tenant_id: string | null } | null = null;
+  let doc: { id: string; tenant_id: string | null; signers_required?: number } | null = null;
 
   if (documentId) {
     // A real shareable link (/sign/[id]) — this is the exact document, no
     // guessing needed. Keep content_hash in sync so the tamper-evident
     // record still reflects what was actually signed.
-    const { data: existing, error: findError } = await supabase.from("documents").select("id, tenant_id").eq("id", documentId).maybeSingle();
+    let { data: existing, error: findError } = await supabase
+      .from("documents")
+      .select("id, tenant_id, signers_required")
+      .eq("id", documentId)
+      .maybeSingle();
+    if (isMissingColumn(findError)) {
+      ({ data: existing, error: findError } = await supabase
+        .from("documents")
+        .select("id, tenant_id")
+        .eq("id", documentId)
+        .maybeSingle());
+    }
     if (findError || !existing) {
       return NextResponse.json({ error: "That document no longer exists." }, { status: 404 });
     }
@@ -174,10 +186,39 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: sigError.message }, { status: 500 });
   }
 
-  await supabase.from("documents").update({ status: "signed", updated_at: signedAt }).eq("id", doc!.id);
+  // A two-party document isn't finished when the first person signs it. Count
+  // what's actually on the chain rather than assuming, so the status can never
+  // claim "signed" while a required signature is still missing.
+  const signersRequired = doc!.signers_required ?? 1;
+  const { count: signatureCount } = await supabase
+    .from("signatures")
+    .select("id", { count: "exact", head: true })
+    .eq("document_id", doc!.id);
+  const signaturesSoFar = signatureCount ?? 1;
+  const complete = signaturesSoFar >= signersRequired;
+
+  const { error: statusError } = await supabase
+    .from("documents")
+    .update({ status: complete ? "signed" : "partially_signed", updated_at: signedAt })
+    .eq("id", doc!.id);
+
+  // Before migration 0015 the status check constraint has no 'partially_signed'
+  // value. Leaving the document on 'sent' is the correct fallback: it keeps the
+  // link open for the second signer rather than sealing it early.
+  if (statusError && !complete) {
+    await supabase.from("documents").update({ status: "sent", updated_at: signedAt }).eq("id", doc!.id);
+  }
 
   if (doc!.tenant_id) {
-    await createNotification(supabase, doc!.tenant_id, "document_signed", `"${documentTitle}" was signed`, `Signed by ${signerName}`);
+    await createNotification(
+      supabase,
+      doc!.tenant_id,
+      "document_signed",
+      complete ? `"${documentTitle}" was signed` : `"${documentTitle}" was signed by one party`,
+      complete
+        ? `Signed by ${signerName}`
+        : `Signed by ${signerName} — still waiting on ${signersRequired - signaturesSoFar} more signature`
+    );
   }
 
   return NextResponse.json({
@@ -188,5 +229,8 @@ export async function POST(request: Request) {
     persisted: true,
     stampApplied,
     stampCreditsRemaining,
+    signersRequired,
+    signaturesSoFar,
+    complete,
   });
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireTenant } from "@/lib/requireTenant";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import { isMissingColumn } from "@/lib/twoPartySigning";
 
 export async function GET() {
   if (!isBackendConfigured) return NextResponse.json({ configured: false });
@@ -27,15 +28,17 @@ export async function POST(request: Request) {
   const { error, status, supabase, tenantId, userId } = await requireTenant();
   if (error) return NextResponse.json({ error }, { status });
 
-  const { title, text, sections, paymentLinkId, layout, accentColor, logoUrl } = (await request.json()) as {
-    title?: string;
-    text?: string;
-    sections?: { heading: string; text: string }[];
-    paymentLinkId?: string | null;
-    layout?: string;
-    accentColor?: string;
-    logoUrl?: string | null;
-  };
+  const { title, text, sections, paymentLinkId, layout, accentColor, logoUrl, signersRequired } =
+    (await request.json()) as {
+      title?: string;
+      text?: string;
+      sections?: { heading: string; text: string }[];
+      paymentLinkId?: string | null;
+      layout?: string;
+      accentColor?: string;
+      logoUrl?: string | null;
+      signersRequired?: number;
+    };
   const hasSections = Array.isArray(sections) && sections.length > 0;
   if (!title?.trim() || (!text?.trim() && !hasSections)) {
     return NextResponse.json({ error: "Give the document a title and some content." }, { status: 400 });
@@ -46,18 +49,33 @@ export async function POST(request: Request) {
   if (accentColor) content.accentColor = accentColor;
   if (logoUrl) content.logoUrl = logoUrl;
 
-  const { data: document, error: insertError } = await supabase!
+  const row = {
+    tenant_id: tenantId,
+    created_by: userId,
+    title: title.trim(),
+    content,
+    status: "sent",
+    payment_link_id: paymentLinkId || null,
+  };
+  const returning = "id, title, status, created_at, payment_link_id, payment_links(id, title, amount_cents, currency)";
+
+  // Clamped rather than trusted: the column has a 1–2 check constraint, and a
+  // bad value from the client should fall back to the safe default instead of
+  // failing the whole save.
+  const signers = signersRequired === 2 ? 2 : 1;
+
+  let { data: document, error: insertError } = await supabase!
     .from("documents")
-    .insert({
-      tenant_id: tenantId,
-      created_by: userId,
-      title: title.trim(),
-      content,
-      status: "sent",
-      payment_link_id: paymentLinkId || null,
-    })
-    .select("id, title, status, created_at, payment_link_id, payment_links(id, title, amount_cents, currency)")
+    .insert({ ...row, signers_required: signers })
+    .select(returning)
     .single();
+
+  if (isMissingColumn(insertError)) {
+    ({ data: document, error: insertError } = await supabase!.from("documents").insert(row).select(returning).single());
+    if (!insertError) {
+      return NextResponse.json({ document, signersRequiredSaved: false });
+    }
+  }
   if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
 
   return NextResponse.json({ document });

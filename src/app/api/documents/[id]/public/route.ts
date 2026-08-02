@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import { isMissingColumn } from "@/lib/twoPartySigning";
 
 // Intentionally unauthenticated: this is the "anyone with the link" read path for a
 // document shared via the white-label mini site. The document's random UUID is the
@@ -12,11 +13,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const supabase = createAdminClient();
 
-  const { data: document, error } = await supabase
-    .from("documents")
-    .select("id, title, content, status, created_at")
-    .eq("id", id)
-    .maybeSingle();
+  const WITH_SIGNERS =
+    "id, title, content, status, created_at, signers_required, payment_link_id, payment_links(title, amount_cents, currency, url, status)";
+  const WITHOUT_SIGNERS =
+    "id, title, content, status, created_at, payment_link_id, payment_links(title, amount_cents, currency, url, status)";
+
+  let { data: document, error } = await supabase.from("documents").select(WITH_SIGNERS).eq("id", id).maybeSingle();
+  if (isMissingColumn(error)) {
+    ({ data: document, error } = await supabase.from("documents").select(WITHOUT_SIGNERS).eq("id", id).maybeSingle());
+  }
 
   // A malformed id (e.g. a mistyped or partial link) fails at the database
   // level with an "invalid input syntax for uuid" error, not a clean "no
@@ -30,6 +35,18 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   const content = document.content as { text?: string; sections?: { heading: string; text: string }[]; layout?: string; accentColor?: string; logoUrl?: string };
 
+  // Who has already signed drives the second signer's view: they need to know
+  // the first party is on the record, not just be handed a blank pad. Only the
+  // name and time are exposed — never the email, IP or user agent stored
+  // alongside them.
+  const { data: signatures } = await supabase
+    .from("signatures")
+    .select("signer_name, signed_at")
+    .eq("document_id", document.id)
+    .order("signed_at", { ascending: true });
+
+  const link = Array.isArray(document.payment_links) ? document.payment_links[0] : document.payment_links;
+
   return NextResponse.json({
     configured: true,
     document: {
@@ -42,6 +59,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       logoUrl: content?.logoUrl ?? null,
       status: document.status,
       createdAt: document.created_at,
+      signersRequired: "signers_required" in document ? (document.signers_required as number) ?? 1 : 1,
+      signedBy: (signatures ?? []).map((s) => ({ name: s.signer_name, at: s.signed_at })),
+      payment: link && link.status === "active"
+        ? { title: link.title, amountCents: link.amount_cents, currency: link.currency, url: link.url }
+        : null,
     },
   });
 }

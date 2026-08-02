@@ -16,6 +16,9 @@ type FetchedDoc = {
   logoUrl: string | null;
   status: string;
   createdAt: string;
+  signersRequired: number;
+  signedBy: { name: string; at: string }[];
+  payment: { title: string; amountCents: number; currency: string; url: string } | null;
 };
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -79,7 +82,12 @@ export default function SignByIdPage({ params }: { params: Promise<{ id: string 
     createdAt: doc.createdAt,
   };
 
-  if (doc.status === "signed") {
+  // Only a fully-signed document is closed. A two-party document that one side
+  // has already signed stays open — that's the whole point of the second slot.
+  const signedCount = doc.signedBy?.length ?? 0;
+  const stillOpen = signedCount < (doc.signersRequired ?? 1);
+
+  if (doc.status === "signed" || !stillOpen) {
     return (
       <Shell>
         <div className="relative w-full max-w-[440px] mt-8 flex flex-col gap-5 items-center text-center">
@@ -109,5 +117,13 @@ export default function SignByIdPage({ params }: { params: Promise<{ id: string 
     );
   }
 
-  return <SignFlow document={signDocument} documentId={id} />;
+  return (
+    <SignFlow
+      document={signDocument}
+      documentId={id}
+      signersRequired={doc.signersRequired ?? 1}
+      alreadySigned={doc.signedBy ?? []}
+      payment={doc.payment}
+    />
+  );
 }

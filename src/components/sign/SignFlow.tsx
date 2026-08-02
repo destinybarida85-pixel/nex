@@ -17,14 +17,31 @@ export type SignatureProof = {
   persisted: boolean;
   stampApplied: boolean;
   stampCreditsRemaining: number | null;
+  signersRequired?: number;
+  signaturesSoFar?: number;
+  complete?: boolean;
 };
+
+export type SignPayment = { title: string; amountCents: number; currency: string; url: string };
 
 // The real, shareable signing flow. Used both by the generic /sign route
 // (a same-tab demo/preview against sessionStorage, no real document behind
 // it) and /sign/[id] (a real persisted document anyone with the link can
 // open). documentId is what tells /api/sign to update that exact row
 // instead of falling back to matching by title+content.
-export default function SignFlow({ document, documentId }: { document: SignDocument; documentId?: string }) {
+export default function SignFlow({
+  document,
+  documentId,
+  signersRequired = 1,
+  alreadySigned = [],
+  payment = null,
+}: {
+  document: SignDocument;
+  documentId?: string;
+  signersRequired?: number;
+  alreadySigned?: { name: string; at: string }[];
+  payment?: SignPayment | null;
+}) {
   const [step, setStep] = useState(1);
   const [signature, setSignature] = useState("");
   const [signerFullName, setSignerFullName] = useState("");
@@ -91,6 +108,27 @@ export default function SignFlow({ document, documentId }: { document: SignDocum
         <SignStepper current={step} skippedSigning={!requireSignature} />
       </div>
 
+      {signersRequired > 1 && (
+        <div
+          className="relative w-full max-w-[440px] mt-6 px-4 py-3 rounded-xl text-[12px] flex flex-col gap-1"
+          style={{ background: "var(--color-surface)", border: "1px solid var(--color-divider)" }}
+        >
+          <div className="font-medium text-[var(--color-text)]">
+            This document needs {signersRequired} signatures.
+          </div>
+          {alreadySigned.length === 0 ? (
+            <div style={{ color: "var(--color-neutral-500)" }}>
+              You&rsquo;re the first to sign. The other party signs from this same link afterwards.
+            </div>
+          ) : (
+            <div style={{ color: "var(--color-neutral-500)" }}>
+              Already signed by {alreadySigned.map((s) => s.name).join(", ")}. Yours is signature{" "}
+              {alreadySigned.length + 1} of {signersRequired}.
+            </div>
+          )}
+        </div>
+      )}
+
       <div
         className="relative w-full max-w-[440px] mt-8 p-8 rounded-2xl bg-[var(--color-bg)] text-[var(--color-text)]"
         style={{ boxShadow: "var(--shadow-lg), 0 40px 80px -30px color-mix(in srgb, var(--color-accent) 25%, transparent)" }}
@@ -124,6 +162,31 @@ export default function SignFlow({ document, documentId }: { document: SignDocum
           />
         )}
       </div>
+
+      {payment && step === 3 && (
+        <div
+          className="relative w-full max-w-[440px] mt-5 p-5 rounded-2xl flex flex-col gap-3"
+          style={{ background: "var(--color-bg)", boxShadow: "var(--shadow-lg)" }}
+        >
+          <div>
+            <div className="text-[14px] font-medium text-[var(--color-text)]">Payment due</div>
+            <div className="text-[12px] mt-0.5" style={{ color: "var(--color-neutral-500)" }}>
+              {payment.title}
+            </div>
+          </div>
+          <div className="text-[24px] font-medium text-[var(--color-text)]">
+            {new Intl.NumberFormat("en-US", { style: "currency", currency: payment.currency.toUpperCase() }).format(
+              payment.amountCents / 100
+            )}
+          </div>
+          <a href={payment.url} className="btn btn-primary btn-block text-[13px]">
+            Pay securely
+          </a>
+          <div className="text-[10.5px] text-center" style={{ color: "var(--color-neutral-600)" }}>
+            Processed by Stripe. Your card details are never shared with the sender.
+          </div>
+        </div>
+      )}
 
       <div className="relative text-[11px] text-[var(--color-neutral-600)] mt-6 flex items-center gap-2">
         Protected by tamper-evident hash-chained signatures · Audit trail retained for 7 years

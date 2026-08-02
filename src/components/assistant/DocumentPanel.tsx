@@ -37,6 +37,25 @@ export default function DocumentPanel({
   const [linkCopied, setLinkCopied] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
+  // Send options. Defaults match the old behaviour exactly — one signer, no
+  // payment attached — so nothing changes for anyone who ignores this panel.
+  const [signersRequired, setSignersRequired] = useState(1);
+  const [sendToPartner, setSendToPartner] = useState(true);
+  const [paymentLinkId, setPaymentLinkId] = useState("");
+  const [payLinks, setPayLinks] = useState<{ id: string; title: string; amount_cents: number; currency: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/stripe/payment-links")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.links) setPayLinks(data.links.filter((l: { status: string }) => l.status === "active"));
+      })
+      .catch(() => {
+        // Stripe not connected or not signed in — the picker just stays empty
+        // and says so, rather than offering links that don't exist.
+      });
+  }, []);
+
   useEffect(() => {
     if (!editing) setDraft(document);
   }, [document, editing]);
@@ -109,7 +128,15 @@ export default function DocumentPanel({
       const res = await fetch("/api/documents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: document.title, sections: document.body, layout, accentColor, logoUrl }),
+        body: JSON.stringify({
+          title: document.title,
+          sections: document.body,
+          layout,
+          accentColor,
+          logoUrl,
+          signersRequired,
+          paymentLinkId: paymentLinkId || null,
+        }),
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || "Couldn't create a shareable link.");
@@ -233,24 +260,82 @@ export default function DocumentPanel({
             </>
           ) : (
             <>
+              <div className="card elev-sm gap-2.5 p-4 no-print">
+                <div className="card-title text-[13px]">Before you send</div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] text-[var(--color-neutral-500)]">Who signs?</span>
+                  <select
+                    className="input text-[11.5px]"
+                    value={signersRequired}
+                    onChange={(e) => setSignersRequired(Number(e.target.value))}
+                  >
+                    <option value={1}>One person signs</option>
+                    <option value={2}>Two people sign (both parties)</option>
+                  </select>
+                  {signersRequired === 2 && (
+                    <span className="text-[10.5px]" style={{ color: "var(--color-neutral-500)" }}>
+                      Both sign from the same link — whoever opens it first signs first.
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1 pt-1">
+                  <span className="text-[11px] text-[var(--color-neutral-500)]">Ask for payment? (optional)</span>
+                  {payLinks.length === 0 ? (
+                    <span className="text-[10.5px]" style={{ color: "var(--color-neutral-500)" }}>
+                      No payment links yet —{" "}
+                      <a href="/payments" style={{ color: "var(--color-accent-300)" }}>create one</a> to attach it here.
+                    </span>
+                  ) : (
+                    <select className="input text-[11.5px]" value={paymentLinkId} onChange={(e) => setPaymentLinkId(e.target.value)}>
+                      <option value="">No payment</option>
+                      {payLinks.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.title} · {(l.amount_cents / 100).toLocaleString("en-US", { style: "currency", currency: l.currency.toUpperCase() })}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+
+                <label className="radio gap-2 text-[11.5px] pt-1">
+                  <input type="checkbox" checked={sendToPartner} onChange={(e) => setSendToPartner(e.target.checked)} />
+                  <span className="dot" style={{ borderRadius: 5 }} />
+                  Share this with someone else
+                </label>
+                {!sendToPartner && (
+                  <span className="text-[10.5px]" style={{ color: "var(--color-neutral-500)" }}>
+                    Keeping it private — the link still exists, it just isn&rsquo;t shown for sharing. You can sign
+                    it yourself from the Open button.
+                  </span>
+                )}
+              </div>
+
               <button className="btn btn-primary btn-block text-[12.5px]" onClick={sendForSignature} disabled={sending}>
                 <IconESign size={14} />
-                {sending ? "Creating link…" : "Send for signature"}
+                {sending ? "Creating link…" : sendToPartner ? "Create signing link" : "Save & sign myself"}
               </button>
               {sendError && <div className="text-[11px]" style={{ color: "var(--color-accent-300)" }}>{sendError}</div>}
               {sentLink && (
                 <div className="card elev-sm gap-2 p-3">
                   <div className="flex items-center gap-1.5 text-[11.5px] font-medium" style={{ color: "#63c3b2" }}>
                     <IconCheckCircle size={13} />
-                    Real link — anyone who opens it can review and sign
+                    {sendToPartner
+                      ? `Real link — ${signersRequired === 2 ? "both parties" : "anyone who opens it"} can review and sign`
+                      : "Saved. Only you have this link."}
                   </div>
-                  <div className="text-[10.5px] font-mono break-all" style={{ color: "var(--color-neutral-400)" }}>{sentLink}</div>
+                  {sendToPartner && (
+                    <div className="text-[10.5px] font-mono break-all" style={{ color: "var(--color-neutral-400)" }}>{sentLink}</div>
+                  )}
                   <div className="flex gap-1.5">
-                    <button className="btn btn-secondary text-[11px] flex-1" onClick={copyLink}>
-                      {linkCopied ? "Copied!" : "Copy link"}
-                    </button>
+                    {sendToPartner && (
+                      <button className="btn btn-secondary text-[11px] flex-1" onClick={copyLink}>
+                        {linkCopied ? "Copied!" : "Copy link"}
+                      </button>
+                    )}
                     <a href={sentLink} target="_blank" rel="noopener noreferrer" className="btn btn-ghost text-[11px] flex-1">
-                      Open
+                      {sendToPartner ? "Open" : "Sign it now"}
                     </a>
                   </div>
                 </div>
