@@ -7,9 +7,15 @@ export const documentAccents: DocumentAccent[] = [
   { id: "burgundy", label: "Burgundy", color: "#5c2a3a" },
 ];
 
-export type DocumentLayout = "classic" | "modern" | "minimal" | "dossier";
+export type DocumentLayout = "classic" | "modern" | "minimal" | "dossier" | "executive" | "letterhead" | "editorial";
 
-export const documentLayouts: { id: DocumentLayout; label: string; why: string }[] = [
+export const documentLayouts: { id: DocumentLayout; label: string; why: string; premium?: boolean }[] = [
+  // The first three are the premium tier: real letterhead furniture — a
+  // full-bleed masthead, a printed contact block, a rule-and-numeral system —
+  // rather than a title sitting on a blank page.
+  { id: "executive", label: "Executive", why: "Full-bleed coloured masthead, wide margins, printed reference block — the one to send a client.", premium: true },
+  { id: "letterhead", label: "Letterhead", why: "Corporate letterhead with a contact block, double rule and a printed footer bar.", premium: true },
+  { id: "editorial", label: "Editorial", why: "Large display type, drop cap and numbered sections — for reports and proposals that need to impress.", premium: true },
   { id: "classic", label: "Classic", why: "Serif letterhead with a formal feel — best for contracts and legal agreements." },
   { id: "modern", label: "Modern", why: "Bold sans-serif with numbered sections — best for invoices, proposals, and reports." },
   { id: "minimal", label: "Minimal", why: "Quiet and typographic, almost no lines — best for letters and short notices." },

@@ -74,6 +74,7 @@ export default function TemplatePicker({
                       }}
                     >
                       <div className="text-[12.5px] font-medium text-[var(--color-text)] flex items-center gap-1.5">
+                        {l.premium && <span style={{ color: "var(--color-accent-300)" }}>★</span>}
                         {l.label}
                         {l.id === chosen.layout && (
                           <span className="tag tag-accent text-[9px]" style={{ padding: "1px 5px" }}>
@@ -118,6 +119,7 @@ export default function TemplatePicker({
                   sections={chosen.sections}
                   accentColor={accentColor}
                   layout={layout}
+                  organisation="Your Company · 12 Broad Street, Lagos · hello@yourcompany.com"
                   big={false}
                 />
               </div>

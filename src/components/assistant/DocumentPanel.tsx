@@ -28,6 +28,10 @@ export default function DocumentPanel({
   const [accentColor, setAccentColor] = useState(documentAccents[0].color);
   const [layout, setLayout] = useState<DocumentLayout>("classic");
   const [font, setFont] = useState<DocumentFont>("auto");
+  // Letterhead block for the premium layouts. Seeded from the tenant's real
+  // name so it isn't blank on first use, then editable — most businesses want
+  // their address and phone on a document they send out.
+  const [organisation, setOrganisation] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -43,6 +47,17 @@ export default function DocumentPanel({
   const [sendToPartner, setSendToPartner] = useState(true);
   const [paymentLinkId, setPaymentLinkId] = useState("");
   const [payLinks, setPayLinks] = useState<{ id: string; title: string; amount_cents: number; currency: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.tenantName) setOrganisation((prev) => prev || data.tenantName);
+      })
+      .catch(() => {
+        // Not signed in — the letterhead shows its placeholder instead.
+      });
+  }, []);
 
   useEffect(() => {
     fetch("/api/stripe/payment-links")
@@ -134,6 +149,7 @@ export default function DocumentPanel({
           sections: document.body,
           layout,
           font,
+          organisation,
           accentColor,
           logoUrl,
           signersRequired,
@@ -162,6 +178,7 @@ export default function DocumentPanel({
   }
 
   const shown = editing ? draft : document;
+  const isLetterheadLayout = layout === "executive" || layout === "letterhead" || layout === "editorial";
 
   return (
     <div className="flex-1 min-w-0 flex flex-col">
@@ -190,6 +207,7 @@ export default function DocumentPanel({
               accentColor={accentColor}
               layout={layout}
               font={font}
+              organisation={organisation}
               logoUrl={logoUrl}
               editable
               onTitleChange={(v) => setDraft((prev) => ({ ...prev, title: v }))}
@@ -199,7 +217,7 @@ export default function DocumentPanel({
           </div>
         ) : (
           <div className="flex-1 min-w-0 max-w-[620px] print-area">
-            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} layout={layout} font={font} logoUrl={logoUrl} />
+            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} layout={layout} font={font} organisation={organisation} logoUrl={logoUrl} />
           </div>
         )}
 
@@ -226,9 +244,24 @@ export default function DocumentPanel({
             <div className="card-title text-[13px]">Document style</div>
             <select className="input text-[11.5px]" value={layout} onChange={(e) => setLayout(e.target.value as DocumentLayout)}>
               {documentLayouts.map((l) => (
-                <option key={l.id} value={l.id}>{l.label}</option>
+                <option key={l.id} value={l.id}>
+                  {l.premium ? `★ ${l.label}` : l.label}
+                </option>
               ))}
             </select>
+            {isLetterheadLayout && (
+              <div className="flex flex-col gap-1">
+                <input
+                  className="input text-[11px]"
+                  placeholder="Acme Ltd · 12 Broad St, Lagos · hello@acme.com"
+                  value={organisation}
+                  onChange={(e) => setOrganisation(e.target.value)}
+                />
+                <span className="text-[10px]" style={{ color: "var(--color-neutral-500)" }}>
+                  Letterhead line — separate name, address and contact with ·
+                </span>
+              </div>
+            )}
             <select className="input text-[11.5px]" value={font} onChange={(e) => setFont(e.target.value as DocumentFont)}>
               {documentFonts.map((f) => (
                 <option key={f.id} value={f.id}>{f.label}</option>

@@ -11,6 +11,7 @@ export type SignDocument = {
   accentColor?: string;
   layout?: DocumentLayout;
   font?: DocumentFont;
+  organisation?: string | null;
   /** Real timestamp the document row was created — only present for a real
    *  persisted document (the /sign/[id] shareable-link flow), never
    *  fabricated for the demo/session-storage flow. Powers the one real

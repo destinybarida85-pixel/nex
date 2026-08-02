@@ -66,6 +66,7 @@ export default function DocumentPaper({
   big = true,
   layout = "classic",
   font = "auto",
+  organisation,
   headerRight,
   footerSlot,
   overlay,
@@ -83,6 +84,10 @@ export default function DocumentPaper({
   big?: boolean;
   layout?: DocumentLayout;
   font?: DocumentFont;
+  /** Sender's letterhead block, dot-separated: "Acme Ltd · 12 Broad St ·
+   *  hello@acme.com · +234 800 000 0000". First part is the name, the rest
+   *  print as the address/contact line. Only the letterhead layouts use it. */
+  organisation?: string;
   headerRight?: ReactNode;
   footerSlot?: ReactNode;
   /** Free-floating content positioned by the caller (e.g. a draggable stamp
@@ -112,6 +117,20 @@ export default function DocumentPaper({
       <div style={style}>{meta}</div>
     ) : null;
 
+  // Layouts that print their own numeral (Executive's "01", Editorial's "1")
+  // must not double up on templates whose headings already read "1. Parties" —
+  // otherwise the page shows "1  1. Parties". Only strips a leading numeral
+  // when the layout is supplying one, and never while editing, so the author
+  // still sees and controls their own text.
+  const stripLeadingNumber = (heading: string) => heading.replace(/^\s*\d+[.)]\s*/, "");
+
+  const numberedHeadingNode = (index: number, style: React.CSSProperties) =>
+    editable && onSectionChange ? (
+      <EditableText as="input" value={sections[index].heading} onChange={(v) => onSectionChange(index, "heading", v)} style={style} placeholder="Section heading" />
+    ) : (
+      <div style={style}>{stripLeadingNumber(sections[index].heading)}</div>
+    );
+
   const headingNode = (index: number, style: React.CSSProperties) =>
     editable && onSectionChange ? (
       <EditableText as="input" value={sections[index].heading} onChange={(v) => onSectionChange(index, "heading", v)} style={style} placeholder="Section heading" />
@@ -127,6 +146,289 @@ export default function DocumentPaper({
     );
 
   let content: ReactNode = null;
+
+  // Printed on the letterhead layouts. Real letterhead carries the sender's
+  // address block; when a tenant hasn't filled theirs in, these render as
+  // visible placeholders rather than being silently dropped, so nobody sends a
+  // client a document with an invisible gap where their address should be.
+  const senderLines = (organisation || "").split("·").map((s) => s.trim()).filter(Boolean);
+
+  if (layout === "executive") {
+    content = (
+      <div
+        className={`w-full ${className}`}
+        style={{
+          background: paperBg,
+          color: paperInk,
+          boxShadow: "0 1px 2px rgba(0,0,0,0.05), 0 18px 44px -22px rgba(0,0,0,0.28)",
+          borderRadius: 10 * f,
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ background: accentColor, padding: `${28 * f}px ${52 * f}px ${24 * f}px` }}>
+          <div className="flex items-start justify-between gap-4 flex-wrap" style={{ rowGap: 10 * f }}>
+            <div className="flex items-center" style={{ gap: 10 * f, minWidth: 0 }}>
+              {logoUrl ? (
+                <img src={logoUrl} alt="" style={{ width: 34 * f, height: 34 * f, borderRadius: 8 * f, objectFit: "cover", flexShrink: 0, background: "rgba(255,255,255,.15)" }} />
+              ) : (
+                <span
+                  style={{
+                    width: 34 * f, height: 34 * f, borderRadius: 8 * f, flexShrink: 0,
+                    display: "grid", placeItems: "center",
+                    background: "rgba(255,255,255,.16)", color: "#fff",
+                    fontSize: 15 * f, fontWeight: 700,
+                  }}
+                >
+                  {(senderLines[0] || "•").charAt(0).toUpperCase()}
+                </span>
+              )}
+              <span style={{ color: "#fff", fontSize: 14 * f, fontWeight: 600, letterSpacing: "0.01em" }}>
+                {senderLines[0] || "Your organisation"}
+              </span>
+            </div>
+            <span style={{ color: "rgba(255,255,255,.72)", fontSize: 9.5 * f, letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 600 }}>
+              Document
+            </span>
+          </div>
+        </div>
+
+        <div style={{ padding: `${40 * f}px ${52 * f}px ${48 * f}px` }}>
+          <div className="flex items-start justify-between gap-4 flex-wrap" style={{ marginBottom: 30 * f, rowGap: 12 * f }}>
+            <div className="min-w-0" style={{ flex: "1 1 auto" }}>
+              {titleNode({ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 34 * f, lineHeight: 1.14, margin: 0, fontWeight: 500, color: paperInk, letterSpacing: "-0.015em", overflowWrap: "break-word" })}
+              {metaNode({ fontSize: 11.5 * f, color: paperMuted, marginTop: 9 * f, letterSpacing: "0.02em", overflowWrap: "break-word" })}
+            </div>
+            {headerRight && <div style={{ flexShrink: 0 }}>{headerRight}</div>}
+          </div>
+
+          <div style={{ height: 3 * f, width: 56 * f, background: accentColor, marginBottom: 30 * f, borderRadius: 2 }} />
+
+          <div className="flex flex-col" style={{ gap: 26 * f }}>
+            {sections.map((s, i) => (
+              <div key={i} className="min-w-0 flex" style={{ gap: 18 * f }}>
+                <span
+                  style={{
+                    fontSize: 10.5 * f, fontWeight: 700, color: accentColor, flexShrink: 0,
+                    width: 22 * f, paddingTop: 3 * f, fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="min-w-0" style={{ flex: "1 1 auto" }}>
+                  {numberedHeadingNode(i, {
+                    fontSize: 11 * f, letterSpacing: "0.09em", textTransform: "uppercase",
+                    fontWeight: 700, color: paperInk, marginBottom: 8 * f,
+                  })}
+                  {bodyNode(i, { fontSize: 13.5 * f, lineHeight: 1.85, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {footerSlot && (
+            <>
+              <div style={{ borderTop: `1px solid ${paperRule}`, marginTop: 30 * f, marginBottom: 18 * f }} />
+              {footerSlot}
+            </>
+          )}
+        </div>
+
+        {senderLines.length > 1 && (
+          <div
+            style={{
+              borderTop: `1px solid ${paperRule}`,
+              padding: `${14 * f}px ${52 * f}px`,
+              fontSize: 9.5 * f,
+              color: paperMuted,
+              letterSpacing: "0.03em",
+            }}
+          >
+            {senderLines.slice(1).join("  ·  ")}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (layout === "letterhead") {
+    content = (
+      <div
+        className={`w-full ${className}`}
+        style={{
+          background: paperBg,
+          color: paperInk,
+          padding: `${46 * f}px ${54 * f}px ${0}px`,
+          boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 14px 36px -20px rgba(0,0,0,0.22)",
+          borderRadius: 10 * f,
+          overflow: "hidden",
+        }}
+      >
+        <div className="flex items-start justify-between gap-6 flex-wrap" style={{ rowGap: 14 * f, marginBottom: 18 * f }}>
+          <div className="flex items-center" style={{ gap: 11 * f, minWidth: 0 }}>
+            {logoUrl ? (
+              <img src={logoUrl} alt="" style={{ width: 40 * f, height: 40 * f, borderRadius: 8 * f, objectFit: "cover", flexShrink: 0 }} />
+            ) : (
+              <span
+                style={{
+                  width: 40 * f, height: 40 * f, borderRadius: 8 * f, flexShrink: 0,
+                  display: "grid", placeItems: "center", background: accentColor, color: "#fff",
+                  fontSize: 17 * f, fontWeight: 700,
+                }}
+              >
+                {(senderLines[0] || "•").charAt(0).toUpperCase()}
+              </span>
+            )}
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 15 * f, fontWeight: 600, color: paperInk, letterSpacing: "-0.005em" }}>
+                {senderLines[0] || "Your organisation"}
+              </div>
+              <div style={{ fontSize: 9.5 * f, letterSpacing: "0.16em", textTransform: "uppercase", color: accentColor, fontWeight: 600, marginTop: 2 * f }}>
+                Official correspondence
+              </div>
+            </div>
+          </div>
+          <div style={{ textAlign: "right", fontSize: 10 * f, lineHeight: 1.7, color: paperMuted, flexShrink: 0 }}>
+            {senderLines.length > 1
+              ? senderLines.slice(1).map((line, i) => <div key={i}>{line}</div>)
+              : <div style={{ fontStyle: "italic" }}>[Address · Phone · Email]</div>}
+          </div>
+        </div>
+
+        {/* The double rule is the detail that reads as printed stationery
+            rather than a word-processor document. */}
+        <div style={{ borderTop: `2px solid ${accentColor}`, marginBottom: 2 * f }} />
+        <div style={{ borderTop: `1px solid ${paperRule}`, marginBottom: 34 * f }} />
+
+        <div className="flex items-start justify-between gap-4 flex-wrap" style={{ marginBottom: 26 * f, rowGap: 10 * f }}>
+          <div className="min-w-0" style={{ flex: "1 1 auto" }}>
+            {titleNode({ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 25 * f, lineHeight: 1.2, margin: 0, fontWeight: 600, color: paperInk, overflowWrap: "break-word" })}
+            {metaNode({ fontSize: 11.5 * f, color: paperMuted, marginTop: 7 * f, overflowWrap: "break-word" })}
+          </div>
+          {headerRight && <div style={{ flexShrink: 0 }}>{headerRight}</div>}
+        </div>
+
+        <div className="flex flex-col" style={{ gap: 20 * f, paddingBottom: 40 * f }}>
+          {sections.map((s, i) => (
+            <div key={i} className="min-w-0">
+              {headingNode(i, {
+                fontFamily: "Georgia, 'Times New Roman', serif",
+                fontSize: 13 * f, fontWeight: 700, color: paperInk, marginBottom: 6 * f,
+              })}
+              {bodyNode(i, { fontSize: 13 * f, lineHeight: 1.85, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
+            </div>
+          ))}
+
+          {footerSlot && (
+            <>
+              <div style={{ borderTop: `1px solid ${paperRule}`, marginTop: 12 * f, marginBottom: 14 * f }} />
+              {footerSlot}
+            </>
+          )}
+        </div>
+
+        <div
+          style={{
+            marginLeft: -54 * f, marginRight: -54 * f,
+            background: accentColor, height: 10 * f,
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (layout === "editorial") {
+    const first = sections[0];
+    content = (
+      <div
+        className={`w-full ${className}`}
+        style={{
+          background: "#fbfaf8",
+          color: paperInk,
+          padding: `${56 * f}px ${58 * f}px`,
+          boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 16px 40px -22px rgba(0,0,0,0.24)",
+          borderRadius: 10 * f,
+        }}
+      >
+        <div className="flex items-center justify-between gap-4 flex-wrap" style={{ marginBottom: 40 * f, rowGap: 10 * f }}>
+          <div className="flex items-center" style={{ gap: 9 * f, minWidth: 0 }}>
+            {logoUrl && <img src={logoUrl} alt="" style={{ width: 22 * f, height: 22 * f, borderRadius: 5 * f, objectFit: "cover", flexShrink: 0 }} />}
+            <span style={{ fontSize: 9.5 * f, letterSpacing: "0.22em", textTransform: "uppercase", fontWeight: 700, color: paperMuted }}>
+              {senderLines[0] || "Document"}
+            </span>
+          </div>
+          {headerRight && <div style={{ flexShrink: 0 }}>{headerRight}</div>}
+        </div>
+
+        <div className="min-w-0" style={{ maxWidth: `${580 * f}px` }}>
+          {titleNode({ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 46 * f, lineHeight: 1.06, margin: 0, fontWeight: 400, color: paperInk, letterSpacing: "-0.025em", overflowWrap: "break-word" })}
+          {metaNode({ fontSize: 12 * f, color: paperMuted, marginTop: 14 * f, fontStyle: "italic", overflowWrap: "break-word" })}
+        </div>
+
+        <div style={{ borderTop: `1px solid ${paperInk}`, marginTop: 34 * f, marginBottom: 32 * f, opacity: 0.85 }} />
+
+        <div className="flex flex-col" style={{ gap: 30 * f }}>
+          {sections.map((s, i) => (
+            <div key={i} className="min-w-0">
+              <div className="flex items-baseline" style={{ gap: 12 * f, marginBottom: 10 * f }}>
+                <span
+                  style={{
+                    fontFamily: "Georgia, 'Times New Roman', serif",
+                    fontSize: 20 * f, lineHeight: 1, color: accentColor, fontWeight: 400,
+                    flexShrink: 0, fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {i + 1}
+                </span>
+                <div className="min-w-0" style={{ flex: "1 1 auto" }}>
+                  {numberedHeadingNode(i, {
+                    fontFamily: "Georgia, 'Times New Roman', serif",
+                    fontSize: 17 * f, fontWeight: 600, color: paperInk, letterSpacing: "-0.01em",
+                  })}
+                </div>
+              </div>
+              <div style={{ paddingLeft: 32 * f }}>
+                {/* Drop cap on the opening paragraph only — the classic
+                    editorial signal that this is a considered document. */}
+                {i === 0 && !editable && first?.text ? (
+                  <p
+                    style={{
+                      fontSize: 13.5 * f, lineHeight: 1.9, color: "#3a3a44", margin: 0,
+                      overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    <span
+                      style={{
+                        float: "left",
+                        fontFamily: "Georgia, 'Times New Roman', serif",
+                        fontSize: 46 * f,
+                        lineHeight: 0.82,
+                        paddingRight: 7 * f,
+                        paddingTop: 3 * f,
+                        color: accentColor,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {first.text.trim().charAt(0)}
+                    </span>
+                    {first.text.trim().slice(1)}
+                  </p>
+                ) : (
+                  bodyNode(i, { fontSize: 13.5 * f, lineHeight: 1.9, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {footerSlot && (
+          <>
+            <div style={{ borderTop: `1px solid ${paperRule}`, marginTop: 34 * f, marginBottom: 20 * f }} />
+            {footerSlot}
+          </>
+        )}
+      </div>
+    );
+  }
 
   if (layout === "modern") {
     content = (

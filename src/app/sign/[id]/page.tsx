@@ -13,6 +13,7 @@ type FetchedDoc = {
   sections: { heading: string; text: string }[] | null;
   layout: DocumentLayout | null;
   font: DocumentFont | null;
+  organisation: string | null;
   accentColor: string | null;
   logoUrl: string | null;
   status: string;
@@ -81,6 +82,7 @@ export default function SignByIdPage({ params }: { params: Promise<{ id: string 
     accentColor: doc.accentColor || documentAccents[0].color,
     layout: doc.layout || "classic",
     font: doc.font || "auto",
+    organisation: doc.organisation,
     createdAt: doc.createdAt,
   };
 
@@ -112,6 +114,7 @@ export default function SignByIdPage({ params }: { params: Promise<{ id: string 
               accentColor={signDocument.accentColor!}
               layout={signDocument.layout}
               font={signDocument.font}
+              organisation={signDocument.organisation ?? undefined}
               logoUrl={signDocument.logoUrl}
             />
           </div>
