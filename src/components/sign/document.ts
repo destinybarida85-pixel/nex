@@ -1,4 +1,4 @@
-import type { DocumentLayout } from "@/components/document/theme";
+import type { DocumentLayout, DocumentFont } from "@/components/document/theme";
 
 export type SignSection = { heading: string; text: string };
 export type SignDocument = {
@@ -10,6 +10,7 @@ export type SignDocument = {
   logoUrl?: string | null;
   accentColor?: string;
   layout?: DocumentLayout;
+  font?: DocumentFont;
   /** Real timestamp the document row was created — only present for a real
    *  persisted document (the /sign/[id] shareable-link flow), never
    *  fabricated for the demo/session-storage flow. Powers the one real

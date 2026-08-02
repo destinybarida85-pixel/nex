@@ -25,6 +25,7 @@ export const templateCategories = [
   "Education",
   "Medical",
   "Government & Legal",
+  "Land & Property",
   "Finance",
   "Marketing",
   "Administrative",
@@ -420,7 +421,7 @@ export const documentTemplates: DocumentTemplate[] = [
     ],
   },
   {
-    id: "lease-agreement", name: "Lease Agreement", category: "Government & Legal", layout: "classic",
+    id: "lease-agreement", name: "Lease Agreement", category: "Land & Property", layout: "classic",
     title: "Lease Agreement", meta: `Landlord and Tenant · ${D}`,
     sections: [
       { heading: "1. Parties & Property", text: "Landlord: [Name, address]\nTenant: [Name, address]\nProperty: [Full address of the premises being let]" },
@@ -430,6 +431,118 @@ export const documentTemplates: DocumentTemplate[] = [
       { heading: "5. Signatures", text: "Landlord: ______________  Date: __________\nTenant: ______________  Date: __________" },
     ],
   },
+
+  // ── Land & Property ───────────────────────────────────────────────────
+  // Land paperwork is the most-requested category and the one where a wrong
+  // document costs the most, so these carry the same "have a lawyer review
+  // it" note as the other instruments with legal effect.
+  {
+    id: "deed-of-assignment", name: "Deed of Assignment", category: "Land & Property", layout: "dossier",
+    title: "Deed of Assignment", meta: `Assignor and Assignee · Executed ${D}`,
+    sections: [
+      { heading: "1. Parties", text: `THIS DEED OF ASSIGNMENT is made on [Date]\n\nBETWEEN [Full Name] of [Address] ("the Assignor")\nAND [Full Name] of [Address] ("the Assignee").` },
+      { heading: "2. Recitals", text: "The Assignor is the beneficial owner of the land described below, holding it free of encumbrance, and has agreed to assign the unexpired residue of the term to the Assignee for the consideration stated." },
+      { heading: "3. The Property", text: "ALL THAT piece or parcel of land measuring approximately [Size] square metres, situate at [Location], covered by [Title document — e.g. Certificate of Occupancy No. / Deed registered as No. __ Page __ Volume __], and more particularly delineated on Survey Plan No. [Plan Number] dated [Date] drawn by [Surveyor's Name]." },
+      { heading: "4. Consideration", text: "In consideration of the sum of [Amount in words] ([Amount in figures]) paid by the Assignee to the Assignor, receipt of which the Assignor acknowledges, the Assignor assigns the property to the Assignee absolutely." },
+      { heading: "5. Assignor's Covenants", text: "The Assignor covenants that: the property is free from encumbrance; the Assignor has good title and full authority to assign; the Assignee shall enjoy quiet possession; and the Assignor will execute any further document reasonably required to perfect the Assignee's title." },
+      { heading: "6. Governor's Consent", text: "The parties acknowledge that this assignment is subject to the consent of the Governor of [State], and the Assignee shall be responsible for obtaining that consent and for the associated fees unless otherwise agreed in writing." },
+      { heading: "7. Execution", text: "IN WITNESS OF WHICH the parties have executed this Deed on the date first written above.\n\nAssignor: ______________  Name: [Name]\nWitness: ______________  Name: [Name]  Address: [Address]\n\nAssignee: ______________  Name: [Name]\nWitness: ______________  Name: [Name]  Address: [Address]" },
+      { heading: "Note", text: "A deed of assignment transfers real property. Have this reviewed by a qualified property lawyer in your jurisdiction, and confirm the title at the relevant land registry, before any money changes hands." },
+    ],
+  },
+  {
+    id: "land-sale-agreement", name: "Land Sale Agreement", category: "Land & Property", layout: "classic",
+    title: "Agreement for Sale of Land", meta: `Vendor and Purchaser · ${D}`,
+    sections: [
+      { heading: "1. Parties", text: `Vendor: [Full Name], of [Address]\nPurchaser: [Full Name], of [Address]\nDate of agreement: [Date]` },
+      { heading: "2. Property Sold", text: "Land measuring approximately [Size] at [Location], with beacon numbers [Beacon Nos.], as shown on Survey Plan No. [Plan Number]. Existing title: [Certificate of Occupancy / Deed / Family land — state clearly]." },
+      { heading: "3. Price & Payment", text: "Total price: [Amount in words] ([Figures]).\nDeposit of [Amount] paid on [Date], receipt acknowledged.\nBalance of [Amount] payable on or before [Date] by [method].\nTime is of the essence in respect of the balance." },
+      { heading: "4. Vendor's Warranties", text: "The Vendor warrants that: the land is not subject to any government acquisition, litigation, mortgage or charge; no other person has an interest in it; and the Vendor has full capacity to sell." },
+      { heading: "5. Completion & Documents", text: "On payment of the balance, the Vendor shall deliver: the original title document, a signed Deed of Assignment, the survey plan, evidence of payment of ground rent and land use charge to date, and vacant possession of the land." },
+      { heading: "6. Default", text: "If the Purchaser fails to pay the balance by the due date, the Vendor may [rescind and forfeit __% of the deposit / grant a written extension]. If the Vendor's title proves defective, the Vendor shall refund all sums paid within [N] days." },
+      { heading: "7. Signatures", text: "Vendor: ______________  Date: __________\nPurchaser: ______________  Date: __________\n\nWitness (Vendor): ______________  Name & address: [Details]\nWitness (Purchaser): ______________  Name & address: [Details]" },
+      { heading: "Note", text: "Conduct a land registry search and a physical inspection before paying anything, and have a property lawyer review this agreement." },
+    ],
+  },
+  {
+    id: "tenancy-agreement", name: "Tenancy Agreement", category: "Land & Property", layout: "classic",
+    title: "Tenancy Agreement", meta: `Landlord and Tenant · ${D}`,
+    sections: [
+      { heading: "1. Parties & Premises", text: "Landlord: [Name], of [Address]\nTenant: [Name], of [Address]\nPremises: [Flat / house description and full address]" },
+      { heading: "2. Term & Rent", text: "Term: [N] year(s), commencing [Start Date] and ending [End Date].\nRent: [Amount] per annum, paid [in advance / quarterly] on [dates].\nCaution/security deposit: [Amount], refundable at the end of the tenancy less the cost of any damage beyond fair wear and tear." },
+      { heading: "3. Tenant's Obligations", text: "The Tenant shall: pay rent and utility bills when due; keep the interior in good and tenantable repair; not alter the structure without written consent; not sublet or assign; use the premises for [residential/commercial] purposes only; and permit inspection on [N] days' notice." },
+      { heading: "4. Landlord's Obligations", text: "The Landlord shall: keep the structure, roof and external walls in repair; pay tenement rates and land use charge; and allow the Tenant quiet enjoyment of the premises throughout the term." },
+      { heading: "5. Renewal & Termination", text: "Either party may terminate by giving [N] months' written notice before the end of the term. Rent for any renewal shall be agreed in writing not less than [N] months before expiry." },
+      { heading: "6. Inventory", text: "Fixtures and fittings handed over: [list — e.g. air conditioners, water heater, wardrobes, keys]. The Tenant shall return these in the same condition, fair wear and tear excepted." },
+      { heading: "7. Signatures", text: "Landlord: ______________  Date: __________\nTenant: ______________  Date: __________\nWitness: ______________  Name: [Name]" },
+    ],
+  },
+  {
+    id: "land-title-search-report", name: "Land Title Search Report", category: "Land & Property", layout: "dossier",
+    title: "Report of Search at the Land Registry", meta: `Prepared by ${P} · ${D}`,
+    sections: [
+      { heading: "1. Instruction", text: "We were instructed by [Client Name] on [Date] to conduct a search on the land described below and report on the state of its title." },
+      { heading: "2. Property Searched", text: "Location: [Full address / description]\nSurvey Plan No.: [Number]\nRegistered title claimed: [Title No. / C of O No. / Deed No., Page, Volume]" },
+      { heading: "3. Search Conducted", text: "Registry: [Name of land registry]\nDate of search: [Date]\nFile(s) examined: [File references]\nConducted by: [Name of searcher]" },
+      { heading: "4. Findings", text: "Registered owner: [Name]\nNature of title: [Statutory right of occupancy / Deemed grant / Deed of assignment]\nEncumbrances found: [Mortgage / Charge / Caution / None found]\nGovernment acquisition: [Free / Committed / Under acquisition — state the scheme]\nLitigation on file: [Yes — details / None found]" },
+      { heading: "5. Opinion", text: "[State plainly whether the title is good, defective, or requires further steps, and what those steps are.]" },
+      { heading: "6. Limitations", text: "This report reflects only what was on the registry file on the date of search. It does not cover unregistered interests, adverse possession, or facts discoverable only by physical inspection." },
+      { heading: "Signature", text: "Prepared by: ______________\nName: [Name]  ·  [Title / Practice]  ·  Date: __________" },
+    ],
+  },
+  {
+    id: "deed-of-gift-land", name: "Deed of Gift (Land)", category: "Land & Property", layout: "dossier",
+    title: "Deed of Gift", meta: `Donor and Donee · Executed ${D}`,
+    sections: [
+      { heading: "1. Parties", text: `THIS DEED OF GIFT is made on [Date]\n\nBETWEEN [Full Name] of [Address] ("the Donor")\nAND [Full Name] of [Address] ("the Donee").` },
+      { heading: "2. Recital", text: "The Donor is the beneficial owner of the property described below and, out of natural love and affection for the Donee, wishes to transfer it to the Donee without any monetary consideration." },
+      { heading: "3. The Property", text: "ALL THAT parcel of land measuring approximately [Size] at [Location], covered by [Title document], as shown on Survey Plan No. [Plan Number]." },
+      { heading: "4. Gift", text: "The Donor voluntarily and without coercion gives, transfers and assigns the property to the Donee absolutely, to hold for the unexpired residue of the term, free from encumbrance." },
+      { heading: "5. Acceptance", text: "The Donee accepts the gift and acknowledges receipt of the title documents relating to the property." },
+      { heading: "6. Execution", text: "Donor: ______________  Name: [Name]  Date: __________\nWitness: ______________  Name & address: [Details]\n\nDonee: ______________  Name: [Name]  Date: __________\nWitness: ______________  Name & address: [Details]" },
+      { heading: "Note", text: "A gift of land can be challenged by family members or creditors. Have a property lawyer advise on consent, stamping and registration before executing this." },
+    ],
+  },
+  {
+    id: "certificate-of-occupancy-application", name: "C of O Application Letter", category: "Land & Property", layout: "classic",
+    title: "Application for Certificate of Occupancy", meta: `${P} · ${D}`,
+    sections: [
+      { heading: "Addressee", text: "The Honourable Commissioner\nMinistry of Lands and Housing\n[State]\n\nDear Sir/Madam," },
+      { heading: "Subject", text: "APPLICATION FOR THE GRANT OF A CERTIFICATE OF OCCUPANCY OVER LAND AT [LOCATION]" },
+      { heading: "Applicant's Details", text: "Name: [Full Name]\nAddress: [Address]\nPhone / Email: [Contact]\nMeans of identification: [ID type and number]" },
+      { heading: "Particulars of the Land", text: "Location: [Full description]\nApproximate size: [Size]\nSurvey Plan No.: [Number], dated [Date], drawn by [Surveyor]\nCurrent use: [Residential / Commercial / Agricultural]\nHow the land was acquired: [Purchase / Gift / Inheritance / Allocation — with dates]" },
+      { heading: "Documents Attached", text: "1. Survey plan (original and [N] copies)\n2. Deed of assignment / purchase receipt\n3. Evidence of payment of [ground rent / development levy]\n4. Passport photographs ([N])\n5. Means of identification\n6. Tax clearance certificate\n7. [Any further document the Ministry requires]" },
+      { heading: "Request", text: "I respectfully apply for the grant of a statutory right of occupancy and the issuance of a Certificate of Occupancy over the land described above. I undertake to pay all prescribed fees and to comply with the conditions attached to the grant." },
+      { heading: "Closing", text: "Thank you for your consideration.\n\nYours faithfully,\n\n______________\n[Full Name]\nDate: __________" },
+      { heading: "Note", text: "Requirements and fees differ by state. Confirm the current checklist at the ministry before filing — a missing attachment is the usual cause of delay." },
+    ],
+  },
+  {
+    id: "property-handover-note", name: "Property Handover Note", category: "Land & Property", layout: "minimal",
+    title: "Property Handover & Possession Note", meta: `${D}`,
+    sections: [
+      { heading: "Property", text: "Address: [Full address]\nDescription: [Flat / house / plot]\nHanded over on: [Date] at [Time]" },
+      { heading: "Parties Present", text: "Handing over: [Name], [role — landlord / vendor / agent]\nTaking over: [Name], [role — tenant / purchaser]\nWitness: [Name], if any" },
+      { heading: "Items & Keys Handed Over", text: "Keys: [number and which doors]\nMeters: electricity [meter no. and reading], water [reading]\nFittings: [list every item — ACs, heaters, wardrobes, doors, gate remote]" },
+      { heading: "Condition on Handover", text: "[Room by room, note the condition honestly. Photograph anything already damaged and attach the photos — this is the record both sides will rely on later.]" },
+      { heading: "Outstanding Items", text: "[Anything promised but not yet done, with the date it will be completed.]" },
+      { heading: "Acknowledgement", text: "Both parties confirm the above is an accurate record of the condition and contents of the property at handover.\n\nHanding over: ______________  Date: __________\nTaking over: ______________  Date: __________" },
+    ],
+  },
+  {
+    id: "land-survey-report", name: "Land Survey Report", category: "Land & Property", layout: "dossier",
+    title: "Land Survey Report", meta: `Survey Plan No. [Number] · ${D}`,
+    sections: [
+      { heading: "1. Client & Instruction", text: "Client: [Name]\nInstruction received: [Date]\nPurpose of survey: [Perimeter survey / Subdivision / Boundary verification / Charting]" },
+      { heading: "2. Location", text: "Address / description: [Details]\nLocal government area: [LGA]\nState: [State]\nCoordinates of origin: [N ____ , E ____ ]" },
+      { heading: "3. Measurements", text: "Total area: [____] square metres ([____] hectares / [____] plots)\nBeacon numbers: [List all beacon numbers in order]\nBearings and distances: [Leg by leg, or refer to the attached schedule]" },
+      { heading: "4. Boundaries & Neighbours", text: "North: [what adjoins]\nSouth: [what adjoins]\nEast: [what adjoins]\nWest: [what adjoins]\nAccess: [road frontage, width, condition]" },
+      { heading: "5. Site Observations", text: "Topography: [flat / sloping / waterlogged]\nExisting structures or crops: [details]\nEncroachments observed: [none / describe precisely]" },
+      { heading: "6. Charting Result", text: "Charted at [Office of the Surveyor-General, State] on [Date]. Status: [Free / Within government acquisition — name the scheme / Overlapping with Plan No. ____]." },
+      { heading: "7. Surveyor's Certification", text: "I certify that this survey was carried out by me or under my direct supervision and that the plan attached is a true representation of the land.\n\n______________\n[Name], Registered Surveyor\nSURCON No.: [Number]  ·  Date: __________" },
+    ],
+  },
+
   {
     id: "power-of-attorney", name: "Power of Attorney", category: "Government & Legal", layout: "classic",
     title: "Power of Attorney", meta: `Executed ${D}`,

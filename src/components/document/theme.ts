@@ -16,6 +16,23 @@ export const documentLayouts: { id: DocumentLayout; label: string; why: string }
   { id: "dossier", label: "Dossier", why: "Monospace, two-column technical contract style — best for agreements and formal legal dossiers." },
 ];
 
+// Font is deliberately separate from layout. A layout picks a sensible default
+// (Classic is serif, Dossier is monospace), but the same contract may need to
+// be set in a different face — so this overrides the layout's choice without
+// changing anything else about it. "auto" means "whatever the layout picked".
+export type DocumentFont = "auto" | "serif" | "sans" | "mono";
+
+export const documentFonts: { id: DocumentFont; label: string; stack: string | null }[] = [
+  { id: "auto", label: "Match the style", stack: null },
+  { id: "serif", label: "Serif — formal", stack: "Georgia, 'Times New Roman', serif" },
+  { id: "sans", label: "Sans — clean", stack: "system-ui, -apple-system, 'Segoe UI', sans-serif" },
+  { id: "mono", label: "Mono — technical", stack: "'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace" },
+];
+
+export function fontStack(font: DocumentFont | undefined) {
+  return documentFonts.find((f) => f.id === font)?.stack ?? null;
+}
+
 export const paperBg = "#ffffff";
 export const paperInk = "#22222a";
 export const paperMuted = "#6b6b76";

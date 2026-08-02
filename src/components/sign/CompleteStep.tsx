@@ -216,6 +216,7 @@ export default function CompleteStep({
             sections={document.sections}
             accentColor={accentColor}
             layout={layout}
+            font={document.font}
             logoUrl={document.logoUrl}
             headerRight={headerStamp}
             footerSlot={footerSlot}

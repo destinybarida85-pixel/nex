@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { paperBg, paperInk, paperMuted, paperRule, monoStack, type DocumentLayout } from "./theme";
+import { paperBg, paperInk, paperMuted, paperRule, monoStack, fontStack, type DocumentLayout, type DocumentFont } from "./theme";
 
 export type DocumentSection = { heading: string; text: string };
 
@@ -65,6 +65,7 @@ export default function DocumentPaper({
   logoUrl,
   big = true,
   layout = "classic",
+  font = "auto",
   headerRight,
   footerSlot,
   overlay,
@@ -81,6 +82,7 @@ export default function DocumentPaper({
   logoUrl?: string | null;
   big?: boolean;
   layout?: DocumentLayout;
+  font?: DocumentFont;
   headerRight?: ReactNode;
   footerSlot?: ReactNode;
   /** Free-floating content positioned by the caller (e.g. a draggable stamp
@@ -124,7 +126,7 @@ export default function DocumentPaper({
       <p style={{ ...style, margin: 0 }}>{sections[index].text}</p>
     );
 
-  let content: ReactNode;
+  let content: ReactNode = null;
 
   if (layout === "modern") {
     content = (
@@ -283,7 +285,11 @@ export default function DocumentPaper({
     );
   }
 
-  content = (
+  // Classic is the fallback, not an override. This guard is load-bearing:
+  // without it, the assignment below ran unconditionally and clobbered
+  // whichever layout branch had just matched — so Modern, Minimal and Dossier
+  // all silently rendered as Classic and the layout picker did nothing.
+  if (!content) content = (
     <div
       className={`w-full ${className}`}
       style={{
@@ -333,8 +339,17 @@ export default function DocumentPaper({
     </div>
   );
 
+  // Each layout sets its own fonts inline, which beat anything inherited. The
+  // override rule in globals.css uses !important to win, and reads the stack
+  // from a custom property set here — so it stays per-instance rather than the
+  // last-rendered document dictating the font for every other one on the page.
+  const chosenStack = fontStack(font);
+
   return (
-    <div style={{ position: "relative" }}>
+    <div
+      style={{ position: "relative", ...(chosenStack ? ({ "--doc-font": chosenStack } as React.CSSProperties) : {}) }}
+      className={chosenStack ? "doc-font-override" : undefined}
+    >
       {content}
       {overlay}
     </div>

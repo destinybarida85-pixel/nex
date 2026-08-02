@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { IconDocuments, IconDownload, IconESign, IconCamera, IconTemplates, IconCheckCircle } from "@/components/icons";
 import DocumentPaper from "@/components/document/DocumentPaper";
-import { documentAccents, documentLayouts, type DocumentLayout } from "@/components/document/theme";
-import TemplatePicker from "@/components/document/TemplatePicker";
-import type { DocumentTemplate } from "@/components/document/templates";
+import { documentAccents, documentLayouts, documentFonts, type DocumentLayout, type DocumentFont } from "@/components/document/theme";
+import TemplatePicker, { type TemplateChoice } from "@/components/document/TemplatePicker";
 
 export type DocumentStep = { label: string; done: boolean };
 export type DocumentData = {
@@ -28,6 +27,7 @@ export default function DocumentPanel({
   const [draft, setDraft] = useState<DocumentData>(document);
   const [accentColor, setAccentColor] = useState(documentAccents[0].color);
   const [layout, setLayout] = useState<DocumentLayout>("classic");
+  const [font, setFont] = useState<DocumentFont>("auto");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -101,8 +101,9 @@ export default function DocumentPanel({
     }
   }
 
-  function applyTemplate(template: DocumentTemplate) {
-    setLayout(template.layout);
+  function applyTemplate({ template, layout: pickedLayout, accentColor: pickedAccent }: TemplateChoice) {
+    setLayout(pickedLayout);
+    setAccentColor(pickedAccent);
     onUpdate({
       title: template.title,
       meta: template.meta,
@@ -132,6 +133,7 @@ export default function DocumentPanel({
           title: document.title,
           sections: document.body,
           layout,
+          font,
           accentColor,
           logoUrl,
           signersRequired,
@@ -187,6 +189,7 @@ export default function DocumentPanel({
               sections={draft.body}
               accentColor={accentColor}
               layout={layout}
+              font={font}
               logoUrl={logoUrl}
               editable
               onTitleChange={(v) => setDraft((prev) => ({ ...prev, title: v }))}
@@ -196,7 +199,7 @@ export default function DocumentPanel({
           </div>
         ) : (
           <div className="flex-1 min-w-0 max-w-[620px] print-area">
-            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} layout={layout} logoUrl={logoUrl} />
+            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} layout={layout} font={font} logoUrl={logoUrl} />
           </div>
         )}
 
@@ -226,6 +229,11 @@ export default function DocumentPanel({
                 <option key={l.id} value={l.id}>{l.label}</option>
               ))}
             </select>
+            <select className="input text-[11.5px]" value={font} onChange={(e) => setFont(e.target.value as DocumentFont)}>
+              {documentFonts.map((f) => (
+                <option key={f.id} value={f.id}>{f.label}</option>
+              ))}
+            </select>
             <div className="flex items-center gap-1.5">
               {documentAccents.map((a) => (
                 <button
@@ -236,6 +244,26 @@ export default function DocumentPanel({
                   style={{ background: a.color, outline: accentColor === a.color ? "2px solid var(--color-text)" : "none", outlineOffset: 2 }}
                 />
               ))}
+              {/* Any colour, not just the four presets — a business whose brand
+                  colour isn't in the list shouldn't have to settle for close. */}
+              <label
+                className="w-[18px] h-[18px] rounded-md cursor-pointer grid place-items-center flex-none"
+                title="Custom colour"
+                style={{
+                  border: "1px dashed var(--color-neutral-600)",
+                  outline: documentAccents.some((a) => a.color === accentColor) ? "none" : "2px solid var(--color-text)",
+                  outlineOffset: 2,
+                  background: documentAccents.some((a) => a.color === accentColor) ? "transparent" : accentColor,
+                }}
+              >
+                <input
+                  type="color"
+                  aria-label="Custom document colour"
+                  value={accentColor}
+                  onChange={(e) => setAccentColor(e.target.value)}
+                  className="opacity-0 w-full h-full cursor-pointer"
+                />
+              </label>
             </div>
             <div className="flex items-center gap-2 pt-1">
               <span className="text-[11px] text-[var(--color-neutral-500)] flex-1">

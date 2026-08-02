@@ -33,7 +33,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   }
   if (!document) return NextResponse.json({ error: "Document not found." }, { status: 404 });
 
-  const content = document.content as { text?: string; sections?: { heading: string; text: string }[]; layout?: string; accentColor?: string; logoUrl?: string };
+  const content = document.content as { text?: string; sections?: { heading: string; text: string }[]; layout?: string; font?: string; accentColor?: string; logoUrl?: string };
 
   // Who has already signed drives the second signer's view: they need to know
   // the first party is on the record, not just be handed a blank pad. Only the
@@ -55,6 +55,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       text: content?.text ?? "",
       sections: content?.sections ?? null,
       layout: content?.layout ?? null,
+      font: content?.font ?? null,
       accentColor: content?.accentColor ?? null,
       logoUrl: content?.logoUrl ?? null,
       status: document.status,
