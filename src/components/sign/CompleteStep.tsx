@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { IconCheckCircle, IconDownload, IconEdit, IconChevronDown, IconCamera } from "@/components/icons";
 
-import Stamp from "./Stamp";
+import Stamp, { stampShapes, type StampShape } from "./Stamp";
 import { demoDocument, type SignDocument } from "./document";
 import DocumentPaper from "@/components/document/DocumentPaper";
 import SignatureBlock from "@/components/document/SignatureBlock";
@@ -14,25 +14,30 @@ const stampColors = ["#c81e1e", "#9184d9", "#63c3b2", "#d9a05b", "#5b8fd9", "#8a
 
 const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-const stampTypes: { id: string; name: string; label: string; sub: string }[] = [
-  { id: "official", name: "Official Stamp", label: "SEALED", sub: "ORIGIN E-SIGN" },
-  { id: "company", name: "Company Stamp", label: "COMPANY", sub: "AUTHORIZED" },
-  { id: "signature", name: "Signature Stamp", label: "SIGNED", sub: "REPRODUCTION" },
-  { id: "date", name: "Date Stamp", label: today.toUpperCase(), sub: "DATE STAMPED" },
-  { id: "received", name: "Received Stamp", label: "RECEIVED", sub: today.toUpperCase() },
-  { id: "paid", name: "Paid Stamp", label: "PAID", sub: "PAYMENT COMPLETE" },
-  { id: "ctc", name: "Certified True Copy", label: "CERTIFIED", sub: "TRUE COPY" },
-  { id: "notary", name: "Notary Stamp/Seal", label: "NOTARIZED", sub: "NOTARY SEAL" },
-  { id: "name", name: "Name Stamp", label: "NAME", sub: "TITLE" },
-  { id: "round_seal", name: "Round/Common Seal", label: "SEAL", sub: "COMMON SEAL" },
-  { id: "logo", name: "Logo Stamp", label: "LOGO", sub: "" },
-  { id: "inspection", name: "Inspection Stamp", label: "INSPECTED", sub: "QUALITY PASSED" },
-  { id: "approval", name: "Approval Stamp", label: "APPROVED", sub: today.toUpperCase() },
-  { id: "rejected", name: "Rejected/Cancelled", label: "REJECTED", sub: "VOIDED" },
-  { id: "confidential", name: "Confidential Stamp", label: "CONFIDENTIAL", sub: "RESTRICTED" },
-  { id: "customs", name: "Customs/Border Stamp", label: "CLEARED", sub: "CUSTOMS" },
-  { id: "postal", name: "Postal Stamp", label: "POSTAGE", sub: "" },
-  { id: "embossing", name: "Embossing Seal", label: "EMBOSSED", sub: "OFFICIAL SEAL" },
+// defaultShape mirrors what each of these actually looks like in the wild —
+// a notary or embossing seal is wax/pressed, a "PAID"/"CONFIDENTIAL" is a
+// rubber rectangle, an approval/inspection mark is a starred quality badge —
+// but it's only ever a suggestion: shape and type stay independently
+// editable, same pattern as document layout vs. template.
+const stampTypes: { id: string; name: string; label: string; sub: string; defaultShape: StampShape }[] = [
+  { id: "official", name: "Official Stamp", label: "SEALED", sub: "ORIGIN E-SIGN", defaultShape: "round" },
+  { id: "company", name: "Company Stamp", label: "COMPANY", sub: "AUTHORIZED", defaultShape: "badge" },
+  { id: "signature", name: "Signature Stamp", label: "SIGNED", sub: "REPRODUCTION", defaultShape: "round" },
+  { id: "date", name: "Date Stamp", label: today.toUpperCase(), sub: "DATE STAMPED", defaultShape: "rectangle" },
+  { id: "received", name: "Received Stamp", label: "RECEIVED", sub: today.toUpperCase(), defaultShape: "rectangle" },
+  { id: "paid", name: "Paid Stamp", label: "PAID", sub: "PAYMENT COMPLETE", defaultShape: "rectangle" },
+  { id: "ctc", name: "Certified True Copy", label: "CERTIFIED", sub: "TRUE COPY", defaultShape: "badge" },
+  { id: "notary", name: "Notary Stamp/Seal", label: "NOTARIZED", sub: "NOTARY SEAL", defaultShape: "wax" },
+  { id: "name", name: "Name Stamp", label: "NAME", sub: "TITLE", defaultShape: "round" },
+  { id: "round_seal", name: "Round/Common Seal", label: "SEAL", sub: "COMMON SEAL", defaultShape: "round" },
+  { id: "logo", name: "Logo Stamp", label: "LOGO", sub: "", defaultShape: "round" },
+  { id: "inspection", name: "Inspection Stamp", label: "INSPECTED", sub: "QUALITY PASSED", defaultShape: "badge" },
+  { id: "approval", name: "Approval Stamp", label: "APPROVED", sub: today.toUpperCase(), defaultShape: "badge" },
+  { id: "rejected", name: "Rejected/Cancelled", label: "REJECTED", sub: "VOIDED", defaultShape: "rectangle" },
+  { id: "confidential", name: "Confidential Stamp", label: "CONFIDENTIAL", sub: "RESTRICTED", defaultShape: "rectangle" },
+  { id: "customs", name: "Customs/Border Stamp", label: "CLEARED", sub: "CUSTOMS", defaultShape: "rectangle" },
+  { id: "postal", name: "Postal Stamp", label: "POSTAGE", sub: "", defaultShape: "round" },
+  { id: "embossing", name: "Embossing Seal", label: "EMBOSSED", sub: "OFFICIAL SEAL", defaultShape: "wax" },
 ];
 
 type StampPosition = "footer" | "header" | "custom";
@@ -76,6 +81,7 @@ export default function CompleteStep({
   const stampType = stampTypes.find((t) => t.id === stampTypeId) || stampTypes[0];
   const [stampLabel, setStampLabel] = useState(stampType.label);
   const [stampSub, setStampSub] = useState(stampType.sub);
+  const [stampShape, setStampShape] = useState<StampShape>(stampType.defaultShape);
   const [stampColor, setStampColor] = useState(stampColors[0]);
   const [stampPosition, setStampPosition] = useState<StampPosition>("footer");
   const [stampX, setStampX] = useState(82);
@@ -96,6 +102,7 @@ export default function CompleteStep({
     setStampTypeId(id);
     setStampLabel(t.label);
     setStampSub(t.sub);
+    setStampShape(t.defaultShape);
   }
 
   async function handleImageFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -142,7 +149,7 @@ export default function CompleteStep({
     setDragging(false);
   }
 
-  const embeddedStampNode = showStamp && !stampBlocked ? <Stamp label={stampLabel} sub={stampSub} color={stampColor} imageUrl={stampImageUrl} size={72} /> : null;
+  const embeddedStampNode = showStamp && !stampBlocked ? <Stamp label={stampLabel} sub={stampSub} color={stampColor} imageUrl={stampImageUrl} size={72} shape={stampShape} /> : null;
 
   const headerStamp = stampPosition === "header" ? embeddedStampNode : null;
   const footerStamp = stampPosition === "footer" ? embeddedStampNode : null;
@@ -257,6 +264,37 @@ export default function CompleteStep({
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}
                 </select>
+                <div className="flex gap-1.5">
+                  {stampShapes.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      title={s.label}
+                      onClick={() => setStampShape(s.id)}
+                      className="flex-1 flex flex-col items-center gap-1 py-1.5 rounded-lg cursor-pointer text-[9.5px]"
+                      style={{
+                        border: `1px solid ${stampShape === s.id ? "var(--color-accent)" : "var(--color-divider)"}`,
+                        color: stampShape === s.id ? "var(--color-accent-300)" : "var(--color-neutral-500)",
+                        background: stampShape === s.id ? "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" : "transparent",
+                      }}
+                    >
+                      {/* mix-blend-mode:multiply (real "ink on paper") only
+                          reads correctly against a light backing — against
+                          this panel's dark surface it multiplies toward
+                          black and the swatch nearly disappears. A small
+                          white chip behind the preview only, matching what
+                          the stamp actually sits on in the document. */}
+                      {/* Fixed width accommodates the rectangle shape, which
+                          renders 1.7x wider than tall at any given size — a
+                          square chip would either clip it or force every
+                          other shape down to fit its width. */}
+                      <span className="rounded-md grid place-items-center overflow-hidden" style={{ width: 48, height: 34, background: "#fff" }}>
+                        <Stamp label={stampLabel.slice(0, 6) || "SEAL"} sub="" color={stampColor} size={28} shape={s.id} />
+                      </span>
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
                 <select className="input text-[12px]" value={stampPosition} onChange={(e) => setStampPosition(e.target.value as StampPosition)}>
                   {positions.map((p) => (
                     <option key={p.id} value={p.id}>{p.label}</option>
