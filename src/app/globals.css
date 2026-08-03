@@ -100,6 +100,18 @@ body {
   font-family: var(--font-inter), system-ui, sans-serif;
 }
 
+/* — homepage 3D sections — scoped to Hero3D/Marquee/About/Modules/Showcase,
+   not applied globally, so the rest of the product stays on Inter. */
+.font-kanit {
+  font-family: var(--font-kanit), sans-serif;
+}
+.hero-heading {
+  background: linear-gradient(180deg, #7a7290 0%, #e9e4ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
