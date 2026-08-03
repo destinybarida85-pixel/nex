@@ -72,7 +72,9 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-5",
-      max_tokens: 1024,
+      // A full contract is 8-14 clauses; at 1024 the JSON was cut off
+      // mid-string, failed to parse, and surfaced as a 502.
+      max_tokens: 8000,
       system: SYSTEM_PROMPT,
       messages: history.map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text })),
     }),
@@ -91,7 +93,20 @@ export async function POST(request: Request) {
   try {
     parsed = JSON.parse(text);
   } catch {
-    return NextResponse.json({ error: "Could not parse the model's response." }, { status: 502 });
+    // Distinguish "ran out of room" from "wrote something malformed". A long
+    // contract hitting the token ceiling truncates the JSON mid-string, and
+    // reporting that as a generic parse failure sends you hunting the wrong
+    // bug — as it did here.
+    const truncated = data.stop_reason === "max_tokens";
+    console.error("[assistant] unparseable response", { stop_reason: data.stop_reason, length: rawText.length });
+    return NextResponse.json(
+      {
+        error: truncated
+          ? "That document was too long to finish in one pass. Try asking for it in parts, or narrow the request."
+          : "Could not parse the model's response.",
+      },
+      { status: 502 }
+    );
   }
 
   if (parsed.type === "question" && parsed.question) {
