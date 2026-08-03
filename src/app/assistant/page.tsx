@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 import ChatPanel, { type ChatMessage } from "@/components/assistant/ChatPanel";
 import DocumentPanel, { type DocumentData } from "@/components/assistant/DocumentPanel";
+import { IconSparkle } from "@/components/icons";
 
 const documents: Record<string, DocumentData> = {
   nda: {
@@ -97,6 +98,20 @@ export default function AssistantPage() {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [currentDocument, setCurrentDocument] = useState<DocumentData>(documents.nda);
   const [thinking, setThinking] = useState(false);
+  const handledHandoff = useRef(false);
+
+  // The AI Assistant (/copilot) hands off here with a ready-made instruction
+  // once it's figured out what the user actually needs — this is what makes
+  // that handoff real instead of just a link. window.location.search rather
+  // than useSearchParams: this only needs to be read once on mount, not
+  // reactively, so it doesn't need to participate in rendering.
+  useEffect(() => {
+    if (handledHandoff.current) return;
+    handledHandoff.current = true;
+    const prompt = new URLSearchParams(window.location.search).get("prompt");
+    if (prompt) handleSend(prompt);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSend(text: string) {
     const nextMessages: ChatMessage[] = [...messages, { role: "user", text }];
@@ -147,9 +162,16 @@ export default function AssistantPage() {
 
   return (
     <div className="flex min-h-screen md:h-screen bg-[var(--color-bg)] md:overflow-hidden">
-      <Sidebar active="AI Assistant" />
+      <Sidebar active="Documents" />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
+        <div className="flex items-center gap-2 px-5 pt-16 md:pt-2.5 pb-2.5 border-b border-[var(--color-divider)] flex-none">
+          <IconSparkle size={13} className="text-[var(--color-accent)] flex-none" />
+          <div className="text-[12px] text-[var(--color-neutral-400)]">
+            Document AI — drafts the words for something you've already decided on.{" "}
+            <a href="/copilot" style={{ color: "var(--color-accent-300)" }}>Not sure what you need? Ask the AI Assistant →</a>
+          </div>
+        </div>
         <div className="flex-1 flex flex-col md:flex-row min-h-0">
           <ChatPanel messages={messages} thinking={thinking} onSend={handleSend} />
           <DocumentPanel document={currentDocument} onUpdate={setCurrentDocument} />

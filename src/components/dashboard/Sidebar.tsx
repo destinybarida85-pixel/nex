@@ -38,7 +38,7 @@ type NavItem = { label: string; icon: React.ComponentType<{ size?: number }>; hr
 // look fuller than the product actually is.
 const primaryNav: NavItem[] = [
   { label: "Dashboard", icon: IconDashboard, href: "/dashboard" },
-  { label: "AI Assistant", icon: IconSparkle, href: "/assistant", badge: "New" },
+  { label: "AI Assistant", icon: IconSparkle, href: "/copilot", badge: "New" },
 ];
 
 const moneyNav: NavItem[] = [

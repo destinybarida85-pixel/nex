@@ -51,7 +51,7 @@ export default function MobileHomePage() {
     { label: "Send", icon: IconSend, bg: "#9184d9", onClick: () => setShowTransfer(true) },
     { label: "Receive", icon: IconReceive, bg: "#63c3b2", onClick: () => setShowReceive(true) },
     { label: "Document", icon: IconDocuments, bg: "#d9a05b", href: "/assistant" },
-    { label: "Ask AI", icon: IconSparkle, bg: "#7fa3e8", href: "/assistant" },
+    { label: "Ask AI", icon: IconSparkle, bg: "#7fa3e8", href: "/copilot" },
   ];
 
   return (

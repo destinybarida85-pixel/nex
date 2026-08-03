@@ -10,6 +10,7 @@ const PROTECTED_PREFIXES = [
   "/dashboard",
   "/wallet",
   "/assistant",
+  "/copilot",
   "/admin",
   "/profile",
   "/analytics",
