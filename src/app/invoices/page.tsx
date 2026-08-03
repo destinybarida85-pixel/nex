@@ -157,7 +157,11 @@ export default function InvoicesPage() {
               ) : (
                 <div className="flex flex-col gap-2.5">
                   {sendable.map((inv) => {
-                    const paid = inv.uses_count > 0;
+                    // A recurring link is never "Paid" — it keeps collecting on
+                    // every cycle, so a past payment makes it Active, not settled.
+                    const used = inv.uses_count > 0;
+                    const paid = used && inv.kind !== "recurring";
+                    const label = inv.status !== "active" ? "Archived" : paid ? "Paid" : used ? "Active" : "Unpaid";
                     return (
                       <div
                         key={inv.id}
@@ -176,8 +180,8 @@ export default function InvoicesPage() {
                             {money(inv.amount_cents, inv.currency)}
                             {inv.kind === "recurring" && inv.interval ? `/${inv.interval}` : ""}
                           </div>
-                          <span className={`tag ${paid ? "tag-accent" : "tag-outline"}`}>
-                            {paid ? "Paid" : inv.status === "active" ? "Unpaid" : "Archived"}
+                          <span className={`tag ${paid || used ? "tag-accent" : "tag-outline"}`}>
+                            {label}
                           </span>
                         </div>
                         <SendInvoice

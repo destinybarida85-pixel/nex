@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isBackendConfigured } from "@/lib/backendStatus";
-import { isMissingColumn } from "@/lib/twoPartySigning";
+import { isMissingColumn } from "@/lib/schema";
 
 // Intentionally unauthenticated: this is the "anyone with the link" read path for a
 // document shared via the white-label mini site. The document's random UUID is the
@@ -29,7 +29,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   // same honest "not found" a real-but-missing id gets below.
   if (error) {
     if (error.code === "22P02") return NextResponse.json({ error: "Document not found." }, { status: 404 });
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Public endpoint: never echo the database's own error text to a stranger.
+    console.error("[documents/public] lookup failed:", error.message);
+    return NextResponse.json({ error: "Document not found." }, { status: 404 });
   }
   if (!document) return NextResponse.json({ error: "Document not found." }, { status: 404 });
 

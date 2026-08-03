@@ -77,7 +77,13 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
   const { from, paidAt } = invoice;
   const accent = from.accent;
   const shortId = invoice.id.slice(0, 8).toUpperCase();
-  const recurringSuffix = invoice.kind === "recurring" && invoice.interval ? ` / ${invoice.interval}` : "";
+  const isRecurring = invoice.kind === "recurring";
+  const recurringSuffix = isRecurring && invoice.interval ? ` / ${invoice.interval}` : "";
+  // A subscription is never "paid in full" — closing it out after the first
+  // payment would hide the Pay button forever and leave the customer with no
+  // way to pay the next cycle from the link they were sent. Only a one-time
+  // invoice is settled by a single payment.
+  const settled = !!paidAt && !isRecurring;
 
   return (
     <Shell>
@@ -123,8 +129,12 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
               </div>
               <div>
                 <div className="uppercase tracking-[.06em] text-[10px]">Status</div>
-                <div style={{ color: paidAt ? "#1f7a4d" : "#1a1a1f" }}>
-                  {paidAt ? `Paid ${longDate(paidAt)}` : "Awaiting payment"}
+                <div style={{ color: settled ? "#1f7a4d" : "#1a1a1f" }}>
+                  {settled
+                    ? `Paid ${longDate(paidAt!)}`
+                    : paidAt
+                      ? `Active · last paid ${longDate(paidAt)}`
+                      : "Awaiting payment"}
                 </div>
               </div>
             </div>
@@ -153,19 +163,19 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
                   className="flex justify-between text-[17px] font-medium pt-1.5"
                   style={{ borderTop: `1.5px solid ${accent}`, color: "#1a1a1f" }}
                 >
-                  <span>{paidAt ? "Total paid" : "Total due"}</span>
+                  <span>{settled ? "Total paid" : isRecurring ? "Amount per cycle" : "Total due"}</span>
                   <span>{money(invoice.amountCents, invoice.currency)}</span>
                 </div>
               </div>
             </div>
 
-            {paidAt ? (
+            {settled ? (
               <div
                 className="rounded-lg p-4 flex items-center gap-2.5 text-[12.5px]"
                 style={{ background: "#e6f4ec", color: "#1f7a4d" }}
               >
                 <IconCheckCircle size={16} />
-                Paid in full on {longDate(paidAt)}. Nothing further is owed.
+                Paid in full on {longDate(paidAt!)}. Nothing further is owed.
               </div>
             ) : invoice.payUrl ? (
               <div className="flex flex-col gap-2.5">

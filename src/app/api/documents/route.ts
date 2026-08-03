@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireTenant } from "@/lib/requireTenant";
 import { isBackendConfigured } from "@/lib/backendStatus";
-import { isMissingColumn } from "@/lib/twoPartySigning";
+import { isMissingColumn } from "@/lib/schema";
 
 export async function GET() {
   if (!isBackendConfigured) return NextResponse.json({ configured: false });

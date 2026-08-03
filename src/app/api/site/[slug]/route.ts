@@ -18,7 +18,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     .eq("site_slug", slug)
     .maybeSingle();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    // Public endpoint: never echo the database's own error text to a stranger.
+    console.error("[site/public] lookup failed:", error.message);
+    return NextResponse.json({ error: "Site not found." }, { status: 404 });
+  }
   if (!tenant || !tenant.site_published) return NextResponse.json({ error: "Site not found." }, { status: 404 });
 
   const documentIds: string[] = tenant.site_document_ids || [];

@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { requireTenant } from "@/lib/requireTenant";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import { isPendingMigration } from "@/lib/schema";
 import type { CertificateDesign } from "@/components/certificates/CertificatePaper";
+
+const SETUP_MESSAGE =
+  "Certificates need one database migration before they work. Run supabase/migrations/0016_certificates.sql in your Supabase SQL editor, then reload this page.";
 
 export async function GET() {
   if (!isBackendConfigured) return NextResponse.json({ configured: false });
@@ -9,13 +13,26 @@ export async function GET() {
   const { error, status, supabase, tenantId } = await requireTenant();
   if (error) return NextResponse.json({ configured: true, error }, { status });
 
-  const { data: tenant } = await supabase!.from("tenants").select("certificate_credits, name, brand_color").eq("id", tenantId).maybeSingle();
+  const { data: tenant, error: tenantError } = await supabase!
+    .from("tenants")
+    .select("certificate_credits, name, brand_color")
+    .eq("id", tenantId)
+    .maybeSingle();
+  if (isPendingMigration(tenantError)) {
+    return NextResponse.json({ configured: true, setupRequired: true, setupMessage: SETUP_MESSAGE });
+  }
 
   const { data: certificates, error: listError } = await supabase!
     .from("certificates")
     .select("id, design, recipient_name, title, issued_at, created_at")
     .eq("tenant_id", tenantId)
     .order("created_at", { ascending: false });
+  // Without this the page fell back to its signed-out demo state — showing a
+  // fake "2 credits" and a disabled button with no explanation — which looks
+  // identical to the feature simply being broken.
+  if (isPendingMigration(listError)) {
+    return NextResponse.json({ configured: true, setupRequired: true, setupMessage: SETUP_MESSAGE });
+  }
   if (listError) return NextResponse.json({ error: listError.message }, { status: 500 });
 
   return NextResponse.json({
@@ -49,7 +66,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A certificate needs a recipient, a title, and a citation." }, { status: 400 });
   }
 
-  const { data: tenant } = await supabase!.from("tenants").select("certificate_credits, name").eq("id", tenantId).single();
+  const { data: tenant, error: tenantError } = await supabase!
+    .from("tenants")
+    .select("certificate_credits, name")
+    .eq("id", tenantId)
+    .single();
+  if (isPendingMigration(tenantError)) {
+    return NextResponse.json({ error: SETUP_MESSAGE }, { status: 503 });
+  }
   const credits = tenant?.certificate_credits ?? 0;
   if (credits < 1) {
     return NextResponse.json({ error: "Out of certificate credits. Buy more to keep issuing." }, { status: 402 });
@@ -69,6 +93,9 @@ export async function POST(request: Request) {
     })
     .select("id")
     .single();
+  if (isPendingMigration(insertError)) {
+    return NextResponse.json({ error: SETUP_MESSAGE }, { status: 503 });
+  }
   if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
 
   await supabase!.from("tenants").update({ certificate_credits: credits - 1 }).eq("id", tenantId);

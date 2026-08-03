@@ -24,6 +24,7 @@ export default function CertificatesPage() {
   const [tenantName, setTenantName] = useState("");
   const [issued, setIssued] = useState<IssuedCertificate[]>([]);
   const [buying, setBuying] = useState(false);
+  const [setupMessage, setSetupMessage] = useState("");
 
   const [design, setDesign] = useState<CertificateDesign>("ribbon");
   const [recipientName, setRecipientName] = useState("");
@@ -43,6 +44,10 @@ export default function CertificatesPage() {
     fetch("/api/certificates")
       .then((r) => r.json())
       .then((data) => {
+        if (data.setupRequired) {
+          setSetupMessage(data.setupMessage || "This feature needs a database migration before it works.");
+          return;
+        }
         if (data.configured) {
           setLive(true);
           setCredits(data.credits ?? 0);
@@ -144,6 +149,15 @@ export default function CertificatesPage() {
               </button>
             </div>
           </div>
+
+          {setupMessage && (
+            <div
+              className="text-[12px] px-3.5 py-3 rounded-lg leading-[1.6]"
+              style={{ background: "color-mix(in srgb, #e0a35b 15%, transparent)", color: "#e0a35b" }}
+            >
+              <strong>One setup step left.</strong> {setupMessage}
+            </div>
+          )}
 
           {live && credits === 0 && (
             <div className="text-[11.5px] px-3 py-2 rounded-lg" style={{ background: "var(--color-accent-900)", color: "var(--color-accent-300)" }}>

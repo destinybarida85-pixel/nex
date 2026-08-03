@@ -3,7 +3,7 @@ import { hashDocument, hashSignature, computeRecordHash, formatCertificateId } f
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient as createSessionClient } from "@/lib/supabase/server";
 import { createNotification } from "@/lib/notify";
-import { isMissingColumn } from "@/lib/twoPartySigning";
+import { isMissingColumn } from "@/lib/schema";
 
 const isConfigured = !!(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&

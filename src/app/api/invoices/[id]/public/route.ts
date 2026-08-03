@@ -23,7 +23,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   // it surfaces as a raw 500 instead of the same honest 404 a missing id gets.
   if (error) {
     if (error.code === "22P02") return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Public endpoint: never echo the database's own error text to a stranger.
+    console.error("[invoices/public] lookup failed:", error.message);
+    return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
   }
   if (!link) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
