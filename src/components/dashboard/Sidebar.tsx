@@ -24,6 +24,7 @@ import {
   IconTemplates,
   IconMenu,
   IconX,
+  IconShieldCheck,
 } from "@/components/icons";
 
 const COLLAPSE_KEY = "origin-sidebar-collapsed";
@@ -53,6 +54,7 @@ const workNav: NavItem[] = [
   { label: "Projects", icon: IconProjects, href: "/projects" },
   { label: "Clients", icon: IconClients, href: "/crm" },
   { label: "Employees", icon: IconEmployees, href: "/employees" },
+  { label: "Certificates", icon: IconShieldCheck, href: "/certificates", badge: "New" },
 ];
 
 // Promoted out of the bottom drawer — white-label is a headline feature, not a

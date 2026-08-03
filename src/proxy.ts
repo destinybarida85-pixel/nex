@@ -20,6 +20,7 @@ const PROTECTED_PREFIXES = [
   "/payroll",
   "/billing",
   "/invoices",
+  "/certificates",
   "/templates",
   "/whitelabel",
   "/mobile",

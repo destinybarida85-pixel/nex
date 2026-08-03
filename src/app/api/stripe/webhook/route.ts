@@ -62,6 +62,17 @@ export async function POST(request: Request) {
       }
     }
 
+    if (session.mode === "payment" && session.metadata?.kind === "certificate_credits" && session.metadata.tenant_id) {
+      const credits = Number(session.metadata.credits) || 5;
+      const { data: tenant } = await supabase.from("tenants").select("certificate_credits").eq("id", session.metadata.tenant_id).single();
+      if (tenant) {
+        await supabase
+          .from("tenants")
+          .update({ certificate_credits: tenant.certificate_credits + credits })
+          .eq("id", session.metadata.tenant_id);
+      }
+    }
+
     const paymentLinkId = session.payment_link as string | null;
     if (paymentLinkId && session.amount_total) {
       const { data: link } = await supabase
