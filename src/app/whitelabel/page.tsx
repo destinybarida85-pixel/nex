@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IconGlobe, IconCamera, IconCheckCircle } from "@/components/icons";
+import { IconGlobe, IconCamera, IconCheckCircle, IconPayments, IconChevronDown } from "@/components/icons";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import { ClaritySite, LedgerSite, AtriumSite, PortfolioSite, LandingSite, type Site } from "../site/[slug]/page";
@@ -66,6 +66,9 @@ export default function WhiteLabelPage() {
   const [docPaymentLinkId, setDocPaymentLinkId] = useState("");
   const [docSaving, setDocSaving] = useState(false);
   const [docError, setDocError] = useState("");
+  // Which document's price row is open — one at a time keeps the list
+  // scannable instead of every row permanently showing a dropdown.
+  const [pricingDocId, setPricingDocId] = useState<string | null>(null);
   const [live, setLive] = useState(false);
   const [tenantFetchError, setTenantFetchError] = useState("");
   const [publishing, setPublishing] = useState(false);
@@ -421,51 +424,98 @@ export default function WhiteLabelPage() {
               </div>
             </div>
 
-            <div className="field">
-              <label>What are clients paying for?</label>
-              {paymentLinks.length > 0 ? (
-                <select className="input text-[12.5px]" value={selectedLinkId} onChange={(e) => setSelectedLinkId(e.target.value)}>
-                  <option value="">None</option>
-                  {paymentLinks.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.title} · {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
-                  No real payment links yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create one on the Payments page</a>, then it'll show up here so the mini site can actually charge clients.
+            <div
+              className="flex flex-col gap-3.5 p-3.5 rounded-xl"
+              style={{ border: "1px solid var(--color-divider)", background: "color-mix(in srgb, var(--color-accent-900) 12%, transparent)" }}
+            >
+              <div className="flex items-center gap-2">
+                <IconPayments size={14} className="text-[var(--color-accent)]" />
+                <div className="text-[13px] font-medium">Getting paid</div>
+              </div>
+              <div className="text-[11.5px] text-[var(--color-neutral-400)] leading-[1.6] -mt-1.5">
+                Two separate things, both optional: a button on your page for a general ask, and a price on any one
+                document for when only that document should be paid for.
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <div className="text-[12px] font-medium">A &ldquo;Pay now&rdquo; button on your page</div>
+                <div className="text-[11px] text-[var(--color-neutral-500)]">
+                  Good for a single flat ask, like a deposit — shows up on every page style, with or without documents.
                 </div>
-              )}
+                {paymentLinks.length > 0 ? (
+                  <select className="input text-[12.5px]" value={selectedLinkId} onChange={(e) => setSelectedLinkId(e.target.value)}>
+                    <option value="">No button — don&rsquo;t ask for a general payment</option>
+                    {paymentLinks.map((l) => (
+                      <option key={l.id} value={l.id}>
+                        {l.title} · {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
+                    No payment links yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create one on the Payments page</a> first, then it&rsquo;ll show up here.
+                  </div>
+                )}
+              </div>
             </div>
+
             <div className="field">
               <label>Documents to feature (their work, shown to clients)</label>
-              <div className="flex flex-col gap-2">
-                {documents.map((d) => (
-                  <div key={d.id} className="flex items-center gap-2 text-[12.5px] py-0.5">
-                    <label className="flex items-center gap-2 flex-1 min-w-0">
-                      <input type="checkbox" checked={selectedDocIds.includes(d.id)} onChange={() => toggleDoc(d.id)} />
-                      <span className="truncate">{d.title}</span>
-                    </label>
-                    {paymentLinks.length > 0 ? (
-                      <select
-                        className="input text-[11px] flex-none"
-                        style={{ width: 150 }}
-                        value={d.payment_link_id || ""}
-                        onChange={(e) => updateDocPaymentLink(d.id, e.target.value)}
-                      >
-                        <option value="">No payment link</option>
-                        {paymentLinks.map((l) => (
-                          <option key={l.id} value={l.id}>
-                            {l.title} · {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <span className="text-[10.5px] flex-none" style={{ color: "var(--color-neutral-500)" }}>No payment links yet</span>
-                    )}
-                  </div>
-                ))}
+              <div className="text-[11px] text-[var(--color-neutral-500)] -mt-1 mb-0.5">
+                Give any one of these its own price — a client pays that exact amount when they open it, separate from
+                the button above.
+              </div>
+              <div className="flex flex-col gap-1.5">
+                {documents.map((d) => {
+                  const link = paymentLinks.find((l) => l.id === d.payment_link_id);
+                  const isOpen = pricingDocId === d.id;
+                  return (
+                    <div key={d.id} className="rounded-lg" style={isOpen ? { border: "1px solid var(--color-divider)" } : undefined}>
+                      <div className="flex items-center gap-2 text-[12.5px] py-1">
+                        <label className="flex items-center gap-2 flex-1 min-w-0">
+                          <input type="checkbox" checked={selectedDocIds.includes(d.id)} onChange={() => toggleDoc(d.id)} />
+                          <span className="truncate">{d.title}</span>
+                        </label>
+                        <button
+                          type="button"
+                          className="tag cursor-pointer flex-none"
+                          onClick={() => setPricingDocId(isOpen ? null : d.id)}
+                          style={
+                            link
+                              ? { background: "var(--color-accent-800)", color: "var(--color-accent-100)" }
+                              : { background: "var(--color-neutral-800)", color: "var(--color-neutral-400)" }
+                          }
+                        >
+                          {link ? `${(link.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: link.currency.toUpperCase() })}` : "Free"}
+                          <IconChevronDown size={10} className={isOpen ? "rotate-180" : undefined} />
+                        </button>
+                      </div>
+                      {isOpen && (
+                        <div className="px-2 pb-2.5">
+                          {paymentLinks.length > 0 ? (
+                            <select
+                              className="input text-[11.5px]"
+                              value={d.payment_link_id || ""}
+                              onChange={(e) => updateDocPaymentLink(d.id, e.target.value)}
+                              autoFocus
+                            >
+                              <option value="">Free — no price on this document</option>
+                              {paymentLinks.map((l) => (
+                                <option key={l.id} value={l.id}>
+                                  Charge {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })} · {l.title}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <div className="text-[10.5px]" style={{ color: "var(--color-neutral-500)" }}>
+                              No payment links yet — <a href="/payments" style={{ color: "var(--color-accent-300)" }}>create one</a> to price this document.
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
                 {documents.length === 0 && <div className="text-[11.5px] text-[var(--color-neutral-500)]">No documents yet.</div>}
               </div>
               {docFormOpen ? (
@@ -480,10 +530,10 @@ export default function WhiteLabelPage() {
                   />
                   {paymentLinks.length > 0 && (
                     <select className="input text-[12.5px]" value={docPaymentLinkId} onChange={(e) => setDocPaymentLinkId(e.target.value)}>
-                      <option value="">No payment link attached</option>
+                      <option value="">Free — no price on this document</option>
                       {paymentLinks.map((l) => (
                         <option key={l.id} value={l.id}>
-                          Attach: {l.title} · {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })}
+                          Charge {(l.amount_cents / 100).toLocaleString(undefined, { style: "currency", currency: l.currency.toUpperCase() })} · {l.title}
                         </option>
                       ))}
                     </select>
