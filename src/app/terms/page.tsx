@@ -1,131 +1,169 @@
 import LegalLayout from "@/components/site/LegalLayout";
 
+// Same principle as the privacy policy: describe the product honestly, and
+// leave anything only the business owner can decide as a visible [BRACKET]
+// rather than inventing it. The previous version claimed Delaware governing
+// law and a "Primue Inc." entity, neither of which is established.
+const H = "text-[18px] text-[var(--color-text)] font-medium";
+const S = "text-[var(--color-text)] font-medium";
+
 export default function TermsPage() {
   return (
-    <LegalLayout kicker="Legal" title="Terms of Service" updated="July 21, 2026">
+    <LegalLayout kicker="Legal" title="Terms of Service" updated="August 3, 2026">
+      <div
+        className="p-3.5 rounded-lg text-[13px] leading-[1.6]"
+        style={{ background: "color-mix(in srgb, #e0a35b 14%, transparent)", color: "#e0a35b" }}
+      >
+        <strong>Draft — not yet reviewed by a lawyer.</strong> Complete everything in [square brackets] and have a
+        qualified lawyer in your jurisdiction review this before publishing. Clauses that limit liability or set a
+        governing law are exactly the ones that fail when they are copied rather than drafted.
+      </div>
+
       <p>
-        These Terms of Service (&ldquo;Terms&rdquo;) govern access to and use of Primue, a white-label business operating
-        system covering business wallets, AI-assisted documents, e-signature, HR &amp; payroll, CRM and analytics (the
-        &ldquo;Service&rdquo;), provided by Primue Inc. (&ldquo;Primue,&rdquo; &ldquo;we&rdquo;). By creating an account or using
-        the Service, you agree to these Terms on behalf of yourself and, if applicable, the organization you represent.
+        These Terms govern your use of the Primue platform (the &ldquo;Service&rdquo;), operated by [Legal entity
+        name] of [Registered address] (&ldquo;we,&rdquo; &ldquo;us&rdquo;). By creating an account or using the
+        Service you agree to them. If you are agreeing on behalf of an organisation, you confirm you are authorised
+        to bind it.
       </p>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">1. Eligibility &amp; accounts</h2>
+        <h2 className={H}>1. What the Service is</h2>
         <p className="mt-2">
-          You must be at least 18 years old and able to form a binding contract to use the Service. You are responsible
-          for the accuracy of information you provide, for safeguarding your credentials, and for all activity under your
-          account.
+          Primue provides software for running a business: a wallet view, payment links and invoicing, AI-assisted
+          document drafting, electronic signature, certificates, payroll and HR records, CRM, analytics, and
+          white-label client-facing pages.
+        </p>
+        <p className="mt-2">
+          <strong className={S}>We are a software provider — not a bank, payment institution, law firm or
+          accountant.</strong> We do not hold your money, give legal advice, or provide financial advice.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">2. Payment services</h2>
+        <h2 className={H}>2. Payments are processed by Stripe</h2>
         <p className="mt-2">
-          Primue is a software platform, not a bank or a payment processor. Payments made through the Service are
-          processed by Stripe, subject to Stripe&rsquo;s own terms and applicable regulation. Primue does not hold or
-          custody funds on your behalf, and is not responsible for the acts or omissions of Stripe, except as required
-          by law.
+          Money paid through your payment links and invoices is processed by <strong className={S}>Stripe</strong>{" "}
+          and settles to <strong className={S}>your own Stripe account</strong>, not to us. Your use of Stripe is
+          governed by Stripe&rsquo;s own agreement with you, and Stripe decides matters such as payouts, holds,
+          refunds and disputes. Balances shown in Primue reflect records we receive from Stripe and are for
+          information only.
+        </p>
+        <p className="mt-2">
+          You are responsible for what you charge for, for refunds and chargebacks, and for any tax on money you
+          collect.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">3. Acceptable use</h2>
+        <h2 className={H}>3. Electronic signatures</h2>
+        <p className="mt-2">
+          The Service records signatures with a timestamp, the signer&rsquo;s IP address and a tamper-evident hash
+          chain, designed to help show a document was not altered after signing.
+        </p>
+        <p className="mt-2">
+          <strong className={S}>Whether an electronic signature is legally binding depends on your jurisdiction and
+          the type of document.</strong> Some instruments — certain deeds, wills and land transfers among them —
+          may require a wet signature, witnesses, notarisation or registration. We make no representation that a
+          document signed through the Service satisfies those requirements. Confirm with a lawyer before relying on
+          an electronic signature for anything that matters.
+        </p>
+      </section>
+
+      <section>
+        <h2 className={H}>4. AI features</h2>
+        <p className="mt-2">
+          AI-generated documents, certificate wording and assistant responses are produced automatically and may be
+          inaccurate, incomplete or unsuitable for your situation. They are drafts, not advice. You are responsible
+          for reviewing anything before you use, sign or send it.
+        </p>
+        <p className="mt-2">
+          Using these features sends your content to a third-party AI provider — see the{" "}
+          <a href="/privacy" className="text-[var(--color-accent-300)] no-underline">Privacy Policy</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2 className={H}>5. Features shown as previews</h2>
+        <p className="mt-2">
+          Parts of the Service are clearly marked as previews or demonstrations and do not perform a real
+          transaction. In particular, <strong className={S}>the card feature does not issue a usable payment
+          card</strong> — the numbers shown are generated for demonstration and cannot be used to pay for anything.
+          Anything labelled a preview, specimen or sample is exactly that.
+        </p>
+      </section>
+
+      <section>
+        <h2 className={H}>6. Your responsibilities</h2>
         <ul className="list-disc pl-5 mt-2 flex flex-col gap-1.5">
-          <li>No unlawful, fraudulent, or deceptive use of the Service, including money laundering or sanctions evasion.</li>
-          <li>No attempt to reverse-engineer, disrupt, or gain unauthorized access to the Service or other tenants&rsquo; data.</li>
-          <li>No use that infringes the intellectual property or privacy rights of others.</li>
-          <li>No use of the AI assistant to generate content that is unlawful, defamatory, or knowingly false in a legal document.</li>
+          <li>Keep your login credentials secure; you are responsible for activity under your account.</li>
+          <li>Provide accurate information, and keep your business and tax details current.</li>
+          <li>Only upload content you have the right to use, including logos, images and signatures.</li>
+          <li>Do not use the Service for anything unlawful, fraudulent, or to produce misleading documents.</li>
+          <li>Comply with data protection law for any personal data you put into the Service about other people.</li>
         </ul>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">4. AI-generated content</h2>
+        <h2 className={H}>7. Your content</h2>
         <p className="mt-2">
-          The AI assistant drafts documents and suggestions based on your prompts. AI output may contain errors and does
-          not constitute legal, tax, or financial advice. You are responsible for reviewing any AI-generated content
-          before relying on it or sending it for signature.
+          You keep ownership of everything you create or upload. You grant us only the licence needed to host,
+          process and display it so the Service can work — including sending it to the sub-processors listed in the
+          Privacy Policy. We do not use your content to train AI models.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">5. E-signatures &amp; documents</h2>
+        <h2 className={H}>8. Plans, billing and credits</h2>
         <p className="mt-2">
-          Documents signed through the Service are sealed with a tamper-evident certificate and audit trail intended to
-          satisfy applicable e-signature laws (such as the U.S. ESIGN Act and UETA). It is your responsibility to confirm
-          that electronic signatures are legally sufficient for your specific use case and jurisdiction.
+          Subscription plans and credit packs (stamp credits, certificate credits) are billed through Stripe.
+          Credits are consumed when used and are [refundable / non-refundable — decide and state which]. We may
+          change pricing on [number] days&rsquo; notice.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">6. White-label &amp; sub-tenants</h2>
+        <h2 className={H}>9. Availability</h2>
         <p className="mt-2">
-          If you operate a white-label instance of Primue for your own clients (a &ldquo;Tenant Operator&rdquo;), you are
-          responsible for your clients&rsquo; compliance with these Terms, for the accuracy of your own branding, and for
-          providing your clients with a privacy notice covering their use of your branded portal. Primue remains the
-          underlying processor of the Service infrastructure.
+          We aim to keep the Service available but do not guarantee uninterrupted access. We may change, suspend or
+          discontinue features. Where a change materially reduces functionality you rely on, we will give
+          reasonable notice.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">7. Fees &amp; billing</h2>
+        <h2 className={H}>10. Termination</h2>
         <p className="mt-2">
-          Paid plans are billed in advance on a monthly or annual basis as selected at checkout. Fees are non-refundable
-          except where required by law. We may change pricing with at least 30 days&rsquo; notice before it applies to
-          your next billing cycle.
+          You may close your account at any time. We may suspend or terminate an account that breaches these Terms
+          or is used unlawfully. You can export your data before closing; after closure we handle it as set out in
+          the Privacy Policy.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">8. Intellectual property</h2>
+        <h2 className={H}>11. Disclaimers and liability</h2>
         <p className="mt-2">
-          Primue retains all rights to the Service, its software, and its branding. You retain all rights to the content and
-          data you upload or generate through the Service (&ldquo;Customer Data&rdquo;) and grant us a limited license to
-          host and process it solely to provide the Service to you.
+          The Service is provided &ldquo;as is&rdquo;, without warranties of any kind to the maximum extent
+          permitted by law. To the extent permitted by law, our total liability arising from the Service is limited
+          to [the amount you paid us in the preceding 12 months], and we are not liable for indirect or
+          consequential loss, lost profits, or lost data.
+        </p>
+        <p className="mt-2">
+          [Some jurisdictions do not permit these limitations. Have a lawyer confirm what is enforceable where you
+          operate — an unenforceable limitation clause offers no protection at all.]
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">9. Termination</h2>
+        <h2 className={H}>12. Governing law</h2>
         <p className="mt-2">
-          You may stop using the Service and close your account at any time. We may suspend or terminate access for
-          material breach of these Terms, suspected fraud, or as required by our payment processor or applicable law. Upon
-          termination, we will make reasonable efforts to provide export of your Customer Data for a limited period.
+          These Terms are governed by the laws of [jurisdiction — e.g. the Federal Republic of Nigeria], and
+          disputes will be resolved in the courts of [venue].
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">10. Disclaimers &amp; limitation of liability</h2>
-        <p className="mt-2">
-          The Service is provided &ldquo;as is&rdquo; without warranties of any kind, express or implied. To the maximum
-          extent permitted by law, Primue will not be liable for indirect, incidental, or consequential damages, and our
-          total liability for any claim will not exceed the fees you paid in the 12 months preceding the claim.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">11. Governing law</h2>
-        <p className="mt-2">
-          These Terms are governed by the laws of the State of Delaware, without regard to conflict-of-law principles,
-          unless a mandatory local law provides otherwise.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">12. Changes to these Terms</h2>
-        <p className="mt-2">
-          We may update these Terms from time to time. Continued use of the Service after changes take effect constitutes
-          acceptance of the revised Terms.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">13. Contact us</h2>
-        <p className="mt-2">
-          Questions about these Terms can be sent to{" "}
-          <a href="mailto:legal@origin.io" className="text-[var(--color-accent-300)] no-underline">legal@origin.io</a> or via
-          our <a href="/contact" className="text-[var(--color-accent-300)] no-underline">contact page</a>.
-        </p>
+        <h2 className={H}>13. Contact</h2>
+        <p className="mt-2">Questions about these Terms: [legal@primue.com].</p>
       </section>
     </LegalLayout>
   );

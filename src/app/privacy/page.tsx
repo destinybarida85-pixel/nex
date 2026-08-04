@@ -1,120 +1,182 @@
 import LegalLayout from "@/components/site/LegalLayout";
 
+// Written to describe what this application actually does, not what a generic
+// SaaS template assumes. The parts only the business owner can supply — legal
+// entity, registered address, governing jurisdiction, DPO contact — are left as
+// visible [SQUARE BRACKETS] rather than filled with plausible-looking
+// placeholders, because a privacy policy that quietly misstates who the
+// controller is or where they're incorporated is worse than one that is
+// obviously unfinished.
+const H = "text-[18px] text-[var(--color-text)] font-medium";
+const S = "text-[var(--color-text)] font-medium";
+
 export default function PrivacyPage() {
   return (
-    <LegalLayout kicker="Legal" title="Privacy Policy" updated="July 21, 2026">
+    <LegalLayout kicker="Legal" title="Privacy Policy" updated="August 3, 2026">
+      <div
+        className="p-3.5 rounded-lg text-[13px] leading-[1.6]"
+        style={{ background: "color-mix(in srgb, #e0a35b 14%, transparent)", color: "#e0a35b" }}
+      >
+        <strong>Draft — not yet reviewed by a lawyer.</strong> Everything in [square brackets] must be completed
+        before this is published, and the whole document should be checked by a qualified lawyer in your
+        jurisdiction. It is written to describe accurately what this software does, but that is not the same thing
+        as legal advice.
+      </div>
+
       <p>
-        Primue Inc. (&ldquo;Primue,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) provides a white-label business
-        operating system covering business wallets, AI-assisted documents, e-signature, HR &amp; payroll, CRM and analytics
-        (the &ldquo;Service&rdquo;). This Privacy Policy explains what information we collect, how we use it, and the
-        choices you have. It applies to visitors of our marketing site and to organizations and individuals who use the
-        Service (&ldquo;Customers,&rdquo; &ldquo;you&rdquo;).
+        [Legal entity name] (&ldquo;Primue,&rdquo; &ldquo;we,&rdquo; &ldquo;us&rdquo;) provides a white-label
+        business operating system covering business wallets, AI-assisted documents, e-signature, certificates,
+        invoicing, HR &amp; payroll, CRM and analytics (the &ldquo;Service&rdquo;). This policy explains what we
+        collect, why, and who else sees it. It applies to visitors to primue.com and to organisations and
+        individuals using the Service (&ldquo;you&rdquo;).
+      </p>
+      <p>
+        Registered address: [Registered business address]. Privacy contact: [privacy@primue.com].
       </p>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">1. Information we collect</h2>
+        <h2 className={H}>1. What we collect</h2>
         <p className="mt-2">
-          <strong className="text-[var(--color-text)] font-medium">Account &amp; profile data</strong>: name, work email,
-          company name, role, password (stored as a salted hash), and any profile photo you upload.
+          <strong className={S}>Account data</strong> — name, email, business name, and a password stored only as a
+          salted hash. If you sign in with Google we receive your name, email and profile picture from Google.
         </p>
         <p className="mt-2">
-          <strong className="text-[var(--color-text)] font-medium">Business &amp; financial data</strong>: transaction
-          records, invoices, payroll runs, and documents you create or upload in the Service. Real payments are processed
-          by Stripe, and Primue stores the associated records needed to display them back to you.
+          <strong className={S}>Content you create</strong> — documents, contracts, certificates, invoices, payroll
+          records, client records, uploaded logos and images, and the signatures drawn or typed into documents.
         </p>
         <p className="mt-2">
-          <strong className="text-[var(--color-text)] font-medium">Usage data</strong>: pages visited, features used,
-          device and browser type, IP address, and timestamps, collected automatically to keep the Service reliable and
-          secure.
+          <strong className={S}>Signature evidence</strong> — when a document is signed we record the signer&rsquo;s
+          name, the time, their IP address and browser user-agent, and a cryptographic hash chain of the document
+          and signature. This exists so a signature can be shown to be genuine and untampered later. It is retained
+          with the document.
         </p>
         <p className="mt-2">
-          <strong className="text-[var(--color-text)] font-medium">Cookies &amp; local storage</strong>: small pieces of
-          data stored in your browser to keep you signed in and understand aggregate product usage. See our{" "}
-          <a href="/cookies" className="text-[var(--color-accent-300)] no-underline">Cookie Policy</a> for
-          details.
+          <strong className={S}>Payment records</strong> — amounts, currency, payment status, and the email address a
+          payer gives at checkout. <strong className={S}>We never receive or store card numbers</strong>; those go
+          directly to Stripe.
+        </p>
+        <p className="mt-2">
+          <strong className={S}>Usage data</strong> — pages visited, features used, browser and device type, IP
+          address and timestamps.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">2. How we use information</h2>
+        <h2 className={H}>2. Artificial intelligence — read this part</h2>
+        <p className="mt-2">
+          Several features (the AI Assistant, document drafting, and certificate wording) work by sending your
+          request <strong className={S}>and the content of the document being worked on</strong> to{" "}
+          <strong className={S}>Anthropic PBC</strong>, which operates the Claude models, so that text can be
+          generated and returned to you.
+        </p>
+        <p className="mt-2">
+          This means information you type into those features — including business terms, names, amounts and any
+          personal details you include — leaves our systems and is processed by Anthropic under their terms. Do not
+          put information into the AI features that you are not permitted to disclose to a third-party processor.
+        </p>
+        <p className="mt-2">
+          Features that do not use AI — your wallet, payment links, stored documents, signing and certificates — do
+          not send anything to Anthropic.
+        </p>
+        <p className="mt-2">
+          <strong className={S}>AI output is not advice.</strong> Drafts are a starting point. Anything with legal
+          or financial effect should be reviewed by a qualified professional before you rely on it or send it to
+          anyone.
+        </p>
+      </section>
+
+      <section>
+        <h2 className={H}>3. Who else processes your data</h2>
+        <p className="mt-2">We do not sell personal information. These sub-processors handle it on our behalf:</p>
         <ul className="list-disc pl-5 mt-2 flex flex-col gap-1.5">
-          <li>To provide, maintain and secure the Service, including authentication and fraud prevention.</li>
-          <li>To operate wallet, payroll, e-signature and AI document features you actively use.</li>
-          <li>To communicate with you about your account, security notices, and product updates.</li>
-          <li>To improve the Service through aggregated, de-identified usage analysis.</li>
-          <li>To comply with legal, tax, and regulatory obligations, including those of our payment processor.</li>
+          <li>
+            <strong className={S}>Supabase</strong> — database, authentication and file storage. Holds essentially
+            all Service data.
+          </li>
+          <li>
+            <strong className={S}>Stripe</strong> — payment processing, checkout and payouts. Receives payer card
+            details directly; we never see them.
+          </li>
+          <li>
+            <strong className={S}>Anthropic PBC</strong> — AI text generation, as described in section 2.
+          </li>
+          <li>
+            <strong className={S}>Vercel</strong> — application hosting and delivery. Processes request metadata
+            including IP addresses.
+          </li>
+          <li>
+            <strong className={S}>Google</strong> — only if you choose to sign in with Google.
+          </li>
         </ul>
-      </section>
-
-      <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">3. How we share information</h2>
         <p className="mt-2">
-          We do not sell your personal information. We share it only with: (a) Stripe, to process payments on your
-          behalf; (b) infrastructure and sub-processors that host or
-          secure the Service under contractual confidentiality obligations; (c) other users within your own organization
-          or white-label tenant, according to the permissions your administrator sets; and (d) authorities, where required
-          by law, regulation, or valid legal process.
+          We also disclose information where legally required, and to other users inside your own organisation
+          according to the permissions your administrator sets.
+        </p>
+        <p className="mt-2">
+          These providers operate in [list countries/regions], so your data may be processed outside [your country].
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">4. Data security</h2>
+        <h2 className={H}>4. Links you share are public</h2>
         <p className="mt-2">
-          We use encryption in transit and at rest, role-based access controls, and audit logging across the Service.
-          E-signed documents are sealed with a tamper-evident certificate and audit trail. No method of transmission or
-          storage is 100% secure, and we cannot guarantee absolute security.
+          Signing links, invoice links and certificate verification links are deliberately reachable by anyone who
+          has the link, without signing in — that is how the person you send them to can open them. The link&rsquo;s
+          random identifier is the only thing protecting it. Treat these links as you would an unlisted document:
+          anyone you forward one to can see its contents.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">5. Data retention</h2>
+        <h2 className={H}>5. How long we keep it</h2>
         <p className="mt-2">
-          We retain account and transaction data for as long as your account is active and as needed to meet legal,
-          accounting, and banking-partner recordkeeping requirements after closure. You may request deletion of data that
-          is not subject to a legal retention obligation.
+          Account and business data is kept while your account is active. Signed documents and their signature
+          evidence are kept for [retention period] because their value depends on being able to prove later that a
+          signature was genuine. Payment records are kept as long as tax and accounting law requires — see
+          [applicable requirement].
+        </p>
+        <p className="mt-2">
+          On deletion request we remove your data within [number] days, except where we are legally required to keep
+          records.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">6. Your rights &amp; choices</h2>
+        <h2 className={H}>6. Your rights</h2>
         <p className="mt-2">
-          Depending on your location, you may have the right to access, correct, export, or delete your personal
-          information, and to object to or restrict certain processing. You can update most account information directly
-          in your <a href="/profile" className="text-[var(--color-accent-300)] no-underline">profile settings</a>, or reach
-          us using the details below to exercise these rights.
+          Depending on where you live you may have the right to access, correct, export or delete your personal
+          data, to object to processing, and to complain to a data protection authority. To exercise any of these,
+          contact [privacy@primue.com]. We respond within [number] days.
+        </p>
+        <p className="mt-2">
+          If you are in Nigeria, the Nigeria Data Protection Act 2023 applies and your supervisory authority is the
+          Nigeria Data Protection Commission. If you are in the EU/UK, GDPR rights apply. [Confirm which regimes
+          apply to your business with a lawyer.]
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">7. Children&rsquo;s privacy</h2>
+        <h2 className={H}>7. Security</h2>
         <p className="mt-2">
-          The Service is intended for business use by adults and organizations. We do not knowingly collect personal
-          information from children under 16.
+          Data is encrypted in transit. Passwords are salted and hashed and never stored in readable form. Access
+          between customer accounts is isolated at the database level. No system is perfectly secure; if a breach
+          affects your data we will notify you and the relevant authority as required by law.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">8. International transfers</h2>
+        <h2 className={H}>8. Children</h2>
         <p className="mt-2">
-          We and our sub-processors may process information in countries other than your own. Where required, we rely on
-          appropriate legal safeguards for such transfers.
+          The Service is for business use and is not directed at anyone under 18. We do not knowingly collect data
+          from children.
         </p>
       </section>
 
       <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">9. Changes to this policy</h2>
+        <h2 className={H}>9. Changes</h2>
         <p className="mt-2">
-          We may update this Privacy Policy from time to time. Material changes will be announced within the Service or
-          by email. The &ldquo;Last updated&rdquo; date above reflects the most recent revision.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="text-[18px] text-[var(--color-text)] font-medium">10. Contact us</h2>
-        <p className="mt-2">
-          Questions about this policy or your data can be sent to{" "}
-          <a href="mailto:privacy@origin.io" className="text-[var(--color-accent-300)] no-underline">privacy@origin.io</a> or via
-          our <a href="/contact" className="text-[var(--color-accent-300)] no-underline">contact page</a>.
+          We will post any change here and update the date above. For changes that materially affect your rights we
+          will notify you by email before they take effect.
         </p>
       </section>
     </LegalLayout>
