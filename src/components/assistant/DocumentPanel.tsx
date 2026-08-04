@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IconDocuments, IconDownload, IconESign, IconCamera, IconTemplates, IconCheckCircle } from "@/components/icons";
 import DocumentPaper from "@/components/document/DocumentPaper";
-import { documentAccents, documentLayouts, documentFonts, type DocumentLayout, type DocumentFont } from "@/components/document/theme";
+import { documentAccents, documentLayouts, documentFonts, documentPaperTones, type DocumentLayout, type DocumentFont, type DocumentPaperTone } from "@/components/document/theme";
 import TemplatePicker, { type TemplateChoice } from "@/components/document/TemplatePicker";
 
 export type DocumentStep = { label: string; done: boolean };
@@ -28,6 +28,7 @@ export default function DocumentPanel({
   const [accentColor, setAccentColor] = useState(documentAccents[0].color);
   const [layout, setLayout] = useState<DocumentLayout>("classic");
   const [font, setFont] = useState<DocumentFont>("auto");
+  const [tone, setTone] = useState<DocumentPaperTone>("white");
   // Letterhead block for the premium layouts. Seeded from the tenant's real
   // name so it isn't blank on first use, then editable — most businesses want
   // their address and phone on a document they send out.
@@ -149,6 +150,7 @@ export default function DocumentPanel({
           sections: document.body,
           layout,
           font,
+          tone,
           organisation,
           accentColor,
           logoUrl,
@@ -207,6 +209,7 @@ export default function DocumentPanel({
               accentColor={accentColor}
               layout={layout}
               font={font}
+              tone={tone}
               organisation={organisation}
               logoUrl={logoUrl}
               editable
@@ -217,7 +220,7 @@ export default function DocumentPanel({
           </div>
         ) : (
           <div className="flex-1 min-w-0 max-w-[620px] print-area">
-            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} layout={layout} font={font} organisation={organisation} logoUrl={logoUrl} />
+            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} layout={layout} font={font} tone={tone} organisation={organisation} logoUrl={logoUrl} />
           </div>
         )}
 
@@ -267,6 +270,26 @@ export default function DocumentPanel({
                 <option key={f.id} value={f.id}>{f.label}</option>
               ))}
             </select>
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] text-[var(--color-neutral-500)]">Page colour</span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {documentPaperTones.map((t) => (
+                  <button
+                    key={t.id}
+                    aria-label={t.label}
+                    title={t.label}
+                    onClick={() => setTone(t.id)}
+                    className="w-[18px] h-[18px] rounded-md cursor-pointer"
+                    style={{
+                      background: t.bg,
+                      border: "1px solid var(--color-divider)",
+                      outline: tone === t.id ? "2px solid var(--color-text)" : "none",
+                      outlineOffset: 2,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
             <div className="flex items-center gap-1.5">
               {documentAccents.map((a) => (
                 <button

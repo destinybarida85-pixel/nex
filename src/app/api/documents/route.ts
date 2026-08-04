@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   const { error, status, supabase, tenantId, userId } = await requireTenant();
   if (error) return NextResponse.json({ error }, { status });
 
-  const { title, text, sections, paymentLinkId, layout, font, organisation, accentColor, logoUrl, signersRequired } =
+  const { title, text, sections, paymentLinkId, layout, font, tone, organisation, accentColor, logoUrl, signersRequired } =
     (await request.json()) as {
       title?: string;
       text?: string;
@@ -39,6 +39,7 @@ export async function POST(request: Request) {
       logoUrl?: string | null;
       signersRequired?: number;
       font?: string;
+      tone?: string;
       organisation?: string;
     };
   const hasSections = Array.isArray(sections) && sections.length > 0;
@@ -49,6 +50,7 @@ export async function POST(request: Request) {
   const content: Record<string, unknown> = hasSections ? { sections } : { text: text!.trim() };
   if (layout) content.layout = layout;
   if (font && font !== "auto") content.font = font;
+  if (tone && tone !== "white") content.tone = tone;
   if (organisation) content.organisation = organisation;
   if (accentColor) content.accentColor = accentColor;
   if (logoUrl) content.logoUrl = logoUrl;

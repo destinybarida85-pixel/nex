@@ -5,7 +5,7 @@ import { IconLogoMark, IconCheckCircle } from "@/components/icons";
 import SignFlow from "@/components/sign/SignFlow";
 import DocumentPaper from "@/components/document/DocumentPaper";
 import type { SignDocument } from "@/components/sign/document";
-import { documentAccents, type DocumentLayout, type DocumentFont } from "@/components/document/theme";
+import { documentAccents, type DocumentLayout, type DocumentFont, type DocumentPaperTone } from "@/components/document/theme";
 
 type FetchedDoc = {
   title: string;
@@ -13,6 +13,7 @@ type FetchedDoc = {
   sections: { heading: string; text: string }[] | null;
   layout: DocumentLayout | null;
   font: DocumentFont | null;
+  tone: DocumentPaperTone | null;
   organisation: string | null;
   accentColor: string | null;
   logoUrl: string | null;
@@ -82,6 +83,7 @@ export default function SignByIdPage({ params }: { params: Promise<{ id: string 
     accentColor: doc.accentColor || documentAccents[0].color,
     layout: doc.layout || "classic",
     font: doc.font || "auto",
+    tone: doc.tone || "white",
     organisation: doc.organisation,
     createdAt: doc.createdAt,
   };
@@ -114,6 +116,7 @@ export default function SignByIdPage({ params }: { params: Promise<{ id: string 
               accentColor={signDocument.accentColor!}
               layout={signDocument.layout}
               font={signDocument.font}
+              tone={signDocument.tone}
               organisation={signDocument.organisation ?? undefined}
               logoUrl={signDocument.logoUrl}
             />

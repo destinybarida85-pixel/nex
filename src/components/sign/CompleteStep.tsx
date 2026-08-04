@@ -224,6 +224,7 @@ export default function CompleteStep({
             accentColor={accentColor}
             layout={layout}
             font={document.font}
+            tone={document.tone}
             organisation={document.organisation ?? undefined}
             logoUrl={document.logoUrl}
             headerRight={headerStamp}

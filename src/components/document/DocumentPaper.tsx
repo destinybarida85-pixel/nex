@@ -1,5 +1,15 @@
 import type { ReactNode } from "react";
-import { paperBg, paperInk, paperMuted, paperRule, monoStack, fontStack, type DocumentLayout, type DocumentFont } from "./theme";
+import {
+  paperInk as defaultPaperInk,
+  paperMuted as defaultPaperMuted,
+  paperRule as defaultPaperRule,
+  monoStack,
+  fontStack,
+  paperTone,
+  type DocumentLayout,
+  type DocumentFont,
+  type DocumentPaperTone,
+} from "./theme";
 
 export type DocumentSection = { heading: string; text: string };
 
@@ -66,6 +76,7 @@ export default function DocumentPaper({
   big = true,
   layout = "classic",
   font = "auto",
+  tone,
   organisation,
   headerRight,
   footerSlot,
@@ -84,6 +95,8 @@ export default function DocumentPaper({
   big?: boolean;
   layout?: DocumentLayout;
   font?: DocumentFont;
+  /** Page colour. Defaults to white. */
+  tone?: DocumentPaperTone;
   /** Sender's letterhead block, dot-separated: "Acme Ltd · 12 Broad St ·
    *  hello@acme.com · +234 800 000 0000". First part is the name, the rest
    *  print as the address/contact line. Only the letterhead layouts use it. */
@@ -102,6 +115,20 @@ export default function DocumentPaper({
   onSectionChange?: (index: number, field: "heading" | "text", value: string) => void;
 }) {
   const f = big ? 1 : 0.86;
+
+  // Shadow the module defaults with the chosen tone. Every layout below already
+  // reads these names, so the page colour flows through all seven without
+  // touching a single call site — and the dark tones bring their own ink,
+  // otherwise body text stays near-black on a near-black page.
+  const t = paperTone(tone);
+  const paperBg = t.bg;
+  const paperInk = t.ink ?? defaultPaperInk;
+  const paperMuted = t.muted ?? defaultPaperMuted;
+  // Hairlines are black at 9% — invisible on a dark page.
+  const paperRule = t.ink ? "rgba(255,255,255,0.16)" : defaultPaperRule;
+  // Body copy sits a step softer than headings on light paper; on dark paper it
+  // has to go the other way or it disappears into the page.
+  const paperBody = t.ink ? "rgba(255,255,255,0.82)" : "#3a3a44";
 
   const titleNode = (style: React.CSSProperties) =>
     editable && onTitleChange ? (
@@ -219,7 +246,7 @@ export default function DocumentPaper({
                     fontSize: 11 * f, letterSpacing: "0.09em", textTransform: "uppercase",
                     fontWeight: 700, color: paperInk, marginBottom: 8 * f,
                   })}
-                  {bodyNode(i, { fontSize: 13.5 * f, lineHeight: 1.85, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
+                  {bodyNode(i, { fontSize: 13.5 * f, lineHeight: 1.85, color: paperBody, overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
                 </div>
               </div>
             ))}
@@ -314,7 +341,7 @@ export default function DocumentPaper({
                 fontFamily: "Georgia, 'Times New Roman', serif",
                 fontSize: 13 * f, fontWeight: 700, color: paperInk, marginBottom: 6 * f,
               })}
-              {bodyNode(i, { fontSize: 13 * f, lineHeight: 1.85, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
+              {bodyNode(i, { fontSize: 13 * f, lineHeight: 1.85, color: paperBody, overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
             </div>
           ))}
 
@@ -342,7 +369,7 @@ export default function DocumentPaper({
       <div
         className={`w-full ${className}`}
         style={{
-          background: "#fbfaf8",
+          background: paperBg,
           color: paperInk,
           padding: `${56 * f}px ${58 * f}px`,
           boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 16px 40px -22px rgba(0,0,0,0.24)",
@@ -392,7 +419,7 @@ export default function DocumentPaper({
                 {i === 0 && !editable && first?.text ? (
                   <p
                     style={{
-                      fontSize: 13.5 * f, lineHeight: 1.9, color: "#3a3a44", margin: 0,
+                      fontSize: 13.5 * f, lineHeight: 1.9, color: paperBody, margin: 0,
                       overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap",
                     }}
                   >
@@ -413,7 +440,7 @@ export default function DocumentPaper({
                     {first.text.trim().slice(1)}
                   </p>
                 ) : (
-                  bodyNode(i, { fontSize: 13.5 * f, lineHeight: 1.9, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })
+                  bodyNode(i, { fontSize: 13.5 * f, lineHeight: 1.9, color: paperBody, overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })
                 )}
               </div>
             </div>
@@ -482,7 +509,7 @@ export default function DocumentPaper({
               </span>
               <div className="min-w-0 flex-1">
                 {headingNode(i, { fontSize: 13.5 * f, fontWeight: 700, color: paperInk, marginBottom: 4 * f })}
-                {bodyNode(i, { fontSize: 13 * f, lineHeight: 1.75, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
+                {bodyNode(i, { fontSize: 13 * f, lineHeight: 1.75, color: paperBody, overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
               </div>
             </div>
           ))}
@@ -535,7 +562,7 @@ export default function DocumentPaper({
     content = (
       <div
         className={`w-full ${className}`}
-        style={{ background: "#fdfdfc", color: "#0a0a0a", fontFamily: monoStack, padding: `${46 * f}px ${48 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 6 * f }}
+        style={{ background: paperBg, color: paperInk, fontFamily: monoStack, padding: `${46 * f}px ${48 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 6 * f }}
       >
         <div className="flex items-start justify-between gap-4 flex-wrap" style={{ marginBottom: 46 * f, rowGap: 12 * f }}>
           <div className="flex items-center gap-2">
@@ -549,7 +576,7 @@ export default function DocumentPaper({
           {headerRight && <div style={{ flexShrink: 0 }}>{headerRight}</div>}
         </div>
 
-        {titleNode({ fontFamily: monoStack, fontSize: 30 * f, lineHeight: 1.08, margin: 0, fontWeight: 700, letterSpacing: "-0.01em", textTransform: "uppercase", color: "#0a0a0a", overflowWrap: "break-word", maxWidth: `${560 * f}px` })}
+        {titleNode({ fontFamily: monoStack, fontSize: 30 * f, lineHeight: 1.08, margin: 0, fontWeight: 700, letterSpacing: "-0.01em", textTransform: "uppercase", color: paperInk, overflowWrap: "break-word", maxWidth: `${560 * f}px` })}
 
         <div style={{ borderTop: "1.5px solid #0a0a0a", marginTop: 24 * f, marginBottom: 30 * f }} />
 
@@ -557,11 +584,11 @@ export default function DocumentPaper({
           <div className="min-w-0">
             <div style={{ fontSize: 9.5 * f, letterSpacing: "0.08em", textTransform: "uppercase", color: paperMuted, marginBottom: 8 * f }}>Reference</div>
             {editable && onMetaChange ? (
-              metaNode({ fontSize: 11.5 * f, color: "#0a0a0a", lineHeight: 1.6, overflowWrap: "break-word" })
+              metaNode({ fontSize: 11.5 * f, color: paperInk, lineHeight: 1.6, overflowWrap: "break-word" })
             ) : metaLines.length > 0 ? (
               <div className="flex flex-col" style={{ gap: 2 * f }}>
                 {metaLines.map((line, i) => (
-                  <span key={i} style={{ fontSize: 11.5 * f, color: "#0a0a0a", lineHeight: 1.6, overflowWrap: "break-word" }}>{line}</span>
+                  <span key={i} style={{ fontSize: 11.5 * f, color: paperInk, lineHeight: 1.6, overflowWrap: "break-word" }}>{line}</span>
                 ))}
               </div>
             ) : null}
@@ -570,7 +597,7 @@ export default function DocumentPaper({
           <div className="flex flex-col min-w-0" style={{ gap: 26 * f }}>
             {sections.map((s, i) => (
               <div key={i} className="min-w-0">
-                {headingNode(i, { fontSize: 12 * f, fontWeight: 700, letterSpacing: "0.01em", textTransform: "uppercase", color: "#0a0a0a", marginBottom: 8 * f })}
+                {headingNode(i, { fontSize: 12 * f, fontWeight: 700, letterSpacing: "0.01em", textTransform: "uppercase", color: paperInk, marginBottom: 8 * f })}
                 {bodyNode(i, { fontSize: 12 * f, lineHeight: 1.85, color: "#3a3a3a", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
               </div>
             ))}
@@ -627,7 +654,7 @@ export default function DocumentPaper({
               color: accentColor,
               marginBottom: 7 * f,
             })}
-            {bodyNode(i, { fontSize: 13.5 * f, lineHeight: 1.8, color: "#3a3a44", overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
+            {bodyNode(i, { fontSize: 13.5 * f, lineHeight: 1.8, color: paperBody, overflowWrap: "break-word", wordBreak: "break-word", whiteSpace: "pre-wrap" })}
           </div>
         ))}
       </div>

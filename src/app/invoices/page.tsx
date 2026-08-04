@@ -6,7 +6,8 @@ import TopBar from "@/components/dashboard/TopBar";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import SendInvoice from "@/components/invoices/SendInvoice";
-import { IconSparkle, IconInvoices, IconMail } from "@/components/icons";
+import CreateInvoice from "@/components/invoices/CreateInvoice";
+import { IconInvoices, IconMail } from "@/components/icons";
 
 const demoInvoices = [
   { number: "INV-2041", client: "Halcyon Ventures", amount: "$18,500.00", due: "Jul 21, 2026", status: "Paid", statusTag: "tag-neutral" },
@@ -59,8 +60,7 @@ export default function InvoicesPage() {
   const [sendable, setSendable] = useState<SendableInvoice[]>([]);
   const [tenantName, setTenantName] = useState("");
 
-  useEffect(() => {
-    if (!checked || !isBackendConfigured || !hasSession) return;
+  function load() {
     fetch("/api/invoices")
       .then((r) => r.json())
       .then((data) => {
@@ -72,6 +72,12 @@ export default function InvoicesPage() {
         }
       })
       .catch(() => {});
+  }
+
+  useEffect(() => {
+    if (!checked || !isBackendConfigured || !hasSession) return;
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked, hasSession]);
 
   const rows = live
@@ -110,13 +116,11 @@ export default function InvoicesPage() {
               </div>
             </div>
             <div className="flex-1 hidden sm:block" />
-            <a href="/assistant" className="btn btn-secondary text-[13px]">
-              <IconSparkle size={14} />
-              Generate with AI
-            </a>
-            <a href="/payments" className="btn btn-primary text-[13px]">
+            {/* Creating an invoice now happens inline below, so this no longer
+                sends you to /payments to do the same thing by another name. */}
+            <a href="/payments" className="btn btn-secondary text-[13px]">
               <IconInvoices size={14} />
-              New payment link
+              Manage payment links
             </a>
           </div>
 
@@ -137,12 +141,7 @@ export default function InvoicesPage() {
             <div className="card elev-sm p-[16px_18px] gap-3">
               <div className="flex items-center gap-2 flex-wrap">
                 <IconMail size={14} className="text-[var(--color-accent)]" />
-                <div className="card-title text-sm">Send an invoice</div>
-                <div className="flex-1" />
-                <a href="/payments" className="btn btn-secondary text-[12px]">
-                  <IconInvoices size={13} />
-                  New invoice
-                </a>
+                <div className="card-title text-sm">Invoices</div>
               </div>
               <div className="text-[11.5px] text-[var(--color-neutral-500)]">
                 Each one has its own web page your client can open and pay from. Email the link, or paste it into
@@ -150,9 +149,11 @@ export default function InvoicesPage() {
                 opens your own mail app with everything already written.
               </div>
 
+              <CreateInvoice tenantName={tenantName} onCreated={load} />
+
               {sendable.length === 0 ? (
                 <div className="text-[12.5px] text-[var(--color-neutral-500)] py-2">
-                  No invoices yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create one →</a>
+                  No invoices yet — create your first one above.
                 </div>
               ) : (
                 <div className="flex flex-col gap-2.5">

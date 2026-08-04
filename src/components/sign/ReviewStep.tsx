@@ -44,7 +44,7 @@ export default function ReviewStep({
       </div>
 
       <div className="rounded-xl overflow-hidden max-h-[320px] overflow-y-auto">
-        <DocumentPaper title={document.title} sections={document.sections} accentColor={accentColor} layout={layout} font={document.font} organisation={document.organisation ?? undefined} logoUrl={document.logoUrl} big={false} />
+        <DocumentPaper title={document.title} sections={document.sections} accentColor={accentColor} layout={layout} font={document.font} tone={document.tone} organisation={document.organisation ?? undefined} logoUrl={document.logoUrl} big={false} />
       </div>
 
       <div className="field">

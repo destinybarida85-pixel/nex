@@ -39,6 +39,28 @@ export function fontStack(font: DocumentFont | undefined) {
   return documentFonts.find((f) => f.id === font)?.stack ?? null;
 }
 
+// The accent colour only ever tinted rules and headings — the page itself was
+// always white. These are the page. Kept deliberately pale: a document is
+// still meant to be read, and printed, so these are tints rather than colours.
+export type DocumentPaperTone = "white" | "ivory" | "sand" | "mist" | "sage" | "blush" | "slate" | "charcoal";
+
+export const documentPaperTones: { id: DocumentPaperTone; label: string; bg: string; ink?: string; muted?: string }[] = [
+  { id: "white", label: "White", bg: "#ffffff" },
+  { id: "ivory", label: "Ivory", bg: "#faf7f0" },
+  { id: "sand", label: "Sand", bg: "#f6f1e7" },
+  { id: "mist", label: "Mist", bg: "#f2f5f8" },
+  { id: "sage", label: "Sage", bg: "#f1f5f1" },
+  { id: "blush", label: "Blush", bg: "#fbf4f4" },
+  // The two dark tones need their own ink, or the body text stays near-black
+  // on a near-black page.
+  { id: "slate", label: "Slate", bg: "#242833", ink: "#eef1f7", muted: "#9aa3b8" },
+  { id: "charcoal", label: "Charcoal", bg: "#1b1b20", ink: "#eeeef2", muted: "#9a9aa6" },
+];
+
+export function paperTone(id: DocumentPaperTone | undefined) {
+  return documentPaperTones.find((t) => t.id === id) ?? documentPaperTones[0];
+}
+
 export const paperBg = "#ffffff";
 export const paperInk = "#22222a";
 export const paperMuted = "#6b6b76";

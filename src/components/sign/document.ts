@@ -1,4 +1,4 @@
-import type { DocumentLayout, DocumentFont } from "@/components/document/theme";
+import type { DocumentLayout, DocumentFont, DocumentPaperTone } from "@/components/document/theme";
 
 export type SignSection = { heading: string; text: string };
 export type SignDocument = {
@@ -11,6 +11,7 @@ export type SignDocument = {
   accentColor?: string;
   layout?: DocumentLayout;
   font?: DocumentFont;
+  tone?: DocumentPaperTone;
   organisation?: string | null;
   /** Real timestamp the document row was created — only present for a real
    *  persisted document (the /sign/[id] shareable-link flow), never
