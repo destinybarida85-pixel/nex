@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import Stripe from "stripe";
 import { requireTenant } from "@/lib/requireTenant";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
@@ -45,16 +46,34 @@ export async function POST(request: Request) {
 
   const stripe = getStripe();
 
-  const price = await stripe.prices.create({
-    currency: "usd",
-    unit_amount: body.amountCents,
-    product_data: { name: body.title.trim() },
-    ...(body.kind === "recurring" ? { recurring: { interval: body.interval! } } : {}),
-  });
+  // Neither call was wrapped in try/catch, so a real Stripe rejection (e.g.
+  // no payment method activated for this currency in the Stripe dashboard —
+  // confirmed against the live account: every attempt to create a link was
+  // failing with exactly that) threw an unhandled exception. Next turns that
+  // into a bare 500 with no JSON body, which the client's res.json() then
+  // fails to parse, landing in its generic catch and showing "Couldn't reach
+  // the server" — hiding the real, fixable reason completely.
+  let price: Stripe.Price;
+  let paymentLink: Stripe.PaymentLink;
+  try {
+    price = await stripe.prices.create({
+      currency: "usd",
+      unit_amount: body.amountCents,
+      product_data: { name: body.title.trim() },
+      ...(body.kind === "recurring" ? { recurring: { interval: body.interval! } } : {}),
+    });
 
-  const paymentLink = await stripe.paymentLinks.create({
-    line_items: [{ price: price.id, quantity: 1 }],
-  });
+    paymentLink = await stripe.paymentLinks.create({
+      line_items: [{ price: price.id, quantity: 1 }],
+    });
+  } catch (err) {
+    const message = err instanceof Stripe.errors.StripeError ? err.message : "Stripe rejected the request.";
+    const hint =
+      err instanceof Stripe.errors.StripeError && err.code === "payment_link_no_valid_payment_methods"
+        ? " Go to your Stripe Dashboard → Settings → Payment methods and activate at least one method (e.g. Cards) for USD, then try again."
+        : "";
+    return NextResponse.json({ error: `${message}${hint}` }, { status: 502 });
+  }
 
   const { data: saved, error: saveError } = await supabase!
     .from("payment_links")

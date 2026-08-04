@@ -321,6 +321,15 @@ textarea.input { min-height: 90px; resize: vertical; }
 .dialog-body { font-size: 14px; opacity: 0.85; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
 
+/* Removes the browser's default print margins (commonly 0.4"-1" per edge) so
+   .print-area's own inset:0 actually reaches the physical page edge instead
+   of being pushed in by margin the page adds on top of it. Left un-nested
+   (rather than inside @media print) since @page only ever applies to paged
+   output anyway, and that's the more broadly supported form. */
+@page {
+  margin: 0;
+}
+
 /* — print — */
 @media print {
   body * { visibility: hidden; }
@@ -331,8 +340,24 @@ textarea.input { min-height: 90px; resize: vertical; }
        would resolve against that nearest ancestor instead of the actual page,
        leaving a block of blank space above the content when printed. Fixed
        positioning anchors to the page regardless of ancestor positioning. */
-    position: fixed; inset: 0; width: 100%; margin: 0; padding: 0;
+    position: fixed; inset: 0; width: 100%; padding: 0;
     background: #fff !important; color: #1a1a1f !important; box-shadow: none !important;
+    /* Several consumers (certificate, invoice, DocumentPanel) also carry a
+       max-width narrower than the page. `inset:0` pins left AND right, but a
+       max-width cap stops the box from actually reaching the right edge —
+       browsers resolve that by leaving it pinned to the left, with the cap's
+       shortfall sitting as dead space on the right. `margin: 0 auto` (auto on
+       the sides only, not top/bottom, which stay 0 since inset already pins
+       those) is what makes an inset+max-width box centre instead of hug the
+       left edge — the same trick as centering a fixed-width block. */
+    margin: 0 auto;
+    /* Vertically centres whatever flex-column content the consumer already
+       declares (every current .print-area user sets its own flex/flex-col on
+       this same element) without touching display or flex-direction —
+       CompleteStep's certificate has two stacked print-visible blocks and
+       must stay in a column, so this only adds centering, it doesn't impose
+       a layout of its own. */
+    justify-content: center;
     /* Cards inside print-area (e.g. the signing certificate/audit card) are
        themed with these custom properties for the app's dark UI. Redefining
        them here — rather than patching every component individually — makes

@@ -135,6 +135,10 @@ function CertificateArt({
   const showStamp = style?.showStamp !== false;
   const stampShape = style?.stampShape ?? d.stamp;
   const stampLabel = style?.stampLabel || "CERTIFIED";
+  // Deliberately not `|| accent`-linked beyond the initial default: once a
+  // seal colour is explicitly set it must survive the certificate's own
+  // accent or design changing later — that coupling was the bug.
+  const sealColor = style?.sealColor || accent;
   const stampSub = style?.stampSub ?? "";
   const dateLabel = new Date(issuedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
@@ -220,7 +224,7 @@ function CertificateArt({
           style={{ gap: 28, marginTop: 26, alignSelf: d.header === "centre" ? "center" : "flex-start" }}
         >
           {showStamp && (
-            <Stamp label={stampLabel.slice(0, 12)} sub={stampSub.slice(0, 16)} color={accent} size={58} shape={stampShape} onDarkPaper={onDarkPaper} />
+            <Stamp label={stampLabel.slice(0, 40)} sub={stampSub.slice(0, 40)} color={sealColor} size={58} shape={stampShape} onDarkPaper={onDarkPaper} />
           )}
           <div>
             <div style={{ borderTop: `1px solid ${onDarkPaper ? d.muted : d.ink}`, width: 150, paddingTop: 4, fontSize: 9.5, color: d.muted }}>

@@ -1,13 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IconPen } from "@/components/icons";
+import { IconPen, IconCamera } from "@/components/icons";
 
 const penColors = [
   { id: "black", label: "Black", value: "#181818" },
   { id: "blue", label: "Blue", value: "#1d4ed8" },
   { id: "red", label: "Red", value: "#b91c1c" },
 ];
+
+function readAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function SignStep({
   documentTitle,
@@ -18,12 +27,21 @@ export default function SignStep({
   onContinue: (signature: string, fullName: string) => void;
   onBack: () => void;
 }) {
-  const [mode, setMode] = useState<"type" | "draw">("type");
+  // "upload" is signing physically: sign on paper the ordinary way, then
+  // photograph or scan just the signature and attach that image — as opposed
+  // to "type"/"draw", which are both signed electronically, right here on
+  // screen. All three end up as the same kind of value (a data URL or plain
+  // text) passed to onContinue, so nothing downstream needs to know which one
+  // was used.
+  const [mode, setMode] = useState<"type" | "draw" | "upload">("type");
   const [typedName, setTypedName] = useState("");
   const [hasDrawn, setHasDrawn] = useState(false);
   const [penColor, setPenColor] = useState(penColors[0].value);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawing = useRef(false);
+  const [uploadedSignature, setUploadedSignature] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -67,14 +85,33 @@ export default function SignStep({
     setHasDrawn(false);
   }
 
-  const canSign = typedName.trim().length > 1 && (mode === "type" || hasDrawn);
+  const canSign =
+    typedName.trim().length > 1 &&
+    (mode === "type" || (mode === "draw" && hasDrawn) || (mode === "upload" && !!uploadedSignature));
 
   function adopt() {
     const fullName = typedName.trim();
     if (mode === "type") {
       onContinue(fullName, fullName);
+    } else if (mode === "upload") {
+      onContinue(uploadedSignature ?? "signature", fullName);
     } else {
       onContinue(canvasRef.current?.toDataURL() ?? "signature", fullName);
+    }
+  }
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setUploadError("That doesn't look like an image — try a photo or scan.");
+      return;
+    }
+    setUploadError("");
+    try {
+      setUploadedSignature(await readAsDataUrl(file));
+    } catch {
+      setUploadError("Couldn't read that file — try again.");
     }
   }
 
@@ -104,15 +141,24 @@ export default function SignStep({
         </div>
       </div>
 
-      <div className="seg self-start">
-        <label className="seg-opt">
-          <input type="radio" name="sigmode" checked={mode === "type"} onChange={() => setMode("type")} />
-          <span>Type</span>
-        </label>
-        <label className="seg-opt">
-          <input type="radio" name="sigmode" checked={mode === "draw"} onChange={() => setMode("draw")} />
-          <span>Draw</span>
-        </label>
+      <div className="flex flex-col gap-1.5">
+        <div className="text-[11px] text-[var(--color-neutral-500)]">
+          Sign electronically, right here — or sign physically on paper and attach a photo.
+        </div>
+        <div className="seg self-start">
+          <label className="seg-opt">
+            <input type="radio" name="sigmode" checked={mode === "type"} onChange={() => setMode("type")} />
+            <span>Type</span>
+          </label>
+          <label className="seg-opt">
+            <input type="radio" name="sigmode" checked={mode === "draw"} onChange={() => setMode("draw")} />
+            <span>Draw</span>
+          </label>
+          <label className="seg-opt">
+            <input type="radio" name="sigmode" checked={mode === "upload"} onChange={() => setMode("upload")} />
+            <span>Signed on paper</span>
+          </label>
+        </div>
       </div>
 
       {mode === "type" ? (
@@ -131,7 +177,7 @@ export default function SignStep({
           </div>
           {penPicker}
         </div>
-      ) : (
+      ) : mode === "draw" ? (
         <div className="flex flex-col gap-3">
           <input
             className="input"
@@ -154,6 +200,42 @@ export default function SignStep({
             {penPicker}
             <button className="btn btn-ghost text-[12px]" onClick={clearCanvas}>Clear</button>
           </div>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <input
+            className="input"
+            value={typedName}
+            onChange={(e) => setTypedName(e.target.value)}
+            placeholder="Your full name (printed under the signature)"
+          />
+          <div
+            className="rounded-xl flex items-center justify-center overflow-hidden"
+            style={{ background: "#f4f4f2", height: 140, boxShadow: "var(--shadow-sm)" }}
+          >
+            {uploadedSignature ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={uploadedSignature} alt="Uploaded signature" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} />
+            ) : (
+              <div className="flex flex-col items-center gap-1.5 text-[var(--color-neutral-500)]">
+                <IconCamera size={20} />
+                <span className="text-[11.5px]">Print, sign by hand, then photograph just the signature</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" className="btn btn-secondary text-[12px]" onClick={() => fileInputRef.current?.click()}>
+              <IconCamera size={12} />
+              {uploadedSignature ? "Replace photo" : "Upload photo"}
+            </button>
+            {uploadedSignature && (
+              <button type="button" className="btn btn-ghost text-[12px]" onClick={() => setUploadedSignature(null)}>
+                Remove
+              </button>
+            )}
+          </div>
+          {uploadError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{uploadError}</div>}
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
         </div>
       )}
 

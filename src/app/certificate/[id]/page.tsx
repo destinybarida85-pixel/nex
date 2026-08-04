@@ -61,6 +61,27 @@ export default function PublicCertificatePage({ params }: { params: Promise<{ id
 
   if (!cert) return <Shell><div /></Shell>;
 
+  // The certificate canvas is landscape (~1.55:1). Printed on a default
+  // portrait page, only my centering fix in globals.css moves it from
+  // "pinned in a corner" to "small and centered" — it stays letterboxed,
+  // since centering redistributes empty space rather than removing it.
+  // Scoping @page { size: landscape } to just this click (via a temporary
+  // style tag, cleaned up on the browser's own afterprint event) fills the
+  // page properly without touching @page for the rest of the app, where
+  // documents and invoices are genuinely portrait content.
+  function printLandscape() {
+    const style = document.createElement("style");
+    style.id = "cert-landscape";
+    style.textContent = "@page { size: landscape; margin: 0; }";
+    document.head.appendChild(style);
+    const cleanup = () => {
+      style.remove();
+      window.removeEventListener("afterprint", cleanup);
+    };
+    window.addEventListener("afterprint", cleanup);
+    window.print();
+  }
+
   return (
     <Shell>
       <div className="relative w-full max-w-[760px] flex flex-col gap-4 print-area">
@@ -83,7 +104,7 @@ export default function PublicCertificatePage({ params }: { params: Promise<{ id
           Verified — this certificate record is held by {cert.issuerName || "the issuer"} on Primue.
         </div>
 
-        <button className="btn btn-secondary text-[12.5px] no-print self-center" onClick={() => window.print()}>
+        <button className="btn btn-secondary text-[12.5px] no-print self-center" onClick={printLandscape}>
           <IconDownload size={13} />
           Print / Save as PDF
         </button>

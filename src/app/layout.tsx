@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+// Scoped to the AI Assistant's chat only (via --font-chat), not applied
+// globally. Anthropic's own chat interface uses proprietary typefaces that
+// can't be licensed or embedded here — this is a genuinely different font,
+// chosen because it reads the same way: a calm serif built for paragraphs of
+// prose rather than UI chrome, which is what actually gives that interface
+// its quieter, more "written for you" feel versus a dense sans-serif chat
+// bubble.
+const sourceSerif = Source_Serif_4({
+  variable: "--font-chat",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -20,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} antialiased`}>
+    <html lang="en" className={`${inter.variable} ${sourceSerif.variable} antialiased`}>
       <body>{children}</body>
     </html>
   );

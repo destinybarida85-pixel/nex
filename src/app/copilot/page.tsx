@@ -96,17 +96,26 @@ export default function CopilotPage() {
             </div>
           </div>
 
-          <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-3.5">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-5">
             {messages.map((m, i) =>
               m.role === "user" ? (
-                <div key={i} className="self-end max-w-[85%] text-[13.5px] leading-[1.55] px-4 py-2.5 rounded-xl bg-[var(--color-surface)]">
+                <div
+                  key={i}
+                  className="self-end max-w-[80%] text-[13.5px] leading-[1.55] px-4 py-2.5 rounded-2xl"
+                  style={{ background: "var(--color-surface)" }}
+                >
                   {m.text}
                 </div>
               ) : (
-                <div key={i} className="self-start max-w-[92%] flex flex-col gap-2">
+                // No bubble background here on purpose — the assistant's reply
+                // reads as plain prose on the page, the same register a
+                // calm chat interface uses instead of a dense colour block.
+                // The serif face and wider line-height are what actually do
+                // the work of feeling "written", not the container.
+                <div key={i} className="self-start max-w-[92%] flex flex-col gap-2.5">
                   <div
-                    className="text-[13.5px] leading-[1.6] text-[var(--color-neutral-300)] px-4 py-2.5 rounded-xl"
-                    style={{ background: "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" }}
+                    className="text-[15px] leading-[1.75] text-[var(--color-text)]"
+                    style={{ fontFamily: "var(--font-chat), Georgia, serif" }}
                   >
                     {m.text}
                   </div>
@@ -123,10 +132,7 @@ export default function CopilotPage() {
               )
             )}
             {thinking && (
-              <div
-                className="self-start text-[13px] px-4 py-2.5 rounded-xl text-[var(--color-neutral-400)]"
-                style={{ background: "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" }}
-              >
+              <div className="self-start text-[var(--color-neutral-500)]">
                 <span className="inline-flex gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
                   <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse [animation-delay:150ms]" />

@@ -62,6 +62,7 @@ export default function Pricing() {
           <div className="flex flex-col gap-[7px] text-[12.5px] text-[var(--color-neutral-300)] mt-1">
             <span>· Unlimited AI documents &amp; e-signatures</span>
             <span>· E-signatures + official digital stamps</span>
+            <span>· AI-generated premium certificates</span>
             <span>· Payroll, CRM, projects, analytics</span>
             <span>· White-label branding + custom domain</span>
             <span>· API access &amp; webhooks</span>

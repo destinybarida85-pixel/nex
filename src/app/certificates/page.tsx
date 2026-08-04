@@ -41,6 +41,12 @@ export default function CertificatesPage() {
   const [stampShape, setStampShape] = useState<StampShape | "">("");
   const [stampLabel, setStampLabel] = useState("CERTIFIED");
   const [stampSub, setStampSub] = useState("");
+  // Independent of accentColor on purpose: it used to just be `accentColor`
+  // reused for the seal too, so switching design or the main colour silently
+  // recoloured the seal as a side effect. Empty string means "match the
+  // certificate's colour" (the sensible default); once you pick a seal colour
+  // explicitly it stays exactly that until you change it again.
+  const [sealColor, setSealColor] = useState<string>("");
 
   const spec = findDesign(design);
   const style: CertificateStyle = {
@@ -50,6 +56,7 @@ export default function CertificatesPage() {
     stampShape: (stampShape || undefined) as StampShape | undefined,
     stampLabel,
     stampSub,
+    sealColor: sealColor || undefined,
   };
 
   const [aiPrompt, setAiPrompt] = useState("");
@@ -320,7 +327,7 @@ export default function CertificatesPage() {
                         }}
                       >
                         <span className="rounded-md grid place-items-center" style={{ width: 40, height: 30, background: "#fff" }}>
-                          <Stamp label="SEAL" sub="" color={accentColor || spec.accent} size={24} shape={spec.stamp} />
+                          <Stamp label="SEAL" sub="" color={sealColor || accentColor || spec.accent} size={24} shape={spec.stamp} />
                         </span>
                         Default
                       </button>
@@ -338,15 +345,46 @@ export default function CertificatesPage() {
                           {/* White chip behind each: the seal blends with
                               multiply, which goes invisible on this dark panel. */}
                           <span className="rounded-md grid place-items-center overflow-hidden" style={{ width: 40, height: 30, background: "#fff" }}>
-                            <Stamp label="SEAL" sub="" color={accentColor || spec.accent} size={24} shape={s.id} />
+                            <Stamp label="SEAL" sub="" color={sealColor || accentColor || spec.accent} size={24} shape={s.id} />
                           </span>
                           {s.label.split(" ")[0]}
                         </button>
                       ))}
                     </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[11px] text-[var(--color-neutral-500)] w-[52px]">Seal colour</span>
+                      <button
+                        onClick={() => setSealColor("")}
+                        className="text-[10px] px-2 py-1 rounded-md cursor-pointer"
+                        style={{
+                          border: `1px solid ${sealColor ? "var(--color-divider)" : "var(--color-accent)"}`,
+                          color: sealColor ? "var(--color-neutral-500)" : "var(--color-accent-300)",
+                        }}
+                      >
+                        Matches design
+                      </button>
+                      {["#c9a227", "#a8202a", "#2b6ca8", "#2f6b4a", "#9184d9", "#0c0c0c", "#ffffff"].map((c) => (
+                        <button
+                          key={c}
+                          aria-label={`Use ${c}`}
+                          onClick={() => setSealColor(c)}
+                          className="w-[20px] h-[20px] rounded-md cursor-pointer"
+                          style={{ background: c, border: c === "#ffffff" ? "1px solid var(--color-divider)" : "none", outline: sealColor === c ? "2px solid var(--color-text)" : "none", outlineOffset: 2 }}
+                        />
+                      ))}
+                      <label
+                        className="w-[20px] h-[20px] rounded-md cursor-pointer grid place-items-center overflow-hidden"
+                        title="Custom seal colour"
+                        style={{ border: "1px dashed var(--color-neutral-600)" }}
+                      >
+                        <input type="color" aria-label="Custom seal colour" value={sealColor || accentColor || spec.accent} onChange={(e) => setSealColor(e.target.value)} className="opacity-0 w-full h-full cursor-pointer" />
+                      </label>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-2">
-                      <input className="input text-[11.5px]" placeholder="Seal text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 12))} />
-                      <input className="input text-[11.5px]" placeholder="Sub text (optional)" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 16))} />
+                      <input className="input text-[11.5px]" placeholder="Seal text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 40))} />
+                      <input className="input text-[11.5px]" placeholder="Sub text (optional)" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 40))} />
                     </div>
                   </>
                 )}

@@ -138,4 +138,8 @@ export type CertificateStyle = {
   stampShape?: StampShape;
   stampLabel?: string;
   stampSub?: string;
+  /** Seal colour, independent of accentColor. Unset means "match the
+   *  certificate's accent" — but once set, it stays put even if the design or
+   *  accent changes later, instead of silently following them. */
+  sealColor?: string;
 };

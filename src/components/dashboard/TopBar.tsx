@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { IconSearch, IconPlus, IconBell, IconMessages, IconSparkle, IconClients, IconEmployees, IconLink, IconESign, IconWallet, IconSend } from "@/components/icons";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import CommandPalette from "./CommandPalette";
 
 const quickCreateItems = [
   { label: "New document", icon: IconSparkle, href: "/assistant" },
@@ -35,6 +36,7 @@ export default function TopBar() {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [initials, setInitials] = useState("");
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [chatOpen, setChatOpen] = useState(false);
@@ -95,6 +97,19 @@ export default function TopBar() {
     return () => clearInterval(interval);
   }, [checked, hasSession, chatOpen]);
 
+  // ⌘K/Ctrl+K from anywhere on the page, matching the hint the search bar
+  // already displayed (and previously did nothing when pressed).
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   useEffect(() => {
     if (!quickCreateOpen && !notifOpen && !chatOpen) return;
     function onClickOutside(e: MouseEvent) {
@@ -133,13 +148,18 @@ export default function TopBar() {
 
   return (
     <header className="flex items-center gap-2 sm:gap-3.5 pl-16 pr-3 py-3 sm:px-7 border-b border-[var(--color-divider)]">
-      <div className="flex items-center gap-2.5 flex-1 min-w-0 md:flex-none md:w-[340px] px-3 py-[7px] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-neutral-500)] text-[13px] cursor-text hover:border-[var(--color-neutral-600)] transition-colors">
+      <button
+        type="button"
+        onClick={() => setPaletteOpen(true)}
+        className="flex items-center gap-2.5 flex-1 min-w-0 md:flex-none md:w-[340px] px-3 py-[7px] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-neutral-500)] text-[13px] cursor-text hover:border-[var(--color-neutral-600)] transition-colors text-left"
+      >
         <IconSearch size={14} className="flex-none" />
         <span className="flex-1 hidden sm:inline truncate">Search or run a command…</span>
         <kbd className="hidden md:inline font-mono text-[10.5px] font-medium px-1.5 py-0.5 border border-[var(--color-divider)] rounded-[5px] text-[var(--color-neutral-500)]">
           ⌘K
         </kbd>
-      </div>
+      </button>
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
       <div className="flex-1 hidden md:block" />
       <div className="relative flex-none" ref={menuRef}>
         <button className="btn btn-primary text-[13px] flex-none" onClick={() => setQuickCreateOpen((v) => !v)}>

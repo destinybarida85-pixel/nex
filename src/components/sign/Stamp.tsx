@@ -11,6 +11,20 @@ export const stampShapes: { id: StampShape; label: string }[] = [
 
 type ShapeProps = { uid: string; label: string; sub: string; c: string; imageUrl?: string | null; size: number };
 
+// Real stamps carry whatever text an organisation needs — the previous fixed
+// font sizes plus a hard 12/16-character slice meant "CERTIFIED FOR
+// EXCELLENCE" came out as "CERTIFIED FO". This scales the size down as the
+// string grows instead of cutting it off, the same way word processors
+// auto-shrink text to fit a box. maxLen is the length at which it reaches the
+// floor — a circular seal has less room than a rectangle, so each shape passes
+// its own.
+function fitFontSize(text: string, base: number, floor: number, maxLen: number) {
+  const len = text.length;
+  if (len <= 6) return base;
+  const t = Math.min(1, (len - 6) / (maxLen - 6));
+  return base - (base - floor) * t;
+}
+
 // A shared "roughen" filter gives every shape the slightly uneven, ink-on-a-
 // worn-stamp edge from the reference images, instead of a perfectly crisp
 // vector line that reads as a screenshot rather than a stamp.
@@ -52,10 +66,10 @@ function RoundSeal({ uid, label, sub, c, imageUrl, size }: ShapeProps) {
         </g>
       )}
 
-      <text fontSize={20} fontWeight={800} letterSpacing="2.5" fill={c} style={{ fontFamily: "'Arial Black', system-ui, -apple-system, sans-serif" }}>
+      <text fontSize={fitFontSize(label, 20, 10, 26)} fontWeight={800} letterSpacing="2.5" fill={c} style={{ fontFamily: "'Arial Black', system-ui, -apple-system, sans-serif" }}>
         <textPath href={`#top-${uid}`} startOffset="50%" textAnchor="middle">{label}</textPath>
       </text>
-      <text fontSize={12} fontWeight={600} letterSpacing="3" fill={c} opacity={0.85} style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
+      <text fontSize={fitFontSize(sub, 12, 7, 30)} fontWeight={600} letterSpacing="3" fill={c} opacity={0.85} style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
         <textPath href={`#bottom-${uid}`} startOffset="50%" textAnchor="middle">{sub}</textPath>
       </text>
     </svg>
@@ -68,6 +82,7 @@ function RectangleStamp({ uid, label, sub, c, size }: ShapeProps) {
   // square box, same as the reference "PAID" / "TOP SECRET" stamps.
   const w = size * 1.7;
   const h = size * 0.72;
+  const labelSize = fitFontSize(label, sub ? 40 : 46, 16, 22);
   return (
     <svg viewBox="0 0 340 144" width={w} height={h}>
       <defs>
@@ -81,7 +96,7 @@ function RectangleStamp({ uid, label, sub, c, size }: ShapeProps) {
         x={170}
         y={sub ? 74 : 84}
         textAnchor="middle"
-        fontSize={sub ? 40 : 46}
+        fontSize={labelSize}
         fontWeight={800}
         letterSpacing="2"
         fill={c}
@@ -90,7 +105,7 @@ function RectangleStamp({ uid, label, sub, c, size }: ShapeProps) {
         {label}
       </text>
       {sub && (
-        <text x={170} y={106} textAnchor="middle" fontSize={16} fontWeight={700} letterSpacing="3" fill={c} opacity={0.85}>
+        <text x={170} y={106} textAnchor="middle" fontSize={fitFontSize(sub, 16, 9, 30)} fontWeight={700} letterSpacing="3" fill={c} opacity={0.85}>
           {sub}
         </text>
       )}
@@ -137,11 +152,11 @@ function BadgeSeal({ uid, label, sub, c, imageUrl, size }: ShapeProps) {
         <image href={imageUrl} x={cx - 40} y={cy - 40} width={80} height={80} preserveAspectRatio="xMidYMid slice" clipPath={`url(#clip-${uid})`} />
       )}
 
-      <text fontSize={19} fontWeight={800} letterSpacing="2" fill={c} style={{ fontFamily: "'Arial Black', system-ui, -apple-system, sans-serif" }}>
+      <text fontSize={fitFontSize(label, 19, 10, 24)} fontWeight={800} letterSpacing="2" fill={c} style={{ fontFamily: "'Arial Black', system-ui, -apple-system, sans-serif" }}>
         <textPath href={`#top-${uid}`} startOffset="50%" textAnchor="middle">{label}</textPath>
       </text>
       {sub && (
-        <text fontSize={11} fontWeight={700} letterSpacing="1.5" fill={c} opacity={0.85}>
+        <text fontSize={fitFontSize(sub, 11, 6, 28)} fontWeight={700} letterSpacing="1.5" fill={c} opacity={0.85}>
           <textPath href={`#bottom-${uid}`} startOffset="50%" textAnchor="middle">{sub}</textPath>
         </text>
       )}
@@ -171,11 +186,11 @@ function WaxSeal({ uid, label, sub, c, size }: ShapeProps) {
         <circle cx={cx} cy={cy} r={88} fill={`url(#wax-${uid})`} />
         <circle cx={cx} cy={cy} r={88} fill="none" stroke="#000" strokeOpacity={0.18} strokeWidth={2} />
       </g>
-      <text fontSize={17} fontWeight={700} letterSpacing="1.5" fill="#fff" opacity={0.92} style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+      <text fontSize={fitFontSize(label, 17, 9, 24)} fontWeight={700} letterSpacing="1.5" fill="#fff" opacity={0.92} style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
         <textPath href={`#top-${uid}`} startOffset="50%" textAnchor="middle">{label}</textPath>
       </text>
       {sub && (
-        <text x={cx} y={128} textAnchor="middle" fontSize={11} fontWeight={600} letterSpacing="1" fill="#fff" opacity={0.8} style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+        <text x={cx} y={128} textAnchor="middle" fontSize={fitFontSize(sub, 11, 6, 30)} fontWeight={600} letterSpacing="1" fill="#fff" opacity={0.8} style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
           {sub}
         </text>
       )}
