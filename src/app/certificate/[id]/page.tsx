@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { IconLogoMark, IconCheckCircle, IconDownload } from "@/components/icons";
-import CertificatePaper, { type CertificateDesign } from "@/components/certificates/CertificatePaper";
+import CertificatePaper, { type CertificateDesign, type CertificateStyle } from "@/components/certificates/CertificatePaper";
 
 type Certificate = {
   id: string;
@@ -13,6 +13,7 @@ type Certificate = {
   issuerName: string;
   issuedAt: string;
   accentColor: string | null;
+  style?: CertificateStyle;
 };
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -71,6 +72,7 @@ export default function PublicCertificatePage({ params }: { params: Promise<{ id
           issuerName={cert.issuerName}
           issuedAt={cert.issuedAt}
           accentColor={cert.accentColor || undefined}
+          style={cert.style}
         />
 
         <div

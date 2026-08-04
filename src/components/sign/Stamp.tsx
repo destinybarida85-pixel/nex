@@ -190,6 +190,7 @@ export default function Stamp({
   imageUrl,
   size = 108,
   shape = "round",
+  onDarkPaper = false,
 }: {
   label: string;
   sub: string;
@@ -197,6 +198,8 @@ export default function Stamp({
   imageUrl?: string | null;
   size?: number;
   shape?: StampShape;
+  /** Set when the stamp sits on a dark surface — see the blend note below. */
+  onDarkPaper?: boolean;
 }) {
   const c = color || "var(--color-accent)";
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
@@ -205,7 +208,16 @@ export default function Stamp({
   return (
     <div
       className="pointer-events-none select-none"
-      style={{ transform: `rotate(${rotation}deg)`, opacity: 0.95, mixBlendMode: "multiply" }}
+      style={{
+        transform: `rotate(${rotation}deg)`,
+        opacity: onDarkPaper ? 1 : 0.95,
+        // multiply is what makes ink look absorbed into white paper, but it
+        // multiplies toward black against a dark ground — on a dark
+        // certificate the seal turned into an almost invisible smudge. Screen
+        // is the dark-surface equivalent: it keeps the ink sitting *on* the
+        // page instead of being swallowed by it.
+        mixBlendMode: onDarkPaper ? "screen" : "multiply",
+      }}
     >
       {shape === "rectangle" && <RectangleStamp uid={uid} label={label} sub={sub} c={c} size={size} />}
       {shape === "badge" && <BadgeSeal uid={uid} label={label} sub={sub} c={c} imageUrl={imageUrl} size={size} />}

@@ -7,6 +7,8 @@ import CertificatePaper, { certificateDesigns, type CertificateDesign } from "@/
 import { useCopy } from "@/components/invoices/SendInvoice";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import Stamp, { stampShapes, type StampShape } from "@/components/sign/Stamp";
+import { findDesign, type CertificateStyle } from "@/components/certificates/designs";
 import { IconSparkle, IconCopy, IconCheckCircle, IconLink } from "@/components/icons";
 
 type IssuedCertificate = {
@@ -30,6 +32,25 @@ export default function CertificatesPage() {
   const [recipientName, setRecipientName] = useState("");
   const [title, setTitle] = useState("Achievement");
   const [citation, setCitation] = useState("In recognition of outstanding commitment and measurable impact.");
+
+  // Style overrides. Each starts unset so the chosen design's own defaults
+  // apply; touching a control pins that one aspect without disturbing the rest.
+  const [accentColor, setAccentColor] = useState<string>("");
+  const [font, setFont] = useState<"" | "serif" | "sans">("");
+  const [showStamp, setShowStamp] = useState(true);
+  const [stampShape, setStampShape] = useState<StampShape | "">("");
+  const [stampLabel, setStampLabel] = useState("CERTIFIED");
+  const [stampSub, setStampSub] = useState("");
+
+  const spec = findDesign(design);
+  const style: CertificateStyle = {
+    accentColor: accentColor || undefined,
+    font: font || undefined,
+    showStamp,
+    stampShape: (stampShape || undefined) as StampShape | undefined,
+    stampLabel,
+    stampSub,
+  };
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiBusy, setAiBusy] = useState(false);
@@ -97,7 +118,7 @@ export default function CertificatesPage() {
       const res = await fetch("/api/certificates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ design, recipientName, title, citation, issuerName: tenantName }),
+        body: JSON.stringify({ design, recipientName, title, citation, issuerName: tenantName, accentColor: accentColor || undefined, style }),
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || "Couldn't issue that certificate.");
@@ -205,24 +226,130 @@ export default function CertificatesPage() {
                 />
               </div>
 
-              <div className="card elev-sm p-[14px_16px] gap-2">
-                <div className="card-title text-[13px]">Design</div>
-                <div className="flex flex-col gap-1.5">
+              <div className="card elev-sm p-[14px_16px] gap-2.5">
+                <div className="flex items-baseline gap-2">
+                  <div className="card-title text-[13px]">Design</div>
+                  <span className="text-[10.5px] text-[var(--color-neutral-500)]">{certificateDesigns.length} templates</span>
+                </div>
+                {/* Swatches rather than a list: at fifteen options the reason
+                    you pick one is how it looks, so show the palette and frame
+                    up front and keep the description for the selected one. */}
+                <div className="grid grid-cols-5 gap-1.5">
                   {certificateDesigns.map((d) => (
                     <button
                       key={d.id}
                       onClick={() => setDesign(d.id)}
-                      className="text-left p-2.5 rounded-lg border cursor-pointer transition-colors"
+                      title={d.label}
+                      aria-label={d.label}
+                      className="rounded-md cursor-pointer overflow-hidden relative"
                       style={{
-                        borderColor: design === d.id ? "var(--color-accent)" : "var(--color-divider)",
-                        background: design === d.id ? "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" : "transparent",
+                        height: 34,
+                        background: d.paper,
+                        border: design === d.id ? "2px solid var(--color-accent)" : "1px solid var(--color-divider)",
                       }}
                     >
-                      <div className="text-[12.5px] font-medium text-[var(--color-text)]">{d.label}</div>
-                      <div className="text-[10.5px] text-[var(--color-neutral-500)] mt-0.5">{d.why}</div>
+                      <span className="absolute inset-x-0 top-0" style={{ height: 9, background: d.accent2 || d.accent }} />
+                      <span className="absolute left-1 bottom-1 rounded-full" style={{ width: 8, height: 8, background: d.accent }} />
                     </button>
                   ))}
                 </div>
+                <div className="text-[10.5px] text-[var(--color-neutral-500)] leading-[1.5]">
+                  <span className="text-[var(--color-text)] font-medium">{spec.label}</span> — {spec.why}
+                </div>
+              </div>
+
+              <div className="card elev-sm p-[14px_16px] gap-2.5">
+                <div className="card-title text-[13px]">Style</div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[11px] text-[var(--color-neutral-500)] w-[52px]">Colour</span>
+                  <button
+                    onClick={() => setAccentColor("")}
+                    className="text-[10px] px-2 py-1 rounded-md cursor-pointer"
+                    style={{
+                      border: `1px solid ${accentColor ? "var(--color-divider)" : "var(--color-accent)"}`,
+                      color: accentColor ? "var(--color-neutral-500)" : "var(--color-accent-300)",
+                    }}
+                  >
+                    Default
+                  </button>
+                  {["#c9a227", "#a8202a", "#2b6ca8", "#2f6b4a", "#9184d9", "#0c0c0c"].map((c) => (
+                    <button
+                      key={c}
+                      aria-label={`Use ${c}`}
+                      onClick={() => setAccentColor(c)}
+                      className="w-[20px] h-[20px] rounded-md cursor-pointer"
+                      style={{ background: c, outline: accentColor === c ? "2px solid var(--color-text)" : "none", outlineOffset: 2 }}
+                    />
+                  ))}
+                  <label
+                    className="w-[20px] h-[20px] rounded-md cursor-pointer grid place-items-center overflow-hidden"
+                    title="Custom colour"
+                    style={{ border: "1px dashed var(--color-neutral-600)" }}
+                  >
+                    <input type="color" aria-label="Custom certificate colour" value={accentColor || spec.accent} onChange={(e) => setAccentColor(e.target.value)} className="opacity-0 w-full h-full cursor-pointer" />
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-[var(--color-neutral-500)] w-[52px]">Font</span>
+                  <select className="input text-[11.5px]" value={font} onChange={(e) => setFont(e.target.value as typeof font)}>
+                    <option value="">Match the design ({spec.titleFont})</option>
+                    <option value="serif">Serif — ceremonial</option>
+                    <option value="sans">Sans — modern</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="card elev-sm p-[14px_16px] gap-2.5">
+                <label className="radio gap-2 text-[12.5px]">
+                  <input type="checkbox" checked={showStamp} onChange={(e) => setShowStamp(e.target.checked)} />
+                  <span className="dot" style={{ borderRadius: 5 }} />
+                  Show a seal
+                </label>
+
+                {showStamp && (
+                  <>
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={() => setStampShape("")}
+                        className="flex-1 flex flex-col items-center gap-1 py-1.5 rounded-lg cursor-pointer text-[9.5px]"
+                        style={{
+                          border: `1px solid ${stampShape ? "var(--color-divider)" : "var(--color-accent)"}`,
+                          color: stampShape ? "var(--color-neutral-500)" : "var(--color-accent-300)",
+                        }}
+                      >
+                        <span className="rounded-md grid place-items-center" style={{ width: 40, height: 30, background: "#fff" }}>
+                          <Stamp label="SEAL" sub="" color={accentColor || spec.accent} size={24} shape={spec.stamp} />
+                        </span>
+                        Default
+                      </button>
+                      {stampShapes.map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => setStampShape(s.id)}
+                          title={s.label}
+                          className="flex-1 flex flex-col items-center gap-1 py-1.5 rounded-lg cursor-pointer text-[9.5px]"
+                          style={{
+                            border: `1px solid ${stampShape === s.id ? "var(--color-accent)" : "var(--color-divider)"}`,
+                            color: stampShape === s.id ? "var(--color-accent-300)" : "var(--color-neutral-500)",
+                          }}
+                        >
+                          {/* White chip behind each: the seal blends with
+                              multiply, which goes invisible on this dark panel. */}
+                          <span className="rounded-md grid place-items-center overflow-hidden" style={{ width: 40, height: 30, background: "#fff" }}>
+                            <Stamp label="SEAL" sub="" color={accentColor || spec.accent} size={24} shape={s.id} />
+                          </span>
+                          {s.label.split(" ")[0]}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input className="input text-[11.5px]" placeholder="Seal text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 12))} />
+                      <input className="input text-[11.5px]" placeholder="Sub text (optional)" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 16))} />
+                    </div>
+                  </>
+                )}
               </div>
 
               <button className="btn btn-primary btn-block text-[13px]" onClick={issue} disabled={!canIssue || issuing || !live}>
@@ -240,6 +367,8 @@ export default function CertificatesPage() {
                 citation={citation}
                 issuerName={tenantName}
                 issuedAt={new Date().toISOString()}
+                accentColor={accentColor || undefined}
+                style={style}
               />
             </div>
           </div>

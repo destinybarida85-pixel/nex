@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireTenant } from "@/lib/requireTenant";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import { isPendingMigration } from "@/lib/schema";
-import type { CertificateDesign } from "@/components/certificates/CertificatePaper";
+import { isValidDesign } from "@/components/certificates/designs";
 
 const SETUP_MESSAGE =
   "Certificates need one database migration before they work. Run supabase/migrations/0016_certificates.sql in your Supabase SQL editor, then reload this page.";
@@ -54,12 +54,13 @@ export async function POST(request: Request) {
   if (error) return NextResponse.json({ error }, { status });
 
   const body = (await request.json()) as {
-    design?: CertificateDesign;
+    design?: string;
     recipientName?: string;
     title?: string;
     citation?: string;
     issuerName?: string;
     accentColor?: string;
+    style?: Record<string, unknown>;
   };
 
   if (!body.recipientName?.trim() || !body.title?.trim() || !body.citation?.trim()) {
@@ -84,12 +85,16 @@ export async function POST(request: Request) {
     .insert({
       tenant_id: tenantId,
       created_by: userId,
-      design: body.design || "ribbon",
+      // The DB CHECK on design was dropped in 0017 so new templates don't each
+      // need a migration; the catalogue in the app is the source of truth, so
+      // validate here instead of trusting whatever the client sent.
+      design: isValidDesign(body.design) ? body.design : "ribbon",
       recipient_name: body.recipientName.trim(),
       title: body.title.trim(),
       citation: body.citation.trim(),
       issuer_name: body.issuerName?.trim() || tenant?.name || null,
       accent_color: body.accentColor || null,
+      style: body.style ?? {},
     })
     .select("id")
     .single();

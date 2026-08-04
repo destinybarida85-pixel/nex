@@ -15,7 +15,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   const { data: cert, error } = await supabase
     .from("certificates")
-    .select("id, design, recipient_name, title, citation, issuer_name, issued_at, accent_color, tenant_id")
+    .select("id, design, recipient_name, title, citation, issuer_name, issued_at, accent_color, style, tenant_id")
     .eq("id", id)
     .maybeSingle();
 
@@ -43,6 +43,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       issuerName: cert.issuer_name || tenant?.name || "",
       issuedAt: cert.issued_at,
       accentColor: cert.accent_color,
+      style: cert.style ?? {},
     },
   });
 }
