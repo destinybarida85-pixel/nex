@@ -11,7 +11,17 @@ import CryptoTab from "@/components/wallet/CryptoTab";
 import { initialTransactions, beneficiaries, type WalletTx } from "@/components/wallet/data";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
-import { IconDownload, IconSend, IconReceive, IconArrowUpCircle, IconEye, IconEyeOff } from "@/components/icons";
+import { IconDownload, IconSend, IconReceive, IconArrowUpCircle, IconArrowDownCircle, IconEye, IconEyeOff } from "@/components/icons";
+
+// A small fixed palette rather than an arbitrary hash-to-hue — keeps every
+// avatar inside the app's existing accent family instead of drifting into
+// colours nothing else on the page uses.
+const AVATAR_COLORS = ["#9184d9", "#63c3b2", "#e0a35b", "#5b8fd9", "#c96bb0", "#4fae7a", "#d97b6b"];
+function avatarColor(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+}
 
 export default function WalletPage() {
   const { hasSession, checked } = useHasSession();
@@ -125,6 +135,17 @@ export default function WalletPage() {
 
   const filter = hideBalances ? { filter: "blur(7px)" } : undefined;
 
+  // Parsed back out of the display string rather than kept as a separate
+  // numeric field — WalletTx has always stored amount pre-formatted (both the
+  // demo data and the live-mode mapper build it that way), so this reads
+  // whatever's actually on screen instead of introducing a second source of
+  // truth that could drift from it.
+  function parseAmount(amount: string) {
+    return Number(amount.replace(/[^0-9.]/g, "")) || 0;
+  }
+  const moneyIn = transactions.filter((t) => t.credit).reduce((sum, t) => sum + parseAmount(t.amount), 0);
+  const moneyOut = transactions.filter((t) => !t.credit).reduce((sum, t) => sum + parseAmount(t.amount), 0);
+
   return (
     <div className="flex min-h-screen bg-[var(--color-bg)]">
       <Sidebar active="Business Wallet" />
@@ -166,26 +187,48 @@ export default function WalletPage() {
           <>
           <div className="grid gap-3.5 grid-cols-1 lg:grid-cols-[1.4fr_1fr]">
             <div
-              className="rounded-xl p-7 flex flex-col gap-5"
+              className="rounded-xl p-7 flex flex-col gap-6"
               style={{
                 background: "linear-gradient(150deg, var(--color-surface), color-mix(in srgb, var(--color-accent-900) 55%, var(--color-surface)))",
                 boxShadow: "var(--shadow-sm)",
               }}
             >
-              <div className="flex items-center gap-1.5">
-                <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</div>
-                <button
-                  onClick={() => setHideBalances((v) => !v)}
-                  className="text-[var(--color-neutral-500)] hover:text-[var(--color-text)] transition-colors"
-                  aria-label={hideBalances ? "Show balances" : "Hide balances"}
-                >
-                  {hideBalances ? <IconEyeOff size={13} /> : <IconEye size={13} />}
-                </button>
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</div>
+                    <button
+                      onClick={() => setHideBalances((v) => !v)}
+                      className="text-[var(--color-neutral-500)] hover:text-[var(--color-text)] transition-colors"
+                      aria-label={hideBalances ? "Show balances" : "Hide balances"}
+                    >
+                      {hideBalances ? <IconEyeOff size={13} /> : <IconEye size={13} />}
+                    </button>
+                  </div>
+                  <div className="font-medium text-[40px] tracking-[-0.015em] mt-1" style={filter}>
+                    ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="flex items-center gap-1 text-[11px]" style={{ color: "#63c3b2" }}>
+                      <IconArrowDownCircle size={12} /> In
+                    </span>
+                    <span className="text-[15px] font-medium" style={filter}>
+                      ${moneyIn.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="flex items-center gap-1 text-[11px] text-[var(--color-neutral-400)]">
+                      <IconArrowUpCircle size={12} /> Out
+                    </span>
+                    <span className="text-[15px] font-medium" style={filter}>
+                      ${moneyOut.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="font-medium text-[38px] tracking-[-0.015em]" style={filter}>
-                ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-              </div>
-              <div className="flex gap-2.5">
+              <div className="flex gap-2.5 flex-wrap">
                 <button className="btn btn-primary text-[14px]" onClick={() => setShowTransfer(true)}>
                   <IconSend size={14} />
                   Transfer
@@ -229,42 +272,43 @@ export default function WalletPage() {
           </div>
 
           <div className="grid gap-3.5 items-start grid-cols-1 lg:grid-cols-[2fr_1fr]">
-            <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
-              <div className="card-title text-sm">Transaction history</div>
-              <table className="table text-[14px] min-w-[480px]">
-                <thead>
-                  <tr>
-                    <th>Counterparty</th>
-                    <th>Type</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th className="text-right">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((t) => (
-                    <tr key={t.id}>
-                      <td>{t.party}</td>
-                      <td>{t.type}</td>
-                      <td>{t.date}</td>
-                      <td>
-                        <span className={`tag ${t.statusTag}`}>{t.status}</span>
-                      </td>
-                      <td className="text-right" style={filter}>{t.amount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="card elev-sm p-[16px_18px] gap-1">
+              <div className="card-title text-sm mb-1.5">Transaction history</div>
+              {transactions.length === 0 ? (
+                <div className="text-[12.5px] text-[var(--color-neutral-500)] py-4 text-center">No transactions yet.</div>
+              ) : (
+                transactions.map((t) => (
+                  <div key={t.id} className="flex items-center gap-3 py-2.5 border-b last:border-b-0" style={{ borderColor: "var(--color-divider)" }}>
+                    <span
+                      className="w-9 h-9 rounded-full grid place-items-center text-[13px] font-medium flex-none"
+                      style={{ background: `color-mix(in srgb, ${avatarColor(t.party)} 20%, transparent)`, color: avatarColor(t.party) }}
+                    >
+                      {t.party.charAt(0).toUpperCase()}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13.5px] truncate">{t.party}</div>
+                      <div className="text-[11px] text-[var(--color-neutral-500)] truncate">{t.type} · {t.date}</div>
+                    </div>
+                    <span className={`tag ${t.statusTag} flex-none`}>{t.status}</span>
+                    <span
+                      className="text-[14px] font-medium flex-none w-[110px] text-right"
+                      style={{ ...filter, color: t.credit ? "#63c3b2" : "var(--color-text)" }}
+                    >
+                      {t.amount}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
 
-            <div className="card elev-sm p-[16px_18px] gap-2.5">
-              <div className="card-title text-sm">Beneficiaries</div>
+            <div className="card elev-sm p-[16px_18px] gap-1">
+              <div className="card-title text-sm mb-1.5">Beneficiaries</div>
               <div className="flex flex-col">
                 {beneficiaries.map((b) => (
-                  <div key={b.name} className="flex items-center gap-2.5 py-2">
+                  <div key={b.name} className="flex items-center gap-2.5 py-2.5 border-b last:border-b-0" style={{ borderColor: "var(--color-divider)" }}>
                     <span
-                      className="w-7 h-7 rounded-[9px] grid place-items-center text-[11px] font-medium flex-none"
-                      style={{ background: "var(--color-neutral-800)", color: "var(--color-neutral-300)" }}
+                      className="w-8 h-8 rounded-full grid place-items-center text-[12px] font-medium flex-none"
+                      style={{ background: `color-mix(in srgb, ${avatarColor(b.name)} 20%, transparent)`, color: avatarColor(b.name) }}
                     >
                       {b.name.charAt(0)}
                     </span>

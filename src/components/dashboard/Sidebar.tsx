@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import {
   IconLogoMark,
   IconChevronUpDown,
   IconChevronDown,
+  IconCheckCircle,
+  IconPlus,
   IconDashboard,
   IconAnalytics,
   IconWallet,
@@ -26,6 +28,8 @@ import {
   IconX,
   IconShieldCheck,
 } from "@/components/icons";
+
+type Business = { tenantId: string; name: string; role: string };
 
 const COLLAPSE_KEY = "origin-sidebar-collapsed";
 
@@ -111,6 +115,168 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
   );
 }
 
+function BusinessSwitcher({ tenantName, collapsed }: { tenantName: string; collapsed: boolean }) {
+  const { hasSession, checked } = useHasSession();
+  const [open, setOpen] = useState(false);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [activeTenantId, setActiveTenantId] = useState<string | null>(null);
+  const [switching, setSwitching] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [error, setError] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [open]);
+
+  async function loadBusinesses() {
+    if (!checked || !isBackendConfigured || !hasSession) return;
+    try {
+      const res = await fetch("/api/memberships");
+      const data = await res.json();
+      if (data.configured) {
+        setBusinesses(data.businesses ?? []);
+        setActiveTenantId(data.activeTenantId ?? null);
+      }
+    } catch {
+      // Switcher just stays empty — the current business still works fine.
+    }
+  }
+
+  function toggleOpen() {
+    if (!open) loadBusinesses();
+    setOpen((v) => !v);
+    setAdding(false);
+    setError("");
+  }
+
+  async function switchTo(tenantId: string) {
+    if (tenantId === activeTenantId) {
+      setOpen(false);
+      return;
+    }
+    setSwitching(true);
+    try {
+      const res = await fetch("/api/memberships/switch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tenantId }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't switch businesses.");
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't switch businesses.");
+      setSwitching(false);
+    }
+  }
+
+  async function createBusiness() {
+    if (!newName.trim()) return;
+    setSwitching(true);
+    setError("");
+    try {
+      const res = await fetch("/api/memberships", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't create that business.");
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't create that business.");
+      setSwitching(false);
+    }
+  }
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        title={collapsed ? tenantName : undefined}
+        onClick={toggleOpen}
+        className={`flex items-center gap-2 mb-[18px] py-2 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-text)] text-[13.5px] cursor-pointer text-left hover:border-[var(--color-neutral-600)] transition-colors w-full ${
+          collapsed ? "justify-center px-0 mx-0" : "mx-1 px-2.5"
+        }`}
+        style={{ width: collapsed ? undefined : "calc(100% - 8px)" }}
+      >
+        <span className="w-[18px] h-[18px] rounded-[5px] bg-[var(--color-accent-900)] text-[var(--color-accent-300)] grid place-items-center text-[10px] font-semibold flex-none">
+          {tenantName.charAt(0).toUpperCase()}
+        </span>
+        {!collapsed && (
+          <>
+            <span className="flex-1 truncate">{tenantName}</span>
+            <IconChevronUpDown size={12} className="opacity-50" />
+          </>
+        )}
+      </button>
+
+      {open && (
+        <div
+          className="absolute left-1 top-[calc(100%-8px)] w-[240px] rounded-lg border p-1.5 flex flex-col gap-0.5 z-30"
+          style={{ background: "var(--color-bg)", borderColor: "var(--color-divider)", boxShadow: "var(--shadow-md)" }}
+        >
+          <div className="text-[10px] tracking-[.08em] uppercase text-[var(--color-neutral-500)] px-2 py-1.5">
+            Your businesses
+          </div>
+          {businesses.length === 0 ? (
+            <div className="px-2 py-2 text-[12px] text-[var(--color-neutral-500)]">{tenantName}</div>
+          ) : (
+            businesses.map((b) => (
+              <button
+                key={b.tenantId}
+                onClick={() => switchTo(b.tenantId)}
+                disabled={switching}
+                className="flex items-center gap-2 px-2 py-[7px] rounded-md text-[13px] text-left cursor-pointer hover:bg-[var(--color-surface)] transition-colors"
+              >
+                <span className="w-[16px] h-[16px] rounded-[4px] bg-[var(--color-accent-900)] text-[var(--color-accent-300)] grid place-items-center text-[9px] font-semibold flex-none">
+                  {b.name.charAt(0).toUpperCase()}
+                </span>
+                <span className="flex-1 truncate">{b.name}</span>
+                {b.tenantId === activeTenantId && <IconCheckCircle size={12} className="text-[var(--color-accent)] flex-none" />}
+              </button>
+            ))
+          )}
+
+          <div className="h-px my-1" style={{ background: "var(--color-divider)" }} />
+
+          {adding ? (
+            <div className="flex flex-col gap-1.5 p-1">
+              <input
+                className="input text-[12px]"
+                placeholder="New business name"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && createBusiness()}
+                autoFocus
+              />
+              <button className="btn btn-primary text-[11.5px]" onClick={createBusiness} disabled={switching || !newName.trim()}>
+                {switching ? "Creating…" : "Create & switch"}
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setAdding(true)}
+              className="flex items-center gap-2 px-2 py-[7px] rounded-md text-[13px] text-left cursor-pointer hover:bg-[var(--color-surface)] transition-colors"
+              style={{ color: "var(--color-accent-300)" }}
+            >
+              <IconPlus size={13} />
+              Add a business
+            </button>
+          )}
+          {error && <div className="text-[11px] px-2 pt-1" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SidebarContent({
   active,
   onNavigate,
@@ -136,22 +302,7 @@ function SidebarContent({
         {!collapsed && <div className="font-medium text-[16px] tracking-[-0.01em]">Primue</div>}
       </div>
 
-      <button
-        title={collapsed ? tenantName : undefined}
-        className={`flex items-center gap-2 mb-[18px] py-2 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-text)] text-[13.5px] cursor-pointer text-left hover:border-[var(--color-neutral-600)] transition-colors ${
-          collapsed ? "justify-center px-0 mx-0" : "mx-1 px-2.5"
-        }`}
-      >
-        <span className="w-[18px] h-[18px] rounded-[5px] bg-[var(--color-accent-900)] text-[var(--color-accent-300)] grid place-items-center text-[10px] font-semibold flex-none">
-          {tenantName.charAt(0).toUpperCase()}
-        </span>
-        {!collapsed && (
-          <>
-            <span className="flex-1 truncate">{tenantName}</span>
-            <IconChevronUpDown size={12} className="opacity-50" />
-          </>
-        )}
-      </button>
+      <BusinessSwitcher tenantName={tenantName} collapsed={collapsed} />
 
       <nav className="flex flex-col gap-0.5 flex-1">
         {groups.map((group, gi) => (

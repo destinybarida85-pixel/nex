@@ -1,0 +1,73 @@
+import { NextResponse } from "next/server";
+import { requireTenant } from "@/lib/requireTenant";
+import { isBackendConfigured } from "@/lib/backendStatus";
+import { isPendingMigration } from "@/lib/schema";
+
+// Lists every business this login can switch into (see migration 0020),
+// plus which one is active right now — active isn't a membership property,
+// it's just whichever tenant profiles.tenant_id currently points at.
+export async function GET() {
+  if (!isBackendConfigured) return NextResponse.json({ configured: false });
+
+  const { error, status, supabase, tenantId, userId } = await requireTenant();
+  if (error) return NextResponse.json({ configured: true, error }, { status });
+
+  const { data: memberships, error: listError } = await supabase!
+    .from("memberships")
+    .select("tenant_id, role, tenants(name)")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+
+  if (isPendingMigration(listError)) {
+    // Pre-0020: behave as a single business, same as before this feature existed.
+    return NextResponse.json({ configured: true, businesses: [], activeTenantId: tenantId });
+  }
+  if (listError) return NextResponse.json({ error: listError.message }, { status: 500 });
+
+  const businesses = (memberships ?? []).map((m) => ({
+    tenantId: m.tenant_id,
+    name: Array.isArray(m.tenants) ? m.tenants[0]?.name : (m.tenants as { name: string } | null)?.name,
+    role: m.role,
+  }));
+
+  return NextResponse.json({ configured: true, businesses, activeTenantId: tenantId });
+}
+
+// Adds a new business to this login and switches to it immediately — "create
+// a business" without a reason to land you somewhere you didn't just create.
+export async function POST(request: Request) {
+  if (!isBackendConfigured) return NextResponse.json({ error: "Backend isn't connected yet." }, { status: 200 });
+
+  const { error, status, supabase, userId } = await requireTenant();
+  if (error) return NextResponse.json({ error }, { status });
+
+  const { name } = (await request.json()) as { name?: string };
+  if (!name?.trim()) return NextResponse.json({ error: "Give the new business a name." }, { status: 400 });
+
+  const { data: tenant, error: tenantError } = await supabase!
+    .from("tenants")
+    .insert({ name: name.trim(), owner_id: userId })
+    .select("id, name")
+    .single();
+  if (isPendingMigration(tenantError)) {
+    return NextResponse.json({ error: "Multiple businesses need a migration that hasn't been run yet (0020_multi_business.sql)." }, { status: 409 });
+  }
+  if (tenantError) return NextResponse.json({ error: tenantError.message }, { status: 500 });
+
+  const { error: memberError } = await supabase!
+    .from("memberships")
+    .insert({ user_id: userId, tenant_id: tenant.id, role: "owner" });
+  if (memberError) return NextResponse.json({ error: memberError.message }, { status: 500 });
+
+  await supabase!.from("wallet_accounts").insert({
+    tenant_id: tenant.id,
+    label: "Primary",
+    account_number: String(Math.floor(Math.random() * 1e10)).padStart(10, "0"),
+    routing_number: String(Math.floor(Math.random() * 1e9)).padStart(9, "0"),
+    balance_cents: 0,
+  });
+
+  await supabase!.from("profiles").update({ tenant_id: tenant.id }).eq("id", userId);
+
+  return NextResponse.json({ configured: true, business: { tenantId: tenant.id, name: tenant.name, role: "owner" } });
+}

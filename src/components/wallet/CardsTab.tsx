@@ -1,190 +1,53 @@
-"use client";
+import { IconLock } from "@/components/icons";
 
-import { useState } from "react";
-import { generateCardNumber, generateExpiry, generateCVC } from "@/lib/generateCardNumber";
-import { IconEye, IconEyeOff, IconPlus, IconLock } from "@/components/icons";
-
-type BizCard = {
-  label: string;
-  number: string;
-  expiry: string;
-  cvc: string;
-  frozen: boolean;
-  limit: number;
-  revealed: boolean;
-};
-
-const initialCards: BizCard[] = [
-  { label: "Meridian Studio · Primary", number: "4185 2093 6647 2210", expiry: "09/29", cvc: "482", frozen: false, limit: 25000, revealed: false },
-];
-
+// The previous version of this tab generated fake card numbers in the
+// browser for you to "issue" — every number declined everywhere, since
+// nothing was ever actually issued. That's worse than not having the feature:
+// a screen that looks like a working virtual-card product until the moment
+// someone actually tries to pay with it. Removed rather than kept as a demo,
+// per the standing instruction to remove what can't be made real and explain
+// what it'd take to fix instead.
+//
+// Real spendable cards need a licensed card-issuing partner behind them —
+// Stripe Issuing is the most common choice elsewhere, but it isn't available
+// in every country, including Nigeria. Nigeria-focused alternatives worth
+// looking into are Sudo Africa and Bridgecard, both card-issuing APIs built
+// for this market — but their current pricing, requirements and approval
+// process aren't something to state as fact without checking directly, and
+// signing up is something only the business owner can do (identity/business
+// verification, a signed agreement, live API keys). Once that account exists,
+// wiring the API in here is a normal integration, the same shape as Stripe
+// and Resend elsewhere in this app.
 export default function CardsTab() {
-  const [cards, setCards] = useState<BizCard[]>(initialCards);
-  const [issuing, setIssuing] = useState(false);
-  const [newLabel, setNewLabel] = useState("");
-
-  function toggleReveal(i: number) {
-    setCards((prev) => prev.map((c, idx) => (idx === i ? { ...c, revealed: !c.revealed } : c)));
-  }
-
-  function toggleFreeze(i: number) {
-    setCards((prev) => prev.map((c, idx) => (idx === i ? { ...c, frozen: !c.frozen } : c)));
-  }
-
-  function updateLimit(i: number, value: number) {
-    setCards((prev) => prev.map((c, idx) => (idx === i ? { ...c, limit: value } : c)));
-  }
-
-  function issueCard() {
-    const label = newLabel.trim() || `Card ${cards.length + 1}`;
-    setCards((prev) => [
-      ...prev,
-      { label, number: generateCardNumber(), expiry: generateExpiry(), cvc: generateCVC(), frozen: false, limit: 5000, revealed: true },
-    ]);
-    setNewLabel("");
-    setIssuing(false);
-  }
-
   return (
     <div className="flex flex-col gap-4">
-      {/* These card numbers are generated locally and are not real — nothing is
-          issued and nothing can be spent. Saying so plainly is the point: a
-          screen that looks exactly like a working virtual-card product while
-          handing someone a number that declines everywhere is the kind of
-          thing a buyer only discovers at the worst moment. Real cards need
-          Stripe Issuing, which is a separate application with underwriting and
-          isn't offered in every country. */}
       <div
-        className="flex items-start gap-2.5 p-3 rounded-lg text-[13px] leading-[1.6]"
-        style={{ background: "color-mix(in srgb, #e0a35b 14%, transparent)", color: "#e0a35b" }}
+        className="flex items-start gap-3 p-5 rounded-xl"
+        style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-sm)" }}
       >
-        <IconLock size={14} className="flex-none mt-0.5" />
-        <div>
-          <strong>Preview only — these are not real cards.</strong> The numbers below are generated in your
-          browser for demonstration and cannot be used to pay for anything. Issuing a spendable card requires
-          Stripe Issuing, a separate application with its own approval, and it isn&rsquo;t available in every
-          country yet. Everything else in your wallet — balances, payment links, payouts — is real.
+        <span
+          className="w-10 h-10 rounded-full grid place-items-center flex-none"
+          style={{ background: "color-mix(in srgb, #e0a35b 18%, transparent)", color: "#e0a35b" }}
+        >
+          <IconLock size={17} />
+        </span>
+        <div className="flex flex-col gap-2">
+          <div className="text-[14.5px] font-medium">Cards aren&rsquo;t available yet</div>
+          <div className="text-[13px] text-[var(--color-neutral-400)] leading-[1.65] max-w-[560px]">
+            A working virtual or physical card needs a licensed card-issuing partner behind it — this isn&rsquo;t
+            something that can be simulated. Everything else in your wallet (balances, payment links, payouts) is
+            real; a fake card number that declines everywhere would be worse than no card at all, so it&rsquo;s
+            been removed rather than kept as a demo.
+          </div>
+          <div className="text-[12.5px] text-[var(--color-neutral-500)] leading-[1.65] max-w-[560px]">
+            To make this real: Stripe Issuing is the usual path, but it isn&rsquo;t offered in every country.
+            Card-issuing APIs built for the Nigerian market — Sudo Africa and Bridgecard are two worth
+            researching — are worth looking into instead. Whichever you go with needs its own business
+            application and approval before there&rsquo;s an API key to connect; that part has to happen on
+            your end. Once you have one, connecting it here is a normal integration.
+          </div>
         </div>
       </div>
-
-      {cards.map((card, i) => {
-        const masked = card.number.replace(/\d(?=\d{4})/g, "•");
-        return (
-          <div key={i} className="grid gap-3.5 grid-cols-1 lg:grid-cols-[300px_1fr] items-start">
-            <div
-              className="rounded-2xl p-5 flex flex-col justify-between transition-all"
-              style={{
-                width: "100%",
-                maxWidth: 300,
-                aspectRatio: "1.586",
-                background: card.frozen
-                  ? "linear-gradient(140deg, var(--color-neutral-800), var(--color-neutral-900))"
-                  : "linear-gradient(140deg, var(--color-accent-700), var(--color-accent-900))",
-                boxShadow: "var(--shadow-md)",
-                filter: card.frozen ? "grayscale(0.4)" : undefined,
-              }}
-            >
-              <div className="flex items-center justify-between">
-                <span className="w-8 h-6 rounded-[4px]" style={{ background: "color-mix(in srgb, #fff 55%, transparent)" }} />
-                <div className="flex items-center gap-1.5">
-                  {card.frozen && (
-                    <span className="tag text-[9px]" style={{ background: "rgba(0,0,0,0.35)", color: "#fff" }}>
-                      <IconLock size={9} /> Frozen
-                    </span>
-                  )}
-                  {/* On the card face too, not just the banner above — the card
-                      is the part that gets screenshotted and shown to someone
-                      who never saw the surrounding page. */}
-                  <span
-                    className="tag text-[9px] uppercase tracking-[0.08em]"
-                    style={{ background: "rgba(0,0,0,0.4)", color: "#fff" }}
-                  >
-                    Specimen
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className="font-mono text-[16px] tracking-[0.06em]" style={{ color: "#fff" }}>
-                  {card.revealed ? card.number : masked}
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-[10px] uppercase tracking-[0.06em]" style={{ color: "rgba(255,255,255,0.75)" }}>
-                    {card.label}
-                  </span>
-                  <span className="font-mono text-[11px]" style={{ color: "rgba(255,255,255,0.85)" }}>
-                    {card.revealed ? `${card.expiry} · CVC ${card.cvc}` : `${card.expiry}`}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="card elev-sm p-4 gap-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[14px] font-medium">{card.label}</span>
-                <button className="btn btn-ghost text-[11.5px]" onClick={() => toggleReveal(i)}>
-                  {card.revealed ? <IconEyeOff size={13} /> : <IconEye size={13} />}
-                  {card.revealed ? "Hide details" : "Reveal details"}
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-[13.5px]">{card.frozen ? "Card is frozen" : "Card is active"}</div>
-                  <div className="text-[11px] text-[var(--color-neutral-500)]">
-                    {card.frozen ? "No new transactions will be approved" : "Approving transactions normally"}
-                  </div>
-                </div>
-                <button
-                  className={card.frozen ? "btn btn-primary text-[13px]" : "btn btn-secondary text-[13px]"}
-                  onClick={() => toggleFreeze(i)}
-                >
-                  <IconLock size={12} />
-                  {card.frozen ? "Unfreeze" : "Freeze card"}
-                </button>
-              </div>
-
-              <div className="field">
-                <label>Monthly spending limit</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    className="input"
-                    type="number"
-                    value={card.limit}
-                    onChange={(e) => updateLimit(i, Number(e.target.value) || 0)}
-                    min={0}
-                    step={500}
-                  />
-                  <span className="text-[13px] text-[var(--color-neutral-500)] flex-none">USD / mo</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-
-      {issuing ? (
-        <div className="card elev-sm p-4 gap-2.5">
-          <div className="card-title text-[14px]">Issue a new card</div>
-          <div className="flex gap-1.5">
-            <input
-              className="input text-[13.5px]"
-              placeholder="e.g. Marketing team card"
-              value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && issueCard()}
-              autoFocus
-            />
-            <button className="btn btn-primary text-[13.5px] flex-none" onClick={issueCard}>
-              Generate
-            </button>
-          </div>
-        </div>
-      ) : (
-        <button className="btn btn-secondary text-[14px] self-start" onClick={() => setIssuing(true)}>
-          <IconPlus size={13} />
-          Issue new card
-        </button>
-      )}
     </div>
   );
 }

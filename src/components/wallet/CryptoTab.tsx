@@ -1,15 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { generateBtcAddress, generateEthAddress, generateTxHash } from "@/lib/generateCryptoAddress";
-import { IconArrowUpCircle, IconArrowDownCircle, IconCheckCircle } from "@/components/icons";
+import QRCode from "qrcode";
+import {
+  generateBtcAddress,
+  generateEthAddress,
+  generateUsdtAddress,
+  generateBnbAddress,
+  generateSolAddress,
+  generateTxHash,
+} from "@/lib/generateCryptoAddress";
+import { IconArrowUpCircle, IconArrowDownCircle, IconCheckCircle, IconQrCode } from "@/components/icons";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 
-const PRICES = { btc: 64920, eth: 3172 };
+// Indicative demo prices, same spirit as the BTC/ETH figures already here —
+// not fetched live, since nothing behind this screen is a real market feed.
+const PRICES = { btc: 64920, eth: 3172, usdt: 1, bnb: 582, sol: 146 };
 
+type AssetKey = "btc" | "eth" | "usdt" | "bnb" | "sol";
 type Asset = {
-  key: "btc" | "eth";
+  key: AssetKey;
   symbol: string;
   name: string;
   color: string;
@@ -19,11 +30,14 @@ type Asset = {
   dbId?: string;
 };
 
-type CryptoTx = { id: string; asset: "BTC" | "ETH"; type: "Sent" | "Received"; amount: number; hash: string };
+type CryptoTx = { id: string; asset: string; type: "Sent" | "Received"; amount: number; hash: string };
 
 const initialAssets: Asset[] = [
   { key: "btc", symbol: "₿", name: "Bitcoin", color: "#e8a33d", balance: 0.42891234, price: PRICES.btc, address: generateBtcAddress() },
   { key: "eth", symbol: "Ξ", name: "Ethereum", color: "#7fa3e8", balance: 3.102481, price: PRICES.eth, address: generateEthAddress() },
+  { key: "usdt", symbol: "₮", name: "Tether", color: "#4fae7a", balance: 1250.5, price: PRICES.usdt, address: generateUsdtAddress() },
+  { key: "bnb", symbol: "B", name: "BNB", color: "#e8c23d", balance: 4.7215, price: PRICES.bnb, address: generateBnbAddress() },
+  { key: "sol", symbol: "◎", name: "Solana", color: "#c96bb0", balance: 18.334, price: PRICES.sol, address: generateSolAddress() },
 ];
 
 export default function CryptoTab() {
@@ -35,6 +49,7 @@ export default function CryptoTab() {
     { id: "t2", asset: "ETH", type: "Sent", amount: 0.42, hash: generateTxHash() },
   ]);
   const [revealed, setRevealed] = useState<string | null>(null);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [sendOpen, setSendOpen] = useState<string | null>(null);
   const [sendTo, setSendTo] = useState("");
@@ -49,9 +64,9 @@ export default function CryptoTab() {
         if (!data.configured || !data.wallets?.length) return;
         setAssets(
           data.wallets.map((w: { id: string; asset: string; address: string; balance: string | number }) => {
-            const key = w.asset.toLowerCase() as "btc" | "eth";
-            const base = initialAssets.find((a) => a.key === key)!;
-            return { ...base, balance: Number(w.balance), address: w.address, dbId: w.id };
+            const key = w.asset.toLowerCase() as AssetKey;
+            const base = initialAssets.find((a) => a.key === key) ?? initialAssets[0];
+            return { ...base, key, balance: Number(w.balance), address: w.address, dbId: w.id };
           })
         );
         setActivity(
@@ -60,7 +75,7 @@ export default function CryptoTab() {
               const wallet = data.wallets.find((w: { id: string }) => w.id === tx.wallet_id);
               return {
                 id: tx.id,
-                asset: (wallet?.asset ?? "BTC") as "BTC" | "ETH",
+                asset: wallet?.asset ?? "BTC",
                 type: tx.direction === "credit" ? "Received" : "Sent",
                 amount: Number(tx.amount),
                 hash: tx.tx_hash,
@@ -74,6 +89,30 @@ export default function CryptoTab() {
         // Stay in local demo mode on any failure.
       });
   }, [checked, hasSession]);
+
+  // Generated fresh whenever a different address is revealed, not kept around
+  // for all five up front — nobody scans more than one of these per visit,
+  // and it keeps this a genuinely on-demand render rather than five
+  // always-running QR encodes.
+  useEffect(() => {
+    if (!revealed) {
+      setQrDataUrl(null);
+      return;
+    }
+    const asset = assets.find((a) => a.key === revealed);
+    if (!asset) return;
+    let cancelled = false;
+    QRCode.toDataURL(asset.address, { margin: 1, width: 176, color: { dark: "#1a1a1f", light: "#ffffff" } })
+      .then((url) => {
+        if (!cancelled) setQrDataUrl(url);
+      })
+      .catch(() => {
+        // The address is still shown and copyable without the QR image.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [revealed, assets]);
 
   function copyAddress(address: string) {
     navigator.clipboard.writeText(address);
@@ -95,13 +134,13 @@ export default function CryptoTab() {
       if (!res.ok) return;
       setAssets((prev) => prev.map((a) => (a.key === asset.key ? { ...a, balance: Number(data.wallet.balance) } : a)));
       setActivity((prev) => [
-        { id: `t-${Date.now()}`, asset: asset.key.toUpperCase() as "BTC" | "ETH", type: "Sent", amount, hash: data.txHash },
+        { id: `t-${Date.now()}`, asset: asset.key.toUpperCase(), type: "Sent", amount, hash: data.txHash },
         ...prev,
       ]);
     } else {
       setAssets((prev) => prev.map((a) => (a.key === asset.key ? { ...a, balance: a.balance - amount } : a)));
       setActivity((prev) => [
-        { id: `t-${Date.now()}`, asset: asset.key.toUpperCase() as "BTC" | "ETH", type: "Sent", amount, hash: generateTxHash() },
+        { id: `t-${Date.now()}`, asset: asset.key.toUpperCase(), type: "Sent", amount, hash: generateTxHash() },
         ...prev,
       ]);
     }
@@ -128,10 +167,17 @@ export default function CryptoTab() {
         <div className="font-medium text-[32px] tracking-[-0.015em]">
           ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
-        <div className="text-[11px] text-[var(--color-neutral-500)] mt-1">
-          {live
-            ? "Persisted to your Primue account as an internal ledger, not a live blockchain. No real cryptocurrency is held or transferred."
-            : "Demo balances only. Not connected to a real blockchain network, and no real cryptocurrency is held or transferred."}
+        {/* Not a caveat buried in fine print — this is the single most
+            important fact on this screen, so it gets the same visual weight
+            as the number above it. An internal ledger that merely looks like
+            a wallet is exactly the kind of screen someone trusts by mistake. */}
+        <div className="text-[12px] mt-1.5 flex items-start gap-1.5" style={{ color: "#e0a35b" }}>
+          <IconArrowUpCircle size={13} className="flex-none mt-0.5 rotate-45" />
+          <span>
+            {live
+              ? "An internal ledger in your Primue account, not a real blockchain wallet — no real cryptocurrency is held or transferred."
+              : "Demo balances only. Not connected to a real blockchain network, and no real cryptocurrency is held or transferred."}
+          </span>
         </div>
       </div>
 
@@ -139,7 +185,7 @@ export default function CryptoTab() {
         <div key={asset.key} className="card elev-sm p-4 gap-3">
           <div className="flex items-center gap-2.5">
             <span
-              className="w-9 h-9 rounded-full grid place-items-center text-[17px] font-medium flex-none"
+              className="w-9 h-9 rounded-full grid place-items-center text-[15px] font-medium flex-none"
               style={{ background: `color-mix(in srgb, ${asset.color} 20%, transparent)`, color: asset.color }}
             >
               {asset.symbol}
@@ -165,6 +211,7 @@ export default function CryptoTab() {
               className="btn btn-secondary text-xs"
               onClick={() => setRevealed(revealed === asset.key ? null : asset.key)}
             >
+              <IconQrCode size={12} />
               Receive
             </button>
             <button
@@ -176,11 +223,24 @@ export default function CryptoTab() {
           </div>
 
           {revealed === asset.key && (
-            <div className="flex items-center gap-2 p-2.5 rounded-lg" style={{ background: "var(--color-bg)" }}>
-              <span className="font-mono text-[11px] truncate flex-1 min-w-0">{asset.address}</span>
-              <button className="btn btn-ghost text-[11px] px-1.5 py-0.5 flex-none" onClick={() => copyAddress(asset.address)}>
-                {copied ? "Copied!" : "Copy"}
-              </button>
+            <div className="flex items-center gap-3.5 p-3 rounded-lg flex-wrap" style={{ background: "var(--color-bg)" }}>
+              <span className="rounded-lg overflow-hidden flex-none grid place-items-center" style={{ width: 88, height: 88, background: "#fff" }}>
+                {qrDataUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={qrDataUrl} alt={`QR code for ${asset.name} address`} width={88} height={88} />
+                ) : (
+                  <IconQrCode size={28} className="text-[#c9c9d0]" />
+                )}
+              </span>
+              <div className="flex-1 min-w-[160px] flex flex-col gap-1.5">
+                <span className="text-[10.5px] text-[var(--color-neutral-500)]">
+                  Scan to send {asset.key.toUpperCase()} to this address
+                </span>
+                <span className="font-mono text-[11px] break-all">{asset.address}</span>
+                <button className="btn btn-ghost text-[11px] px-1.5 py-0.5 self-start" onClick={() => copyAddress(asset.address)}>
+                  {copied ? "Copied!" : "Copy address"}
+                </button>
+              </div>
             </div>
           )}
 
