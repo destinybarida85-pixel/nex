@@ -55,7 +55,7 @@ function SitePreview() {
           href={hasRealProduct ? payUrl! : "#pay"}
           target={hasRealProduct ? "_blank" : undefined}
           rel={hasRealProduct ? "noreferrer" : undefined}
-          className="text-[13px] px-4 py-2 rounded-lg no-underline font-medium"
+          className="text-[14px] px-4 py-2 rounded-lg no-underline font-medium"
           style={{ background: color, color: "#0c0c10" }}
         >
           {hasRealProduct ? "Pay now" : "Get started"}
@@ -91,7 +91,7 @@ function SitePreview() {
           {hasRealProduct ? `Pay ${priceLabel} now` : "Sign in to your portal"}
           <IconArrowRight size={15} />
         </a>
-        <div className="text-[12px] font-mono mt-2" style={{ color: "#6b6b76" }}>{domain}</div>
+        <div className="text-[13px] font-mono mt-2" style={{ color: "#6b6b76" }}>{domain}</div>
       </section>
 
       {document && (
@@ -123,13 +123,13 @@ function SitePreview() {
               <f.icon size={16} />
             </span>
             <div className="text-[14px] font-medium">{f.title}</div>
-            <div className="text-[13px] leading-[1.55]" style={{ color: "#9a9aa4" }}>{f.copy}</div>
+            <div className="text-[14px] leading-[1.55]" style={{ color: "#9a9aa4" }}>{f.copy}</div>
           </div>
         ))}
       </section>
 
       <footer className="max-w-[1080px] mx-auto px-6 py-8 flex flex-wrap items-center gap-3 border-t" style={{ borderColor: "#1c1c22" }}>
-        <span className="text-[12px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {name}. All rights reserved.</span>
+        <span className="text-[13px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {name}. All rights reserved.</span>
         <div className="flex-1" />
         {powered && (
           <span className="text-[11px]" style={{ color: "#6b6b76" }}>

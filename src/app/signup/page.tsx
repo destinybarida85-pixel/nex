@@ -175,7 +175,7 @@ export default function SignUpPage() {
         </button>
       </form>
 
-      <div className="text-[13.5px] leading-[1.5] text-[var(--color-neutral-600)] text-center mt-6">
+      <div className="text-[14.5px] leading-[1.5] text-[var(--color-neutral-600)] text-center mt-6">
         By continuing, you agree to Primue&rsquo;s Terms of Service and Privacy Policy.
       </div>
 

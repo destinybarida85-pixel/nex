@@ -81,7 +81,7 @@ export default function CreateInvoice({
   return (
     <div className="flex flex-col gap-2.5">
       {!open && !created && (
-        <button className="btn btn-primary text-[12.5px] self-start" onClick={() => setOpen(true)}>
+        <button className="btn btn-primary text-[13.5px] self-start" onClick={() => setOpen(true)}>
           <IconPlus size={13} />
           Create an invoice
         </button>
@@ -89,10 +89,10 @@ export default function CreateInvoice({
 
       {open && (
         <div className="flex flex-col gap-2.5 p-3.5 rounded-lg" style={{ background: "var(--color-bg)", border: "1px solid var(--color-divider)" }}>
-          <div className="text-[12.5px] font-medium">New invoice</div>
+          <div className="text-[13.5px] font-medium">New invoice</div>
 
           <input
-            className="input text-[12.5px]"
+            className="input text-[13.5px]"
             placeholder="What's it for? (e.g. Brand identity — phase 1)"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -101,7 +101,7 @@ export default function CreateInvoice({
 
           <div className="flex gap-2 flex-wrap">
             <input
-              className="input text-[12.5px]"
+              className="input text-[13.5px]"
               style={{ flex: "1 1 140px" }}
               placeholder="Amount (USD)"
               inputMode="decimal"
@@ -109,7 +109,7 @@ export default function CreateInvoice({
               onChange={(e) => setAmount(e.target.value)}
             />
             <select
-              className="input text-[12.5px]"
+              className="input text-[13.5px]"
               style={{ maxWidth: 150 }}
               value={kind}
               onChange={(e) => setKind(e.target.value as "one_time" | "recurring")}
@@ -119,7 +119,7 @@ export default function CreateInvoice({
             </select>
             {kind === "recurring" && (
               <select
-                className="input text-[12.5px]"
+                className="input text-[13.5px]"
                 style={{ maxWidth: 120 }}
                 value={interval}
                 onChange={(e) => setIntervalValue(e.target.value as typeof interval)}
@@ -142,10 +142,10 @@ export default function CreateInvoice({
           {error && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
 
           <div className="flex gap-1.5">
-            <button className="btn btn-primary text-[12px]" onClick={create} disabled={saving}>
+            <button className="btn btn-primary text-[13px]" onClick={create} disabled={saving}>
               {saving ? "Creating…" : "Create invoice"}
             </button>
-            <button className="btn btn-secondary text-[12px]" onClick={() => { setOpen(false); reset(); }}>
+            <button className="btn btn-secondary text-[13px]" onClick={() => { setOpen(false); reset(); }}>
               Cancel
             </button>
           </div>
@@ -157,11 +157,11 @@ export default function CreateInvoice({
 
       {created && (
         <div className="flex flex-col gap-2.5 p-3.5 rounded-lg" style={{ background: "var(--color-bg)", border: "1px solid var(--color-divider)" }}>
-          <div className="flex items-center gap-1.5 text-[12px] font-medium" style={{ color: "#63c3b2" }}>
+          <div className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: "#63c3b2" }}>
             <IconCheckCircle size={14} />
             Invoice created — here's the link to send
           </div>
-          <div className="text-[12px]">
+          <div className="text-[13px]">
             {created.title} ·{" "}
             {(created.amount_cents / 100).toLocaleString("en-US", { style: "currency", currency: created.currency.toUpperCase() })}
           </div>

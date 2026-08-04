@@ -63,7 +63,7 @@ export default function AnalyticsHowItWorksPage() {
                   <span key={i} className="flex-1 rounded-sm" style={{ height: `${h}px`, background: "var(--color-accent)", opacity: 0.4 + i * 0.1 }} />
                 ))}
               </div>
-              <div className="text-[12.5px]" style={{ color: "#63c3b2" }}>▲ 18.4% vs last period</div>
+              <div className="text-[13.5px]" style={{ color: "#63c3b2" }}>▲ 18.4% vs last period</div>
             </div>
           </TiltCard>
         </div>
@@ -74,7 +74,7 @@ export default function AnalyticsHowItWorksPage() {
           <ScrollReveal key={step.n} delay={Math.min(i * 0.05, 0.2)}>
             <div className="flex items-start gap-4 py-6 border-t" style={{ borderColor: "var(--color-divider)" }}>
               <span
-                className="w-9 h-9 rounded-full grid place-items-center text-[12px] font-medium flex-none"
+                className="w-9 h-9 rounded-full grid place-items-center text-[13px] font-medium flex-none"
                 style={{ background: "var(--color-accent-900)", color: "var(--color-accent-300)", border: "1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)" }}
               >
                 {step.n}
@@ -98,14 +98,14 @@ export default function AnalyticsHowItWorksPage() {
             <IconCheckCircle size={20} className="text-[var(--color-accent)]" />
             <div>
               <div className="text-[15px] font-medium">Where this stands, honestly.</div>
-              <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
+              <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-0.5">
                 The top KPI row (revenue, expenses, margin, paying counterparties) is now computed from your real
                 wallet transactions. The deeper charts below it (trend lines, health score, expense breakdown) are
                 still illustrative — that's the next piece to wire to real time-series data.
               </div>
             </div>
           </div>
-          <a href="/signup" className="btn btn-primary text-[13.5px] flex-none">
+          <a href="/signup" className="btn btn-primary text-[14.5px] flex-none">
             Start free <IconArrowRight size={14} />
           </a>
         </div>

@@ -96,7 +96,7 @@ export default function AnalyticsPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Analytics</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">{live ? "Real numbers from your wallet" : "Business performance for Meridian Studio"}</div>
+              <div className="text-muted text-[13.5px] mt-[3px]">{live ? "Real numbers from your wallet" : "Business performance for Meridian Studio"}</div>
             </div>
             <div className="flex-1 hidden sm:block" />
             <div className="seg">
@@ -107,7 +107,7 @@ export default function AnalyticsPage() {
                 </label>
               ))}
             </div>
-            <button className="btn btn-secondary text-[13px]" onClick={exportReport}>
+            <button className="btn btn-secondary text-[14px]" onClick={exportReport}>
               <IconDownload size={14} />
               Export report
             </button>
@@ -148,7 +148,7 @@ export default function AnalyticsPage() {
             style={{ borderColor: "color-mix(in srgb, var(--color-accent) 35%, transparent)" }}
           >
             <IconSparkle size={16} className="text-[var(--color-accent)] flex-none" />
-            <div className="text-[12.5px] text-[var(--color-neutral-300)]">
+            <div className="text-[13.5px] text-[var(--color-neutral-300)]">
               <strong className="text-[var(--color-text)]">Primue AI insight:</strong> revenue growth is outpacing expense growth by 4.3pt this {range.toLowerCase()}, so margins are expanding. Software spend is the fastest-growing cost line; consider a vendor consolidation review.
             </div>
           </div>

@@ -9,7 +9,7 @@ export default function PaymentLinksTable() {
         <div className="card-title text-sm">Payment links</div>
       </div>
       <div className="overflow-x-auto">
-      <table className="table text-[12.5px] min-w-[440px]">
+      <table className="table text-[13.5px] min-w-[440px]">
         <thead>
           <tr>
             <th>Name</th>

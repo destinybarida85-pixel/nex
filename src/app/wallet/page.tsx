@@ -134,7 +134,7 @@ export default function WalletPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Business Wallet</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">
+              <div className="text-muted text-[13.5px] mt-[3px]">
                 Your Primue business balance{live && " · Saved to your account"}
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function WalletPage() {
                 <span>Crypto</span>
               </label>
             </div>
-            <button className="btn btn-secondary text-[13px]" onClick={downloadStatement}>
+            <button className="btn btn-secondary text-[14px]" onClick={downloadStatement}>
               <IconDownload size={14} />
               Download statement
             </button>
@@ -186,22 +186,22 @@ export default function WalletPage() {
                 ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
               <div className="flex gap-2.5">
-                <button className="btn btn-primary text-[13px]" onClick={() => setShowTransfer(true)}>
+                <button className="btn btn-primary text-[14px]" onClick={() => setShowTransfer(true)}>
                   <IconSend size={14} />
                   Transfer
                 </button>
-                <button className="btn btn-secondary text-[13px]" onClick={() => setShowReceive(true)}>
+                <button className="btn btn-secondary text-[14px]" onClick={() => setShowReceive(true)}>
                   <IconReceive size={14} />
                   Receive
                 </button>
                 {live && (
-                  <button className="btn btn-secondary text-[13px]" onClick={() => setShowPayout(true)}>
+                  <button className="btn btn-secondary text-[14px]" onClick={() => setShowPayout(true)}>
                     <IconArrowUpCircle size={14} />
                     Payout to bank
                   </button>
                 )}
                 {live && (
-                  <a href="/receipts" className="btn btn-ghost text-[13px]">
+                  <a href="/receipts" className="btn btn-ghost text-[14px]">
                     Receipts
                   </a>
                 )}
@@ -213,7 +213,7 @@ export default function WalletPage() {
                 <span className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Get paid</span>
                 <span className="tag tag-accent ml-auto text-[9.5px]">Stripe</span>
               </div>
-              <div className="text-[12.5px] text-[var(--color-neutral-300)] leading-[1.6]">
+              <div className="text-[13.5px] text-[var(--color-neutral-300)] leading-[1.6]">
                 Primue doesn&rsquo;t issue its own account numbers &mdash; real payments run through your own Stripe
                 account instead, so nothing here can bounce or mislead anyone.
               </div>
@@ -221,7 +221,7 @@ export default function WalletPage() {
                 Hit &ldquo;Receive&rdquo; to share a real, payable link, or manage all your links on the{" "}
                 <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Payments page</a>.
               </div>
-              <button className="btn btn-secondary text-[12.5px] mt-1" onClick={() => setShowReceive(true)}>
+              <button className="btn btn-secondary text-[13.5px] mt-1" onClick={() => setShowReceive(true)}>
                 <IconReceive size={13} />
                 Get a payment link
               </button>
@@ -231,7 +231,7 @@ export default function WalletPage() {
           <div className="grid gap-3.5 items-start grid-cols-1 lg:grid-cols-[2fr_1fr]">
             <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
               <div className="card-title text-sm">Transaction history</div>
-              <table className="table text-[13px] min-w-[480px]">
+              <table className="table text-[14px] min-w-[480px]">
                 <thead>
                   <tr>
                     <th>Counterparty</th>
@@ -269,7 +269,7 @@ export default function WalletPage() {
                       {b.name.charAt(0)}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[12.5px] truncate">{b.name}</div>
+                      <div className="text-[13.5px] truncate">{b.name}</div>
                       <div className="text-[10.5px] text-[var(--color-neutral-500)]">{b.bank}</div>
                     </div>
                     <span className="font-mono text-[11px] text-[var(--color-neutral-500)]">{b.account}</span>

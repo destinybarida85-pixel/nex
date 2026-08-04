@@ -30,15 +30,15 @@ export default function Nav() {
             <a
               key={l.href}
               href={l.href}
-              className="text-[13.5px] no-underline text-[var(--color-neutral-400)] hover:text-[var(--color-text)] transition-colors"
+              className="text-[14.5px] no-underline text-[var(--color-neutral-400)] hover:text-[var(--color-text)] transition-colors"
             >
               {l.label}
             </a>
           ))}
         </nav>
         <div className="hidden md:flex items-center gap-6">
-          <a href="/signin" className="btn btn-secondary text-[13px]">Sign in</a>
-          <a href="/signup" className="btn btn-primary text-[13px]">Get started</a>
+          <a href="/signin" className="btn btn-secondary text-[14px]">Sign in</a>
+          <a href="/signup" className="btn btn-primary text-[14px]">Get started</a>
         </div>
 
         <div className="md:hidden">
@@ -65,8 +65,8 @@ export default function Nav() {
             </a>
           ))}
           <div className="flex gap-2.5 pt-2">
-            <a href="/signin" className="btn btn-secondary text-[13px] flex-1">Sign in</a>
-            <a href="/signup" className="btn btn-primary text-[13px] flex-1">Get started</a>
+            <a href="/signin" className="btn btn-secondary text-[14px] flex-1">Sign in</a>
+            <a href="/signup" className="btn btn-primary text-[14px] flex-1">Get started</a>
           </div>
         </div>
       )}

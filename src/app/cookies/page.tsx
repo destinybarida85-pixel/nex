@@ -12,7 +12,7 @@ export default function CookiesPage() {
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">1. What cookies are</h2>
         <p className="mt-2">
           Cookies are small text files placed on your device by websites you visit. We also use similar browser
-          technologies such as <code className="text-[13px]">localStorage</code>, which work the same way but are cleared
+          technologies such as <code className="text-[14px]">localStorage</code>, which work the same way but are cleared
           differently and are not automatically sent with every request.
         </p>
       </section>

@@ -5,10 +5,10 @@ export default function PaymentHistoryTable() {
     <div className="card elev-sm p-[16px_18px] gap-2.5">
       <div className="flex items-baseline">
         <div className="card-title text-sm">Payment history</div>
-        <a href="#" className="btn btn-ghost text-[12.5px] ml-auto">View all</a>
+        <a href="#" className="btn btn-ghost text-[13.5px] ml-auto">View all</a>
       </div>
       <div className="overflow-x-auto">
-      <table className="table text-[13px] min-w-[480px]">
+      <table className="table text-[14px] min-w-[480px]">
         <thead>
           <tr>
             <th>Counterparty</th>

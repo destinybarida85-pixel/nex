@@ -31,9 +31,9 @@ export default function Beneficiaries() {
       </div>
       {formOpen && (
         <div className="flex flex-col gap-1.5 p-2.5 rounded-lg" style={{ background: "var(--color-bg)" }}>
-          <input className="input text-[12px]" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+          <input className="input text-[13px]" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
           <select
-            className="input text-[12px]"
+            className="input text-[13px]"
             value={country}
             onChange={(e) => {
               const c = e.target.value;
@@ -45,7 +45,7 @@ export default function Beneficiaries() {
               <option key={c} value={c}>{countryNames[c]}</option>
             ))}
           </select>
-          <select className="input text-[12px]" value={bank} onChange={(e) => setBank(e.target.value)}>
+          <select className="input text-[13px]" value={bank} onChange={(e) => setBank(e.target.value)}>
             {banksByCountry[country].map((b) => (
               <option key={b} value={b}>{b}</option>
             ))}
@@ -63,7 +63,7 @@ export default function Beneficiaries() {
               {b.name.charAt(0)}
             </span>
             <div className="flex-1 min-w-0">
-              <div className="text-[12.5px] truncate">{b.name}</div>
+              <div className="text-[13.5px] truncate">{b.name}</div>
               <div className="text-[10.5px] text-[var(--color-neutral-500)]">
                 {b.bank}{b.country && ` · ${countryNames[b.country] || b.country}`}
               </div>

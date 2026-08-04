@@ -64,20 +64,20 @@ export default function PayoutModal({ onClose, onPaidOut }: { onClose: () => voi
         <div className="dialog-title">Payout to your bank</div>
         <div className="dialog-body flex flex-col gap-3">
           {loading ? (
-            <div className="text-[12.5px] text-[var(--color-neutral-500)]">Checking your Stripe balance…</div>
+            <div className="text-[13.5px] text-[var(--color-neutral-500)]">Checking your Stripe balance…</div>
           ) : success ? (
-            <div className="text-[12.5px] text-[var(--color-neutral-300)] leading-[1.6]">
+            <div className="text-[13.5px] text-[var(--color-neutral-300)] leading-[1.6]">
               Real payout created (status: <strong className="text-[var(--color-text)]">{success.status}</strong>).
               {success.arrivalDate && ` Expected to arrive around ${new Date(success.arrivalDate * 1000).toLocaleDateString()}.`}
               {" "}This moves money from your Stripe balance to the bank account linked to your Stripe account.
             </div>
           ) : (
             <>
-              <div className="text-[12px] text-[var(--color-neutral-500)] leading-[1.6]">
+              <div className="text-[13px] text-[var(--color-neutral-500)] leading-[1.6]">
                 This is a real Stripe payout — it moves money from your Stripe balance to your own bank account,
                 the one linked to your Stripe account. It doesn&rsquo;t pay a vendor or third party.
               </div>
-              <div className="flex items-center justify-between text-[12.5px] p-2.5 rounded-lg" style={{ background: "var(--color-surface)" }}>
+              <div className="flex items-center justify-between text-[13.5px] p-2.5 rounded-lg" style={{ background: "var(--color-surface)" }}>
                 <span className="text-[var(--color-neutral-500)]">Available now</span>
                 <span className="font-medium">${(availableCents / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>

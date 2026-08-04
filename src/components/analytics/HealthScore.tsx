@@ -5,7 +5,7 @@ export default function HealthScore({ score }: { score: number }) {
 
   return (
     <div className="card elev-sm p-5 gap-3 items-center">
-      <div className="card-title text-[13px] self-start">Business health score</div>
+      <div className="card-title text-[14px] self-start">Business health score</div>
       <div className="relative w-[140px] h-[140px]">
         <svg viewBox="0 0 140 140" className="w-full h-full -rotate-90">
           <circle cx="70" cy="70" r={radius} fill="none" stroke="var(--color-neutral-800)" strokeWidth="10" />

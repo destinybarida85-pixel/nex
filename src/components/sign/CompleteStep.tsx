@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IconCheckCircle, IconDownload, IconEdit, IconChevronDown, IconCamera } from "@/components/icons";
 
 import Stamp, { stampShapes, type StampShape } from "./Stamp";
@@ -96,6 +96,37 @@ export default function CompleteStep({
 
   const stampBlocked = signed && applyStampOption && proof && !proof.stampApplied;
   const showStamp = signed && applyStampOption;
+
+  // The signature itself was already saved by the POST /api/sign that put us
+  // on this step. Stamp customization only happens here, after that row
+  // exists — so each change is saved back onto that same row (debounced,
+  // rather than one request per keystroke) instead of living only in this
+  // tab's React state and vanishing the moment the page is left. A short
+  // delay batches rapid edits (typing a label, dragging the stamp) into one
+  // request instead of firing on every change.
+  useEffect(() => {
+    if (!showStamp || stampBlocked || !proof?.signatureRecordId) return;
+    const recordId = proof.signatureRecordId;
+    const timer = setTimeout(() => {
+      fetch(`/api/sign/${recordId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          label: stampLabel,
+          sub: stampSub,
+          shape: stampShape,
+          color: stampColor,
+          position: stampPosition,
+          x: stampX,
+          y: stampY,
+          imageUrl: stampImageUrl,
+        }),
+      }).catch(() => {
+        // Best-effort — the stamp still shows correctly in this tab either way.
+      });
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [showStamp, stampBlocked, proof?.signatureRecordId, stampLabel, stampSub, stampShape, stampColor, stampPosition, stampX, stampY, stampImageUrl]);
 
   function selectStampType(id: string) {
     const t = stampTypes.find((s) => s.id === id) || stampTypes[0];
@@ -209,7 +240,7 @@ export default function CompleteStep({
       </span>
       <div>
         <h4 className="m-0 text-[19px]">{signed ? "Document signed and sealed" : "Document reviewed and completed"}</h4>
-        <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1.5 max-w-[320px]">
+        <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-1.5 max-w-[320px]">
           {signed
             ? `${document.title} has been signed and sealed with a tamper-evident certificate.`
             : `${document.title} has been marked reviewed and completed — no signature was required.`}
@@ -260,7 +291,7 @@ export default function CompleteStep({
 
             {editingStamp && !stampBlocked && showStamp && (
               <div className="no-print flex flex-col gap-2.5 p-3 rounded-lg border" style={{ borderColor: "var(--color-divider)" }}>
-                <select className="input text-[12px]" value={stampTypeId} onChange={(e) => selectStampType(e.target.value)}>
+                <select className="input text-[13px]" value={stampTypeId} onChange={(e) => selectStampType(e.target.value)}>
                   {stampTypes.map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}
@@ -296,7 +327,7 @@ export default function CompleteStep({
                     </button>
                   ))}
                 </div>
-                <select className="input text-[12px]" value={stampPosition} onChange={(e) => setStampPosition(e.target.value as StampPosition)}>
+                <select className="input text-[13px]" value={stampPosition} onChange={(e) => setStampPosition(e.target.value as StampPosition)}>
                   {positions.map((p) => (
                     <option key={p.id} value={p.id}>{p.label}</option>
                   ))}
@@ -307,8 +338,8 @@ export default function CompleteStep({
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-2">
-                  <input className="input text-[12px]" placeholder="Main text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 14))} />
-                  <input className="input text-[12px]" placeholder="Sub text" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 20))} />
+                  <input className="input text-[13px]" placeholder="Main text" value={stampLabel} onChange={(e) => setStampLabel(e.target.value.toUpperCase().slice(0, 14))} />
+                  <input className="input text-[13px]" placeholder="Sub text" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 20))} />
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[11px] text-[var(--color-neutral-500)]">Color</span>
@@ -381,7 +412,7 @@ export default function CompleteStep({
               style={{ background: "transparent", border: "none", color: "inherit" }}
               onClick={() => setShowAudit((v) => !v)}
             >
-              <span className="card-title text-[13px]">Audit trail</span>
+              <span className="card-title text-[14px]">Audit trail</span>
               <span className="text-[11px] text-[var(--color-neutral-500)] ml-auto">{showAudit ? "Hide" : "Show"}</span>
               <span style={{ transform: showAudit ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
                 <IconChevronDown size={13} className="text-[var(--color-neutral-500)]" />
@@ -390,7 +421,7 @@ export default function CompleteStep({
             {showAudit && (
               <div className="flex flex-col gap-2.5 px-4 pb-4">
                 {audit.map((a) => (
-                  <div key={a.label} className="flex items-center gap-2.5 text-[12px]">
+                  <div key={a.label} className="flex items-center gap-2.5 text-[13px]">
                     <span className="w-[7px] h-[7px] rounded-full flex-none" style={{ background: "var(--color-accent)" }} />
                     <span className="flex-1">{a.label}</span>
                     <span className="text-[var(--color-neutral-500)] font-mono text-[10.5px]">{a.meta}</span>

@@ -17,10 +17,10 @@ function DealCard({ deal }: { deal: Deal }) {
       onDragStart={(e) => e.dataTransfer.setData("text/plain", deal.id)}
       className="card elev-sm gap-2 p-3 cursor-grab active:cursor-grabbing"
     >
-      <div className="text-[12.5px] font-medium">{deal.company}</div>
+      <div className="text-[13.5px] font-medium">{deal.company}</div>
       <div className="text-[11.5px] text-[var(--color-neutral-400)]">{deal.title}</div>
       <div className="flex items-center justify-between mt-1">
-        <span className="text-[13px] font-medium" style={{ color: "var(--color-accent-300)" }}>{deal.value}</span>
+        <span className="text-[14px] font-medium" style={{ color: "var(--color-accent-300)" }}>{deal.value}</span>
         <span className="text-[10.5px] text-[var(--color-neutral-500)]">{deal.contact}</span>
       </div>
       {deal.notes && (
@@ -72,7 +72,7 @@ export default function KanbanBoard({
           >
             <div className="flex items-center gap-2 px-1">
               <span
-                className="text-[12px] font-medium"
+                className="text-[13px] font-medium"
                 style={stageAccent[stage] ? { color: "var(--color-accent-300)" } : undefined}
               >
                 {stage}

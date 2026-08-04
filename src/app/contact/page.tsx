@@ -28,13 +28,13 @@ export default function ContactPage() {
               {channels.map((c) => (
                 <div key={c.label} className="card elev-sm p-4 gap-1">
                   <div className="text-[11px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">{c.label}</div>
-                  <a href={`mailto:${c.value}`} className="text-[13.5px] no-underline text-[var(--color-text)]">
+                  <a href={`mailto:${c.value}`} className="text-[14.5px] no-underline text-[var(--color-text)]">
                     {c.value}
                   </a>
                 </div>
               ))}
             </div>
-            <div className="text-[12px] text-[var(--color-neutral-500)] leading-[1.6]">
+            <div className="text-[13px] text-[var(--color-neutral-500)] leading-[1.6]">
               Primue Inc. is a software platform. Payments made through Primue are processed by Stripe, not by
               Primue directly.
             </div>

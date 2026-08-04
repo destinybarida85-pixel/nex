@@ -64,7 +64,7 @@ export default function StampHistoryPage() {
         <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0 max-w-[820px]">
           <div>
             <h3 className="m-0 text-[22px]">Digital stamp history</h3>
-            <div className="text-muted text-[12.5px] mt-[3px]">Every official seal your account has applied to a signed document.</div>
+            <div className="text-muted text-[13.5px] mt-[3px]">Every official seal your account has applied to a signed document.</div>
           </div>
 
           <div className="card elev-sm p-4 flex items-center gap-4 flex-wrap">
@@ -73,14 +73,14 @@ export default function StampHistoryPage() {
               <div className="font-medium text-[24px] mt-0.5">{live ? credits : "3"}</div>
             </div>
             <div className="flex-1" />
-            <button className="btn btn-primary text-[12.5px]" onClick={buyCredits} disabled={buying || !live}>
+            <button className="btn btn-primary text-[13.5px]" onClick={buyCredits} disabled={buying || !live}>
               {buying ? "…" : "Buy 10 credits · $9"}
             </button>
           </div>
           {!live && <div className="text-[11.5px] text-[var(--color-neutral-500)]">Sign in to see your real stamp balance and history.</div>}
 
           {live && stamped.length === 0 && (
-            <div className="card elev-sm p-6 text-center text-[12.5px] text-[var(--color-neutral-500)]">No stamps applied yet.</div>
+            <div className="card elev-sm p-6 text-center text-[13.5px] text-[var(--color-neutral-500)]">No stamps applied yet.</div>
           )}
 
           <div className="flex flex-col gap-2">
@@ -93,7 +93,7 @@ export default function StampHistoryPage() {
                   <span style={{ fontSize: 8, fontWeight: 700 }}>OK</span>
                 </span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[13px] truncate">{docTitle(s) || "Untitled document"}</div>
+                  <div className="text-[14px] truncate">{docTitle(s) || "Untitled document"}</div>
                   <div className="text-[11px] text-[var(--color-neutral-500)]">Sealed for {s.signer_name} · {new Date(s.signed_at).toLocaleDateString()}</div>
                 </div>
               </div>

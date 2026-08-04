@@ -86,7 +86,7 @@ function NavLink({
       onClick={onNavigate}
       title={collapsed ? label : undefined}
       aria-label={label}
-      className={`flex items-center gap-2.5 py-[7px] rounded-lg text-[13.5px] no-underline transition-colors ${
+      className={`flex items-center gap-2.5 py-[7px] rounded-lg text-[14.5px] no-underline transition-colors ${
         collapsed ? "justify-center px-0" : "px-2.5"
       }`}
       style={
@@ -138,7 +138,7 @@ function SidebarContent({
 
       <button
         title={collapsed ? tenantName : undefined}
-        className={`flex items-center gap-2 mb-[18px] py-2 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-text)] text-[12.5px] cursor-pointer text-left hover:border-[var(--color-neutral-600)] transition-colors ${
+        className={`flex items-center gap-2 mb-[18px] py-2 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-text)] text-[13.5px] cursor-pointer text-left hover:border-[var(--color-neutral-600)] transition-colors ${
           collapsed ? "justify-center px-0 mx-0" : "mx-1 px-2.5"
         }`}
       >
@@ -227,7 +227,7 @@ export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
 
   return (
     <>
-      <div className="md:hidden">
+      <div className="md:hidden no-print">
         <button
           className="btn btn-icon btn-secondary fixed top-3 left-3 z-30"
           aria-label="Open menu"
@@ -238,7 +238,7 @@ export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
       </div>
 
       <aside
-        className={`hidden md:flex flex-none flex-col border-r border-[var(--color-divider)] min-h-screen relative transition-[width] duration-200 ${
+        className={`hidden md:flex flex-none flex-col border-r border-[var(--color-divider)] min-h-screen relative transition-[width] duration-200 no-print ${
           collapsed ? "w-[68px] p-[18px_10px_14px]" : "w-[236px] p-[18px_14px_14px]"
         }`}
       >
@@ -265,7 +265,7 @@ export default function Sidebar({ active = "Dashboard" }: { active?: string }) {
       </aside>
 
       {open && (
-        <div className="md:hidden fixed inset-0 z-40 flex">
+        <div className="md:hidden fixed inset-0 z-40 flex no-print">
           <div className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-neutral-900)_60%,transparent)]" onClick={() => setOpen(false)} />
           <div className="relative w-[260px] flex-none flex flex-col p-[18px_14px_14px] bg-[var(--color-bg)] border-r border-[var(--color-divider)] h-full overflow-y-auto">
             <button

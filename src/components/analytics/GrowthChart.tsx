@@ -2,7 +2,7 @@ export default function GrowthChart() {
   return (
     <div className="card elev-sm p-5 gap-3">
       <div className="flex items-baseline">
-        <div className="card-title text-[13px]">Customer growth</div>
+        <div className="card-title text-[14px]">Customer growth</div>
         <span className="card-meta ml-auto" style={{ color: "var(--color-accent-300)" }}>▲ 18% QoQ</span>
       </div>
       <svg viewBox="0 0 320 90" className="w-full h-auto block" role="img" aria-label="Customer count growing over six months">

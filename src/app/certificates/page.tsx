@@ -162,7 +162,7 @@ export default function CertificatesPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Certificates</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">
+              <div className="text-muted text-[13.5px] mt-[3px]">
                 {live ? "Premium, AI-assisted certificates — each one a real, verifiable record" : "Sign in to issue real certificates"}
               </div>
             </div>
@@ -180,7 +180,7 @@ export default function CertificatesPage() {
 
           {setupMessage && (
             <div
-              className="text-[12px] px-3.5 py-3 rounded-lg leading-[1.6]"
+              className="text-[13px] px-3.5 py-3 rounded-lg leading-[1.6]"
               style={{ background: "color-mix(in srgb, #e0a35b 15%, transparent)", color: "#e0a35b" }}
             >
               <strong>One setup step left.</strong> {setupMessage}
@@ -198,17 +198,17 @@ export default function CertificatesPage() {
               <div className="card elev-sm p-[14px_16px] gap-2.5">
                 <div className="flex items-center gap-2">
                   <IconSparkle size={13} className="text-[var(--color-accent)]" />
-                  <div className="card-title text-[13px]">Draft with AI</div>
+                  <div className="card-title text-[14px]">Draft with AI</div>
                 </div>
                 <div className="flex gap-2">
                   <input
-                    className="input text-[12.5px] flex-1"
+                    className="input text-[13.5px] flex-1"
                     placeholder="e.g. Top sales performer, Q3 2026, closed $180k"
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && draftWithAI()}
                   />
-                  <button className="btn btn-primary text-[12px]" onClick={draftWithAI} disabled={aiBusy || !aiPrompt.trim()}>
+                  <button className="btn btn-primary text-[13px]" onClick={draftWithAI} disabled={aiBusy || !aiPrompt.trim()}>
                     {aiBusy ? "…" : "Draft"}
                   </button>
                 </div>
@@ -221,11 +221,11 @@ export default function CertificatesPage() {
               </div>
 
               <div className="card elev-sm p-[14px_16px] gap-2.5">
-                <div className="card-title text-[13px]">Details</div>
-                <input className="input text-[12.5px]" placeholder="Recipient's full name" value={recipientName} onChange={(e) => setRecipientName(e.target.value)} />
-                <input className="input text-[12.5px]" placeholder="Title (appears after 'CERTIFICATE OF')" value={title} onChange={(e) => setTitle(e.target.value)} />
+                <div className="card-title text-[14px]">Details</div>
+                <input className="input text-[13.5px]" placeholder="Recipient's full name" value={recipientName} onChange={(e) => setRecipientName(e.target.value)} />
+                <input className="input text-[13.5px]" placeholder="Title (appears after 'CERTIFICATE OF')" value={title} onChange={(e) => setTitle(e.target.value)} />
                 <textarea
-                  className="input text-[12.5px]"
+                  className="input text-[13.5px]"
                   style={{ minHeight: 70, resize: "vertical" }}
                   placeholder="Citation — what they earned this for"
                   value={citation}
@@ -235,7 +235,7 @@ export default function CertificatesPage() {
 
               <div className="card elev-sm p-[14px_16px] gap-2.5">
                 <div className="flex items-baseline gap-2">
-                  <div className="card-title text-[13px]">Design</div>
+                  <div className="card-title text-[14px]">Design</div>
                   <span className="text-[10.5px] text-[var(--color-neutral-500)]">{certificateDesigns.length} templates</span>
                 </div>
                 {/* Swatches rather than a list: at fifteen options the reason
@@ -266,7 +266,7 @@ export default function CertificatesPage() {
               </div>
 
               <div className="card elev-sm p-[14px_16px] gap-2.5">
-                <div className="card-title text-[13px]">Style</div>
+                <div className="card-title text-[14px]">Style</div>
 
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[11px] text-[var(--color-neutral-500)] w-[52px]">Colour</span>
@@ -309,7 +309,7 @@ export default function CertificatesPage() {
               </div>
 
               <div className="card elev-sm p-[14px_16px] gap-2.5">
-                <label className="radio gap-2 text-[12.5px]">
+                <label className="radio gap-2 text-[13.5px]">
                   <input type="checkbox" checked={showStamp} onChange={(e) => setShowStamp(e.target.checked)} />
                   <span className="dot" style={{ borderRadius: 5 }} />
                   Show a seal
@@ -390,14 +390,14 @@ export default function CertificatesPage() {
                 )}
               </div>
 
-              <button className="btn btn-primary btn-block text-[13px]" onClick={issue} disabled={!canIssue || issuing || !live}>
+              <button className="btn btn-primary btn-block text-[14px]" onClick={issue} disabled={!canIssue || issuing || !live}>
                 {issuing ? "Issuing…" : credits === 0 && live ? "Buy credits to issue" : "Issue certificate · 1 credit"}
               </button>
               {issueError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{issueError}</div>}
               {justIssued && <IssuedLink id={justIssued} />}
             </div>
 
-            <div className="sticky top-4">
+            <div className="sticky top-4 print-area-cert">
               <CertificatePaper
                 design={design}
                 recipientName={recipientName}
@@ -414,7 +414,7 @@ export default function CertificatesPage() {
           {issued.length > 0 && (
             <div className="card elev-sm p-[16px_18px] gap-2.5">
               <div className="card-title text-sm">Previously issued</div>
-              <table className="table text-[12.5px]">
+              <table className="table text-[13.5px]">
                 <thead>
                   <tr>
                     <th>Recipient</th>

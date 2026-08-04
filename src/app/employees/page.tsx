@@ -103,10 +103,10 @@ export default function EmployeesPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Employees</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">Directory, structure and headcount{live && " · saved to your account"}</div>
+              <div className="text-muted text-[13.5px] mt-[3px]">Directory, structure and headcount{live && " · saved to your account"}</div>
             </div>
             <div className="flex-1 hidden sm:block" />
-            <button className="btn btn-primary text-[13px]" onClick={() => setFormOpen((v) => !v)}>
+            <button className="btn btn-primary text-[14px]" onClick={() => setFormOpen((v) => !v)}>
               <IconPlus size={14} />
               Add employee
             </button>
@@ -115,18 +115,18 @@ export default function EmployeesPage() {
           {formOpen && (
             <div className="card elev-sm p-4 gap-2.5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <input className="input text-[13px]" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} />
-                <input className="input text-[13px]" placeholder="Role" value={role} onChange={(e) => setRole(e.target.value)} />
-                <input className="input text-[13px]" placeholder="Department" value={department} onChange={(e) => setDepartment(e.target.value)} />
-                <input className="input text-[13px]" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
-                <input className="input text-[13px]" placeholder="Monthly gross pay (e.g. 8500)" inputMode="decimal" value={gross} onChange={(e) => setGross(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Role" value={role} onChange={(e) => setRole(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Department" value={department} onChange={(e) => setDepartment(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Monthly gross pay (e.g. 8500)" inputMode="decimal" value={gross} onChange={(e) => setGross(e.target.value)} />
               </div>
-              {error && <div className="text-[12px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+              {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
               <div className="flex gap-1.5">
-                <button className="btn btn-primary text-[12.5px] flex-none" onClick={addEmployee} disabled={creating}>
+                <button className="btn btn-primary text-[13.5px] flex-none" onClick={addEmployee} disabled={creating}>
                   {creating ? "Adding…" : "Add employee"}
                 </button>
-                <button className="btn btn-secondary text-[12.5px] flex-none" onClick={() => setFormOpen(false)}>Cancel</button>
+                <button className="btn btn-secondary text-[13.5px] flex-none" onClick={() => setFormOpen(false)}>Cancel</button>
               </div>
             </div>
           )}

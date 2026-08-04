@@ -22,12 +22,12 @@ const steps = [
     copy: "One-time or recurring — a workshop ticket, a retainer, a deposit. Set a title and an amount, and Primue creates a genuine Stripe Payment Link on your own account.",
     visual: (
       <div className="flex flex-col gap-2.5">
-        <input className="input text-[12.5px]" disabled value="Consulting deposit" />
+        <input className="input text-[13.5px]" disabled value="Consulting deposit" />
         <div className="flex gap-2">
-          <input className="input text-[12.5px]" disabled value="$2,000.00" />
-          <select className="input text-[12.5px]" disabled style={{ maxWidth: 110 }}><option>One-time</option></select>
+          <input className="input text-[13.5px]" disabled value="$2,000.00" />
+          <select className="input text-[13.5px]" disabled style={{ maxWidth: 110 }}><option>One-time</option></select>
         </div>
-        <button className="btn btn-primary text-[12.5px]" disabled>Create real payment link</button>
+        <button className="btn btn-primary text-[13.5px]" disabled>Create real payment link</button>
       </div>
     ),
   },
@@ -40,7 +40,7 @@ const steps = [
     visual: (
       <div className="flex items-center gap-2 p-3 rounded-lg" style={{ background: "var(--color-surface)" }}>
         <IconLink size={14} className="text-[var(--color-accent)] flex-none" />
-        <span className="text-[12px] font-mono truncate" style={{ color: "var(--color-neutral-400)" }}>
+        <span className="text-[13px] font-mono truncate" style={{ color: "var(--color-neutral-400)" }}>
           buy.stripe.com/consulting-deposit
         </span>
       </div>
@@ -56,7 +56,7 @@ const steps = [
       <div className="flex flex-col gap-2">
         <div className="text-[11px] text-[var(--color-neutral-500)] uppercase tracking-[.06em]">Consulting deposit</div>
         <div className="font-medium text-[22px]">$2,000.00</div>
-        <div className="rounded-md text-center text-[12px] font-medium py-2" style={{ background: "var(--color-accent)", color: "#0c0c10" }}>
+        <div className="rounded-md text-center text-[13px] font-medium py-2" style={{ background: "var(--color-accent)", color: "#0c0c10" }}>
           Pay $2,000.00
         </div>
       </div>
@@ -72,7 +72,7 @@ const steps = [
       <div className="flex flex-col gap-2">
         <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</div>
         <div className="font-medium text-[24px]">$50,610.44</div>
-        <div className="flex items-center gap-2 text-[12px]" style={{ color: "#63c3b2" }}>
+        <div className="flex items-center gap-2 text-[13px]" style={{ color: "#63c3b2" }}>
           <IconCheckCircle size={13} />
           +$2,000.00 received
         </div>
@@ -112,7 +112,7 @@ export default function PaymentsHowItWorksPage() {
           <div key={step.n} className="relative grid gap-6 md:grid-cols-[auto_1fr_1fr] items-center py-8">
             <div className="hidden md:flex flex-col items-center self-stretch">
               <span
-                className="w-9 h-9 rounded-full grid place-items-center text-[12px] font-medium flex-none"
+                className="w-9 h-9 rounded-full grid place-items-center text-[13px] font-medium flex-none"
                 style={{ background: "var(--color-accent-900)", color: "var(--color-accent-300)", border: "1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)" }}
               >
                 {step.n}
@@ -149,12 +149,12 @@ export default function PaymentsHowItWorksPage() {
             <IconShieldCheck size={20} className="text-[var(--color-accent)]" />
             <div>
               <div className="text-[15px] font-medium">Primue never holds your money.</div>
-              <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
+              <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-0.5">
                 Stripe processes the charge and settles directly to your account — that's what makes this legal to run today.
               </div>
             </div>
           </div>
-          <a href="/signup" className="btn btn-primary text-[13.5px] flex-none">
+          <a href="/signup" className="btn btn-primary text-[14.5px] flex-none">
             Start free <IconArrowRight size={14} />
           </a>
         </div>

@@ -15,7 +15,7 @@ export default function DirectoryTable({ employees, live }: { employees: Employe
         </div>
       </div>
       <div className="overflow-x-auto">
-      <table className="table text-[12.5px] min-w-[560px]">
+      <table className="table text-[13.5px] min-w-[560px]">
         <thead>
           <tr>
             <th>Name</th>

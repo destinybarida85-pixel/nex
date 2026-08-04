@@ -56,7 +56,7 @@ export default function AdminBillingPage() {
             </div>
           </div>
           <div className="flex-1 hidden sm:block" />
-          <button className="btn btn-secondary text-[12.5px]" onClick={exportInvoicesCsv}>
+          <button className="btn btn-secondary text-[13.5px]" onClick={exportInvoicesCsv}>
             <IconDownload size={13} />
             Export CSV
           </button>
@@ -116,7 +116,7 @@ export default function AdminBillingPage() {
             <div className="flex flex-col gap-3 mt-1">
               {planDistribution.map((p) => (
                 <div key={p.label} className="flex flex-col gap-1.5">
-                  <div className="flex items-center justify-between text-[12.5px]">
+                  <div className="flex items-center justify-between text-[13.5px]">
                     <span>{p.label}</span>
                     <span className="text-[var(--color-neutral-500)]">
                       {p.count} · {p.note}
@@ -136,7 +136,7 @@ export default function AdminBillingPage() {
 
         <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
           <div className="card-title text-sm">Recent invoices</div>
-          <table className="table text-[12.5px] min-w-[480px]">
+          <table className="table text-[13.5px] min-w-[480px]">
             <thead>
               <tr>
                 <th>Organization</th>

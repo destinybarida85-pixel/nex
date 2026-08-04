@@ -302,6 +302,29 @@ export function IconCheckCircle({ size, className }: IconProps) {
     </svg>
   );
 }
+export function IconHistory({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M3 12a9 9 0 1 0 3-6.7" />
+      <path d="M3 4v4h4" />
+      <path d="M12 8v4l3 2" />
+    </svg>
+  );
+}
+export function IconThumbUp({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3zM7 11l4-7a2 2 0 0 1 2 2l-1 4h5.5a2 2 0 0 1 1.9 2.6l-1.9 6A2 2 0 0 1 15.6 20H7" />
+    </svg>
+  );
+}
+export function IconThumbDown({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M17 13V4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-3zM17 13l-4 7a2 2 0 0 1-2-2l1-4H6.5a2 2 0 0 1-1.9-2.6l1.9-6A2 2 0 0 1 8.4 4H17" />
+    </svg>
+  );
+}
 export function IconShieldCheck({ size, className }: IconProps) {
   return (
     <svg {...base(size)} className={className}>

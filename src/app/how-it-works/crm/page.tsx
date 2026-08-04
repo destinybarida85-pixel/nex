@@ -81,7 +81,7 @@ export default function CrmHowItWorksPage() {
           <ScrollReveal key={step.n} delay={Math.min(i * 0.05, 0.2)}>
             <div className="flex items-start gap-4 py-6 border-t" style={{ borderColor: "var(--color-divider)" }}>
               <span
-                className="w-9 h-9 rounded-full grid place-items-center text-[12px] font-medium flex-none"
+                className="w-9 h-9 rounded-full grid place-items-center text-[13px] font-medium flex-none"
                 style={{ background: "var(--color-accent-900)", color: "var(--color-accent-300)", border: "1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)" }}
               >
                 {step.n}
@@ -105,13 +105,13 @@ export default function CrmHowItWorksPage() {
             <IconCheckCircle size={20} className="text-[var(--color-accent)]" />
             <div>
               <div className="text-[15px] font-medium">Real and saved.</div>
-              <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
+              <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-0.5">
                 Every deal you add and every drag between stages is saved to your account. Refresh the page and it's
                 still there.
               </div>
             </div>
           </div>
-          <a href="/signup" className="btn btn-primary text-[13.5px] flex-none">
+          <a href="/signup" className="btn btn-primary text-[14.5px] flex-none">
             Start free <IconArrowRight size={14} />
           </a>
         </div>

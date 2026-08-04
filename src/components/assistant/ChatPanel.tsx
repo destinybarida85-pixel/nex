@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { IconSparkle, IconSend } from "@/components/icons";
 
 export type ChatMessage = { role: "user" | "ai"; text: string; options?: string[] };
@@ -24,12 +24,19 @@ export default function ChatPanel({
   onSend: (text: string) => void;
 }) {
   const [value, setValue] = useState("");
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  function autosize(el: HTMLTextAreaElement) {
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }
 
   function submit() {
     const text = value.trim();
     if (!text) return;
     onSend(text);
     setValue("");
+    if (inputRef.current) inputRef.current.style.height = "auto";
   }
 
   return (
@@ -43,13 +50,13 @@ export default function ChatPanel({
       <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3">
         {messages.map((m, i) =>
           m.role === "user" ? (
-            <div key={i} className="self-end max-w-[85%] text-[13px] leading-[1.5] px-3.5 py-2.5 rounded-xl bg-[var(--color-surface)]">
+            <div key={i} className="self-end max-w-[85%] text-[14px] leading-[1.5] px-3.5 py-2.5 rounded-xl bg-[var(--color-surface)]">
               {m.text}
             </div>
           ) : (
             <div key={i} className="self-start max-w-[90%] flex flex-col gap-1.5">
               <div
-                className="text-[13px] leading-[1.55] text-[var(--color-neutral-300)] px-3.5 py-2.5 rounded-xl"
+                className="text-[14px] leading-[1.55] text-[var(--color-neutral-300)] px-3.5 py-2.5 rounded-xl"
                 style={{ background: "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" }}
               >
                 {m.text}
@@ -68,7 +75,7 @@ export default function ChatPanel({
         )}
         {thinking && (
           <div
-            className="self-start text-[13px] px-3.5 py-2.5 rounded-xl text-[var(--color-neutral-400)]"
+            className="self-start text-[14px] px-3.5 py-2.5 rounded-xl text-[var(--color-neutral-400)]"
             style={{ background: "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" }}
           >
             <span className="inline-flex gap-1">
@@ -92,13 +99,24 @@ export default function ChatPanel({
         ))}
       </div>
 
-      <div className="p-4 pt-0 flex gap-2">
-        <input
-          className="input flex-1"
+      <div className="p-4 pt-0 flex gap-2 items-end">
+        <textarea
+          ref={inputRef}
+          rows={1}
+          className="input flex-1 resize-none"
+          style={{ maxHeight: 160, overflowY: "auto" }}
           placeholder="Ask Primue AI to draft, summarize, or analyze…"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && submit()}
+          onChange={(e) => {
+            setValue(e.target.value);
+            autosize(e.target);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              submit();
+            }
+          }}
         />
         <button className="btn btn-primary btn-icon" aria-label="Send" onClick={submit}>
           <IconSend size={15} />

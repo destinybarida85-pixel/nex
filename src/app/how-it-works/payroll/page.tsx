@@ -67,10 +67,10 @@ export default function PayrollHowItWorksPage() {
                     {p.name.charAt(0)}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[12.5px]">{p.name}</div>
+                    <div className="text-[13.5px]">{p.name}</div>
                     <div className="text-[10.5px] text-[var(--color-neutral-500)]">{p.role}</div>
                   </div>
-                  <span className="text-[12.5px] font-medium">{p.amount}</span>
+                  <span className="text-[13.5px] font-medium">{p.amount}</span>
                 </div>
               ))}
             </div>
@@ -83,7 +83,7 @@ export default function PayrollHowItWorksPage() {
           <ScrollReveal key={step.n} delay={Math.min(i * 0.05, 0.2)}>
             <div className="flex items-start gap-4 py-6 border-t" style={{ borderColor: "var(--color-divider)" }}>
               <span
-                className="w-9 h-9 rounded-full grid place-items-center text-[12px] font-medium flex-none"
+                className="w-9 h-9 rounded-full grid place-items-center text-[13px] font-medium flex-none"
                 style={{ background: "var(--color-accent-900)", color: "var(--color-accent-300)", border: "1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)" }}
               >
                 {step.n}
@@ -107,14 +107,14 @@ export default function PayrollHowItWorksPage() {
             <IconCheckCircle size={20} className="text-[var(--color-accent)]" />
             <div>
               <div className="text-[15px] font-medium">Where this stands, honestly.</div>
-              <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
+              <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-0.5">
                 Your employee directory and payroll run history are real and saved. Actually depositing pay through
                 a payroll processor isn&rsquo;t wired up yet — running a payroll here records the numbers, it
                 doesn&rsquo;t move real money.
               </div>
             </div>
           </div>
-          <a href="/signup" className="btn btn-primary text-[13.5px] flex-none">
+          <a href="/signup" className="btn btn-primary text-[14.5px] flex-none">
             Start free <IconArrowRight size={14} />
           </a>
         </div>

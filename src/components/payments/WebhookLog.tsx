@@ -10,7 +10,7 @@ export default function WebhookLog() {
       </div>
       <div className="flex flex-col">
         {webhookEvents.map((w) => (
-          <div key={w.event + w.time} className="flex items-center gap-3 py-2 text-[12px]">
+          <div key={w.event + w.time} className="flex items-center gap-3 py-2 text-[13px]">
             <span className="font-mono" style={{ color: "var(--color-accent-300)" }}>{w.event}</span>
             <span className="text-[var(--color-neutral-500)] font-mono truncate flex-1 min-w-0">{w.endpoint}</span>
             <span

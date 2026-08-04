@@ -35,13 +35,13 @@ export default function ReceiptsPage() {
         <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0 max-w-[720px]">
           <div>
             <h3 className="m-0 text-[22px]">Receipts</h3>
-            <div className="text-muted text-[12.5px] mt-[3px]">Every real payment received and payout sent.</div>
+            <div className="text-muted text-[13.5px] mt-[3px]">Every real payment received and payout sent.</div>
           </div>
 
-          {!live && <div className="card elev-sm p-4 text-[12.5px] text-[var(--color-neutral-500)]">Sign in to see your real receipts.</div>}
+          {!live && <div className="card elev-sm p-4 text-[13.5px] text-[var(--color-neutral-500)]">Sign in to see your real receipts.</div>}
 
           {live && receipts.length === 0 && (
-            <div className="card elev-sm p-6 text-center text-[12.5px] text-[var(--color-neutral-500)]">No receipts yet.</div>
+            <div className="card elev-sm p-6 text-center text-[13.5px] text-[var(--color-neutral-500)]">No receipts yet.</div>
           )}
 
           <div className="flex flex-col gap-2">
@@ -49,7 +49,7 @@ export default function ReceiptsPage() {
               <div key={r.id} className="card elev-sm p-4 flex items-center gap-3">
                 {r.kind === "payment" ? <IconLink size={15} className="text-[var(--color-accent)] flex-none" /> : <IconWallet size={15} className="text-[var(--color-accent)] flex-none" />}
                 <div className="flex-1 min-w-0">
-                  <div className="text-[13px]">{r.kind === "payment" ? "Payment received" : "Payout to bank"}</div>
+                  <div className="text-[14px]">{r.kind === "payment" ? "Payment received" : "Payout to bank"}</div>
                   <div className="text-[11.5px] text-[var(--color-neutral-500)] truncate">
                     {r.counterparty}{r.reference ? ` · ${r.reference}` : ""} · {new Date(r.created_at).toLocaleString()}
                   </div>

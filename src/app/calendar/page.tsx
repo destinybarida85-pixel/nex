@@ -48,10 +48,10 @@ export default function CalendarPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Calendar</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">{monthLabel}</div>
+              <div className="text-muted text-[13.5px] mt-[3px]">{monthLabel}</div>
             </div>
             <div className="flex-1 hidden sm:block" />
-            <button className="btn btn-primary text-[13px]" onClick={() => setFormOpen((v) => !v)}>
+            <button className="btn btn-primary text-[14px]" onClick={() => setFormOpen((v) => !v)}>
               <IconPlus size={14} />
               New event
             </button>
@@ -59,11 +59,11 @@ export default function CalendarPage() {
 
           {formOpen && (
             <div className="card elev-sm p-4 gap-2.5">
-              <div className="text-[12px] text-[var(--color-neutral-500)]">Adding to {selectedDate}</div>
+              <div className="text-[13px] text-[var(--color-neutral-500)]">Adding to {selectedDate}</div>
               <div className="flex gap-2 flex-wrap">
-                <input className="input text-[12.5px]" style={{ maxWidth: 120 }} placeholder="Time (e.g. 14:00)" value={newTime} onChange={(e) => setNewTime(e.target.value)} />
-                <input className="input text-[12.5px] flex-1" placeholder="What's happening?" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
-                <button className="btn btn-primary text-[12.5px] flex-none" onClick={addEvent}>Add</button>
+                <input className="input text-[13.5px]" style={{ maxWidth: 120 }} placeholder="Time (e.g. 14:00)" value={newTime} onChange={(e) => setNewTime(e.target.value)} />
+                <input className="input text-[13.5px] flex-1" placeholder="What's happening?" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+                <button className="btn btn-primary text-[13.5px] flex-none" onClick={addEvent}>Add</button>
               </div>
             </div>
           )}
@@ -94,7 +94,7 @@ export default function CalendarPage() {
                           : { color: "var(--color-text)" }
                       }
                     >
-                      <span className="text-[12.5px]">{day}</span>
+                      <span className="text-[13.5px]">{day}</span>
                       {hasEvents && (
                         <span
                           className="w-1 h-1 rounded-full"
@@ -110,11 +110,11 @@ export default function CalendarPage() {
             <div className="card elev-sm p-4 gap-3">
               <div className="card-title text-[14px]">{selectedDate}</div>
               {selectedEvents.length === 0 ? (
-                <div className="text-[12.5px] text-[var(--color-neutral-500)]">No events scheduled.</div>
+                <div className="text-[13.5px] text-[var(--color-neutral-500)]">No events scheduled.</div>
               ) : (
                 <div className="flex flex-col gap-3">
                   {selectedEvents.map((ev) => (
-                    <div key={ev.time + ev.title} className="flex gap-2.5 text-[12.5px]">
+                    <div key={ev.time + ev.title} className="flex gap-2.5 text-[13.5px]">
                       <span className="font-mono text-[11px] flex-none pt-[1px]" style={{ color: "var(--color-accent-300)" }}>
                         {ev.time}
                       </span>

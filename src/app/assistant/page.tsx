@@ -167,7 +167,7 @@ export default function AssistantPage() {
         <TopBar />
         <div className="flex items-center gap-2 px-5 pt-16 md:pt-2.5 pb-2.5 border-b border-[var(--color-divider)] flex-none">
           <IconSparkle size={13} className="text-[var(--color-accent)] flex-none" />
-          <div className="text-[12px] text-[var(--color-neutral-400)]">
+          <div className="text-[13px] text-[var(--color-neutral-400)]">
             Document AI — drafts the words for something you've already decided on.{" "}
             <a href="/copilot" style={{ color: "var(--color-accent-300)" }}>Not sure what you need? Ask the AI Assistant →</a>
           </div>

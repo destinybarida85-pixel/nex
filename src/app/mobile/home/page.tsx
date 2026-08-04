@@ -59,7 +59,7 @@ export default function MobileHomePage() {
       <div className="flex items-center gap-2.5 pt-16 px-[18px] pb-1.5">
         <MobileLogoMark size={28} initial="M" />
         <div>
-          <div className="text-[13.5px] font-medium">Meridian Studio</div>
+          <div className="text-[14.5px] font-medium">Meridian Studio</div>
           <div className="text-[10.5px] text-[var(--color-neutral-500)]">Business account</div>
         </div>
         <div className="flex-1" />
@@ -124,7 +124,7 @@ export default function MobileHomePage() {
 
         <div className="flex flex-col gap-0.5">
           <div className="flex items-baseline py-0.5 pb-2">
-            <span className="text-[13px] font-medium">Recent activity</span>
+            <span className="text-[14px] font-medium">Recent activity</span>
             <a href="#" className="ml-auto text-[11.5px] no-underline" style={{ color: "var(--color-accent-300)" }}>
               See all
             </a>
@@ -141,10 +141,10 @@ export default function MobileHomePage() {
                 <item.icon size={14} />
               </span>
               <div className="flex-1 min-w-0">
-                <div className="text-[13px]">{item.name}</div>
+                <div className="text-[14px]">{item.name}</div>
                 <div className="text-[10.5px] text-[var(--color-neutral-500)]">{item.meta}</div>
               </div>
-              <span className="text-[13px]" style={{ color: item.credit ? item.color : "var(--color-neutral-400)" }}>
+              <span className="text-[14px]" style={{ color: item.credit ? item.color : "var(--color-neutral-400)" }}>
                 {item.amount}
               </span>
             </div>
@@ -153,7 +153,7 @@ export default function MobileHomePage() {
 
         <div className="card elev-sm p-[14px_16px] gap-2">
           <div className="flex items-baseline">
-            <span className="text-[13px] font-medium">Revenue · 6 months</span>
+            <span className="text-[14px] font-medium">Revenue · 6 months</span>
             <span className="card-meta ml-auto" style={{ color: "var(--color-accent-300)" }}>▲ 12.4%</span>
           </div>
           <svg viewBox="0 0 320 64" className="w-full h-auto block" role="img" aria-label="Revenue rising over six months">

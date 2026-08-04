@@ -52,7 +52,7 @@ function Row({
         </div>
         <h3 className="text-[27px] mt-1 tracking-[-0.015em]">{title}</h3>
         <p className="text-sm text-[var(--color-neutral-400)] leading-[1.65] mt-2.5 max-w-[460px]">{copy}</p>
-        <a href={ctaHref} className="btn btn-ghost text-[13px] mt-2.5">{cta} →</a>
+        <a href={ctaHref} className="btn btn-ghost text-[14px] mt-2.5">{cta} →</a>
       </ScrollReveal>
     </div>
   );
@@ -141,10 +141,10 @@ export default function ProductStory() {
           >
             <div className="flex items-center gap-2">
               <IconSparkle size={15} className="text-[var(--color-accent)]" />
-              <span className="text-[13px] font-medium">Primue AI</span>
+              <span className="text-[14px] font-medium">Primue AI</span>
             </div>
             <div
-              className="text-[13px] leading-[1.55] text-[var(--color-neutral-300)] px-3.5 py-3 rounded-lg"
+              className="text-[14px] leading-[1.55] text-[var(--color-neutral-300)] px-3.5 py-3 rounded-lg"
               style={{ background: "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" }}
             >
               &ldquo;Draft an NDA for Northbeam Co., standard mutual terms, 2-year survival.&rdquo;
@@ -168,7 +168,7 @@ export default function ProductStory() {
             <div className="text-[9.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">MSA · Halcyon Ventures</div>
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#63c3b2" }} />
-              <span className="text-[13px] font-medium" style={{ color: "#63c3b2" }}>Signed &amp; sealed</span>
+              <span className="text-[14px] font-medium" style={{ color: "#63c3b2" }}>Signed &amp; sealed</span>
             </div>
             <div className="text-[10.5px] font-mono text-[var(--color-neutral-500)]">Certificate OG-CERT-8F21</div>
             <div className="flex gap-1 mt-1">
@@ -194,11 +194,11 @@ export default function ProductStory() {
               <span className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Invoice #INV-2038</span>
               <span className="tag tag-neutral ml-auto text-[9.5px]">Overdue</span>
             </div>
-            <div className="flex flex-col gap-1.5 mt-1 text-[12px] text-[var(--color-neutral-400)]">
+            <div className="flex flex-col gap-1.5 mt-1 text-[13px] text-[var(--color-neutral-400)]">
               <div className="flex justify-between"><span>Design retainer · July</span><span>$6,200.00</span></div>
               <div className="flex justify-between"><span>Hosting &amp; infra</span><span>$550.00</span></div>
             </div>
-            <div className="flex justify-between text-[13px] font-medium pt-2 border-t border-[var(--color-divider)]">
+            <div className="flex justify-between text-[14px] font-medium pt-2 border-t border-[var(--color-divider)]">
               <span>Total due</span><span>$6,750.00</span>
             </div>
             <button className="btn btn-primary text-xs self-start mt-1">Send reminder</button>
@@ -300,7 +300,7 @@ export default function ProductStory() {
                 >
                   {t.initial}
                 </span>
-                <div className="text-[12.5px] font-medium">{t.name}</div>
+                <div className="text-[13.5px] font-medium">{t.name}</div>
                 <div className="text-[10.5px] font-mono text-[var(--color-neutral-500)]">{t.domain}</div>
               </div>
             ))}

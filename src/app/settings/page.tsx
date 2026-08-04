@@ -133,7 +133,7 @@ export default function SettingsPage() {
         <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0 max-w-[720px]">
           <div>
             <h3 className="m-0 text-[22px]">Settings</h3>
-            <div className="text-muted text-[12.5px] mt-[3px]">Your business, your team, and how Primue is set up.</div>
+            <div className="text-muted text-[13.5px] mt-[3px]">Your business, your team, and how Primue is set up.</div>
           </div>
 
           <div className="card elev-sm p-5 gap-3.5">
@@ -142,7 +142,7 @@ export default function SettingsPage() {
               <label>Business name</label>
               <input className="input" value={tenantName} onChange={(e) => setTenantName(e.target.value)} />
             </div>
-            <button className="btn btn-primary text-[12.5px] self-start" onClick={saveName} disabled={savingName || !live}>
+            <button className="btn btn-primary text-[13.5px] self-start" onClick={saveName} disabled={savingName || !live}>
               {nameSaved ? "Saved!" : savingName ? "Saving…" : "Save changes"}
             </button>
             {!live && <div className="text-[11.5px] text-[var(--color-neutral-500)]">Sign in to save this for real.</div>}
@@ -160,7 +160,7 @@ export default function SettingsPage() {
                   <span className="w-7 h-7 rounded-full grid place-items-center text-[11px] font-medium flex-none" style={{ background: "var(--color-accent-900)", color: "var(--color-accent-300)" }}>
                     {(m.full_name || "?").charAt(0).toUpperCase()}
                   </span>
-                  <span className="text-[13px] flex-1 truncate">{m.full_name || "Unnamed"}</span>
+                  <span className="text-[14px] flex-1 truncate">{m.full_name || "Unnamed"}</span>
                   <span className="tag tag-outline text-[9.5px]">{m.role}</span>
                 </div>
               ))}
@@ -169,12 +169,12 @@ export default function SettingsPage() {
                   <span className="w-7 h-7 rounded-full grid place-items-center text-[11px] font-medium flex-none text-[var(--color-neutral-500)]" style={{ background: "var(--color-surface)" }}>
                     …
                   </span>
-                  <span className="text-[13px] flex-1 truncate text-[var(--color-neutral-400)]">{i.email}</span>
+                  <span className="text-[14px] flex-1 truncate text-[var(--color-neutral-400)]">{i.email}</span>
                   <span className="tag tag-neutral text-[9.5px]">Pending · {i.role}</span>
                 </div>
               ))}
               {members.length === 0 && invites.length === 0 && (
-                <div className="text-[12.5px] text-[var(--color-neutral-500)]">
+                <div className="text-[13.5px] text-[var(--color-neutral-500)]">
                   {live ? "Just you, for now." : "Sign in to see and invite your team."}
                 </div>
               )}
@@ -182,16 +182,16 @@ export default function SettingsPage() {
 
             <div className="flex gap-1.5 pt-1">
               <input
-                className="input text-[12.5px] flex-1"
+                className="input text-[13.5px] flex-1"
                 placeholder="teammate@company.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
               />
-              <select className="input text-[12.5px] w-[100px] flex-none" value={inviteRole} onChange={(e) => setInviteRole(e.target.value as "member" | "admin")}>
+              <select className="input text-[13.5px] w-[100px] flex-none" value={inviteRole} onChange={(e) => setInviteRole(e.target.value as "member" | "admin")}>
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
               </select>
-              <button className="btn btn-primary text-[12.5px] flex-none" onClick={sendInvite} disabled={inviting || !live}>
+              <button className="btn btn-primary text-[13.5px] flex-none" onClick={sendInvite} disabled={inviting || !live}>
                 <IconPlus size={13} />
                 Invite
               </button>
@@ -234,7 +234,7 @@ export default function SettingsPage() {
             <div className="flex flex-col gap-1.5">
               {apiKeys.map((k) => (
                 <div key={k.id} className="flex items-center gap-2.5 p-2 rounded-lg" style={{ background: "var(--color-surface)" }}>
-                  <span className="text-[13px] flex-1 truncate">{k.name}</span>
+                  <span className="text-[14px] flex-1 truncate">{k.name}</span>
                   <span className="font-mono text-[11px] text-[var(--color-neutral-500)]">{k.key_prefix}…</span>
                   {k.revoked_at ? (
                     <span className="tag tag-neutral text-[9.5px]">Revoked</span>
@@ -243,12 +243,12 @@ export default function SettingsPage() {
                   )}
                 </div>
               ))}
-              {apiKeys.length === 0 && <div className="text-[12.5px] text-[var(--color-neutral-500)]">No API keys yet.</div>}
+              {apiKeys.length === 0 && <div className="text-[13.5px] text-[var(--color-neutral-500)]">No API keys yet.</div>}
             </div>
 
             <div className="flex gap-1.5">
-              <input className="input text-[12.5px] flex-1" placeholder="Key name (e.g. Zapier)" value={newKeyName} onChange={(e) => setNewKeyName(e.target.value)} />
-              <button className="btn btn-primary text-[12.5px] flex-none" onClick={createKey} disabled={creatingKey || !live}>
+              <input className="input text-[13.5px] flex-1" placeholder="Key name (e.g. Zapier)" value={newKeyName} onChange={(e) => setNewKeyName(e.target.value)} />
+              <button className="btn btn-primary text-[13.5px] flex-none" onClick={createKey} disabled={creatingKey || !live}>
                 <IconPlus size={13} />
                 Generate
               </button>
@@ -258,11 +258,11 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <a href="/profile" className="card elev-sm p-4 gap-1 no-underline text-[var(--color-text)] hover:border-[var(--color-neutral-600)] transition-colors">
               <div className="card-title text-sm flex items-center gap-2">Profile &amp; avatar <IconArrowRight size={12} className="ml-auto text-[var(--color-neutral-500)]" /></div>
-              <div className="text-[12px] text-[var(--color-neutral-500)]">Your name, photo, and personal preferences.</div>
+              <div className="text-[13px] text-[var(--color-neutral-500)]">Your name, photo, and personal preferences.</div>
             </a>
             <a href="/billing" className="card elev-sm p-4 gap-1 no-underline text-[var(--color-text)] hover:border-[var(--color-neutral-600)] transition-colors">
               <div className="card-title text-sm flex items-center gap-2">Billing <IconArrowRight size={12} className="ml-auto text-[var(--color-neutral-500)]" /></div>
-              <div className="text-[12px] text-[var(--color-neutral-500)]">Plan, payment method, and invoices.</div>
+              <div className="text-[13px] text-[var(--color-neutral-500)]">Plan, payment method, and invoices.</div>
             </a>
           </div>
         </main>

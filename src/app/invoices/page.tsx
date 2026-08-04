@@ -111,14 +111,14 @@ export default function InvoicesPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Invoices</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">
+              <div className="text-muted text-[13.5px] mt-[3px]">
                 {live ? "Real payments received via your payment links" : "Meridian Studio · billed in USD"}
               </div>
             </div>
             <div className="flex-1 hidden sm:block" />
             {/* Creating an invoice now happens inline below, so this no longer
                 sends you to /payments to do the same thing by another name. */}
-            <a href="/payments" className="btn btn-secondary text-[13px]">
+            <a href="/payments" className="btn btn-secondary text-[14px]">
               <IconInvoices size={14} />
               Manage payment links
             </a>
@@ -152,7 +152,7 @@ export default function InvoicesPage() {
               <CreateInvoice tenantName={tenantName} onCreated={load} />
 
               {sendable.length === 0 ? (
-                <div className="text-[12.5px] text-[var(--color-neutral-500)] py-2">
+                <div className="text-[13.5px] text-[var(--color-neutral-500)] py-2">
                   No invoices yet — create your first one above.
                 </div>
               ) : (
@@ -171,13 +171,13 @@ export default function InvoicesPage() {
                       >
                         <div className="flex items-center gap-2.5 flex-wrap">
                           <div className="min-w-0">
-                            <div className="text-[13px] truncate">{inv.title}</div>
+                            <div className="text-[14px] truncate">{inv.title}</div>
                             <div className="text-[11px] text-[var(--color-neutral-500)] font-mono">
                               INV-{inv.id.slice(0, 8).toUpperCase()}
                             </div>
                           </div>
                           <div className="flex-1" />
-                          <div className="text-[13.5px]">
+                          <div className="text-[14.5px]">
                             {money(inv.amount_cents, inv.currency)}
                             {inv.kind === "recurring" && inv.interval ? `/${inv.interval}` : ""}
                           </div>
@@ -208,11 +208,11 @@ export default function InvoicesPage() {
               </div>
             )}
             {rows.length === 0 ? (
-              <div className="text-[12.5px] text-[var(--color-neutral-500)] p-4 text-center">
+              <div className="text-[13.5px] text-[var(--color-neutral-500)] p-4 text-center">
                 No payments yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create a payment link →</a>
               </div>
             ) : (
-              <table className="table text-[12.5px] min-w-[480px]">
+              <table className="table text-[13.5px] min-w-[480px]">
                 <thead>
                   <tr>
                     <th>Invoice</th>

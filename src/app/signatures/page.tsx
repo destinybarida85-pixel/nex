@@ -46,19 +46,19 @@ export default function SignatureHistoryPage() {
         <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0 max-w-[820px]">
           <div>
             <h3 className="m-0 text-[22px]">Signature history</h3>
-            <div className="text-muted text-[12.5px] mt-[3px]">
+            <div className="text-muted text-[13.5px] mt-[3px]">
               Every signature your account has collected, each independently verifiable by its hash chain.
             </div>
           </div>
 
           {!live && (
-            <div className="card elev-sm p-4 text-[12.5px] text-[var(--color-neutral-500)]">
+            <div className="card elev-sm p-4 text-[13.5px] text-[var(--color-neutral-500)]">
               Sign in to see your real signature history.
             </div>
           )}
 
           {live && signatures.length === 0 && (
-            <div className="card elev-sm p-6 text-center text-[12.5px] text-[var(--color-neutral-500)]">
+            <div className="card elev-sm p-6 text-center text-[13.5px] text-[var(--color-neutral-500)]">
               No documents signed yet. <a href="/sign" style={{ color: "var(--color-accent-300)" }}>Try the e-signature flow →</a>
             </div>
           )}
@@ -69,7 +69,7 @@ export default function SignatureHistoryPage() {
                 <div className="flex items-center gap-2.5">
                   <IconESign size={15} className="text-[var(--color-accent)] flex-none" />
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13.5px] truncate">{docTitle(s) || "Untitled document"}</div>
+                    <div className="text-[14.5px] truncate">{docTitle(s) || "Untitled document"}</div>
                     <div className="text-[11.5px] text-[var(--color-neutral-500)]">
                       Signed by {s.signer_name} · {new Date(s.signed_at).toLocaleString()}
                     </div>

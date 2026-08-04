@@ -20,6 +20,7 @@ export type SignatureProof = {
   signersRequired?: number;
   signaturesSoFar?: number;
   complete?: boolean;
+  signatureRecordId?: string | null;
 };
 
 export type SignPayment = { title: string; amountCents: number; currency: string; url: string };
@@ -98,8 +99,8 @@ export default function SignFlow({
       <div className="relative flex items-center gap-2.5 mb-8">
         <IconLogoMark size={26} />
         <span className="font-medium text-[16px] text-[var(--color-text)]">Primue</span>
-        <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">e-signature</span>
-        <a href="/signatures" className="text-[12px] ml-3 no-underline" style={{ color: "var(--color-accent-300)" }}>
+        <span className="text-[13px] text-[var(--color-neutral-500)] ml-1">e-signature</span>
+        <a href="/signatures" className="text-[13px] ml-3 no-underline" style={{ color: "var(--color-accent-300)" }}>
           View history →
         </a>
       </div>
@@ -110,7 +111,7 @@ export default function SignFlow({
 
       {signersRequired > 1 && (
         <div
-          className="relative w-full max-w-[440px] mt-6 px-4 py-3 rounded-xl text-[12px] flex flex-col gap-1"
+          className="relative w-full max-w-[440px] mt-6 px-4 py-3 rounded-xl text-[13px] flex flex-col gap-1"
           style={{ background: "var(--color-surface)", border: "1px solid var(--color-divider)" }}
         >
           <div className="font-medium text-[var(--color-text)]">
@@ -170,7 +171,7 @@ export default function SignFlow({
         >
           <div>
             <div className="text-[14px] font-medium text-[var(--color-text)]">Payment due</div>
-            <div className="text-[12px] mt-0.5" style={{ color: "var(--color-neutral-500)" }}>
+            <div className="text-[13px] mt-0.5" style={{ color: "var(--color-neutral-500)" }}>
               {payment.title}
             </div>
           </div>
@@ -179,7 +180,7 @@ export default function SignFlow({
               payment.amountCents / 100
             )}
           </div>
-          <a href={payment.url} className="btn btn-primary btn-block text-[13px]">
+          <a href={payment.url} className="btn btn-primary btn-block text-[14px]">
             Pay securely
           </a>
           <div className="text-[10.5px] text-center" style={{ color: "var(--color-neutral-600)" }}>

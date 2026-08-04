@@ -50,7 +50,7 @@ export default function SecurityPage() {
             <div key={p.title} className="card elev-sm p-5 gap-2">
               <p.icon size={18} className="text-[var(--color-accent)]" />
               <div className="card-title text-[14.5px] mt-1">{p.title}</div>
-              <div className="card-body text-[13px] leading-[1.65]">{p.body}</div>
+              <div className="card-body text-[14px] leading-[1.65]">{p.body}</div>
             </div>
           ))}
         </div>
@@ -59,7 +59,7 @@ export default function SecurityPage() {
           <h2 className="text-[19px] tracking-[-0.01em]">Baseline practices</h2>
           <div className="flex flex-col gap-2.5 mt-4">
             {practices.map((item) => (
-              <div key={item} className="flex items-start gap-2.5 text-[13.5px] text-[var(--color-neutral-300)]">
+              <div key={item} className="flex items-start gap-2.5 text-[14.5px] text-[var(--color-neutral-300)]">
                 <IconCheckCircle size={15} className="text-[var(--color-accent)] flex-none mt-0.5" />
                 {item}
               </div>
@@ -69,7 +69,7 @@ export default function SecurityPage() {
 
         <div className="mt-12">
           <h2 className="text-[19px] tracking-[-0.01em]">Roadmap — being upfront</h2>
-          <p className="text-[13.5px] text-[var(--color-neutral-400)] leading-[1.7] mt-3 max-w-[620px]">
+          <p className="text-[14.5px] text-[var(--color-neutral-400)] leading-[1.7] mt-3 max-w-[620px]">
             Two-factor authentication, a dedicated audit-log viewer, and formal SOC 2 certification are not live yet.
             We&rsquo;d rather tell you what&rsquo;s actually built today than list features that don&rsquo;t exist.
             If a specific control matters for your compliance requirements, ask — <a href="/contact" className="text-[var(--color-accent-300)] no-underline">contact us</a> directly.
@@ -78,7 +78,7 @@ export default function SecurityPage() {
 
         <div className="nx-footer-panel mt-14 flex items-center gap-3">
           <IconShieldCheck size={22} className="text-[var(--color-accent)] flex-none" />
-          <div className="text-[13.5px] text-[var(--color-neutral-300)] leading-[1.6]">
+          <div className="text-[14.5px] text-[var(--color-neutral-300)] leading-[1.6]">
             Found a security issue? We want to know before anyone else does.{" "}
             <a href="/contact" className="text-[var(--color-accent-300)] no-underline">Report it here</a> — we take
             every report seriously.

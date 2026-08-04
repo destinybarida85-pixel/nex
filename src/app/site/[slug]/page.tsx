@@ -130,7 +130,7 @@ function CheckoutCard({ site }: { site: Site }) {
           <div className="text-[11px]" style={{ color: "#6b6b76" }}>Secured by Stripe</div>
         </>
       ) : (
-        <div className="text-[13px]" style={{ color: "#9a9aa4" }}>No payment set up yet.</div>
+        <div className="text-[14px]" style={{ color: "#9a9aa4" }}>No payment set up yet.</div>
       )}
     </div>
   );
@@ -159,7 +159,7 @@ function DocumentsList({ site }: { site: Site }) {
           </button>
           {openId === d.id && (
             <div className="px-4 sm:px-5 pb-5 flex flex-col gap-4">
-              <p className="text-[13.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#c4c4cc" }}>
+              <p className="text-[14.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#c4c4cc" }}>
                 {d.text}
               </p>
               {d.paymentLink && (
@@ -167,7 +167,7 @@ function DocumentsList({ site }: { site: Site }) {
                   href={d.paymentLink.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 self-start text-[13px] font-medium px-4 py-2.5 rounded-lg no-underline"
+                  className="inline-flex items-center gap-2 self-start text-[14px] font-medium px-4 py-2.5 rounded-lg no-underline"
                   style={{ background: site.brandColor, color: "#0c0c10" }}
                 >
                   Pay {(d.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: d.paymentLink.currency.toUpperCase() })} for {d.paymentLink.title}
@@ -201,14 +201,14 @@ export function ClaritySite({ site }: { site: Site }) {
           )}
           <span className="text-[15px] font-medium">{site.name}</span>
         </div>
-        <nav className="hidden sm:flex items-center gap-6 text-[13px]" style={{ color: "#9a9aa4" }}>
+        <nav className="hidden sm:flex items-center gap-6 text-[14px]" style={{ color: "#9a9aa4" }}>
           <span>Documents</span>
           <span>Payments</span>
           <span>Contact</span>
         </nav>
         <div className="flex-1" />
         {site.paymentLink && (
-          <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="text-[13px] px-5 py-2.5 rounded-full no-underline font-medium" style={{ background: site.brandColor, color: "#0c0c10" }}>
+          <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="text-[14px] px-5 py-2.5 rounded-full no-underline font-medium" style={{ background: site.brandColor, color: "#0c0c10" }}>
             Pay now
           </a>
         )}
@@ -250,13 +250,13 @@ export function ClaritySite({ site }: { site: Site }) {
               <f.icon size={17} />
             </span>
             <div className="text-[14.5px] font-medium">{f.title}</div>
-            <div className="text-[13px] leading-[1.6]" style={{ color: "#9a9aa4" }}>{f.copy}</div>
+            <div className="text-[14px] leading-[1.6]" style={{ color: "#9a9aa4" }}>{f.copy}</div>
           </div>
         ))}
       </section>
 
       <footer className="relative max-w-[1080px] mx-auto px-6 sm:px-10 py-8 flex flex-wrap items-center gap-3 border-t" style={{ borderColor: "#1c1c22" }}>
-        <span className="text-[12px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}. All rights reserved.</span>
+        <span className="text-[13px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}. All rights reserved.</span>
         <div className="flex-1" />
         {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Primue</span></span>}
       </footer>
@@ -273,15 +273,15 @@ export function LedgerSite({ site }: { site: Site }) {
           {site.logoUrl ? (
             <img src={site.logoUrl} alt={site.name} className="w-7 h-7 rounded-[8px] object-cover" />
           ) : (
-            <span className="w-7 h-7 rounded-[8px] grid place-items-center font-medium text-[13px]" style={{ background: `color-mix(in srgb, ${site.brandColor} 22%, transparent)`, color: site.brandColor }}>
+            <span className="w-7 h-7 rounded-[8px] grid place-items-center font-medium text-[14px]" style={{ background: `color-mix(in srgb, ${site.brandColor} 22%, transparent)`, color: site.brandColor }}>
               {initial}
             </span>
           )}
           <span className="text-[14px] font-medium">{site.name}</span>
         </div>
-        <span className="px-3 py-[9px] rounded-lg text-[12.5px] font-medium" style={{ color: site.brandColor, background: `color-mix(in srgb, ${site.brandColor} 14%, transparent)` }}>Overview</span>
-        <span className="px-3 py-[9px] rounded-lg text-[12.5px]" style={{ color: "#9a9aa4" }}>Documents</span>
-        <span className="px-3 py-[9px] rounded-lg text-[12.5px]" style={{ color: "#9a9aa4" }}>Billing</span>
+        <span className="px-3 py-[9px] rounded-lg text-[13.5px] font-medium" style={{ color: site.brandColor, background: `color-mix(in srgb, ${site.brandColor} 14%, transparent)` }}>Overview</span>
+        <span className="px-3 py-[9px] rounded-lg text-[13.5px]" style={{ color: "#9a9aa4" }}>Documents</span>
+        <span className="px-3 py-[9px] rounded-lg text-[13.5px]" style={{ color: "#9a9aa4" }}>Billing</span>
         <div className="flex-1" />
         <div className="rounded-xl p-4" style={{ background: "#141418", border: "1px solid #1c1c22" }}>
           <div className="w-full max-w-[120px] mx-auto opacity-90"><LedgerMark color={site.brandColor} /></div>
@@ -295,7 +295,7 @@ export function LedgerSite({ site }: { site: Site }) {
         <div className="max-w-[860px] mx-auto px-6 sm:px-10 py-12 sm:py-16 flex flex-col gap-8">
           <div className="md:hidden flex items-center gap-2 mb-1">
             {site.logoUrl ? <img src={site.logoUrl} alt="" className="w-6 h-6 rounded-md object-cover" /> : <span className="w-6 h-6 rounded-md grid place-items-center text-[11px]" style={{ background: site.brandColor, color: "#0c0c10" }}>{initial}</span>}
-            <span className="text-[13.5px] font-medium">{site.name}</span>
+            <span className="text-[14.5px] font-medium">{site.name}</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1fr] gap-8 items-center">
             <div>
@@ -331,13 +331,13 @@ export function AtriumSite({ site }: { site: Site }) {
             {site.logoUrl ? <img src={site.logoUrl} alt="" className="w-8 h-8 rounded-[9px] object-cover" /> : <span className="w-8 h-8 rounded-[9px] grid place-items-center text-[15px] font-medium" style={{ background: site.brandColor, color: "#0c0c10" }}>{initial}</span>}
             <span className="text-[15px] font-medium">{site.name}</span>
           </div>
-          <div className="hidden sm:flex items-center gap-6 text-[13px]" style={{ color: "#e4e4e8" }}>
+          <div className="hidden sm:flex items-center gap-6 text-[14px]" style={{ color: "#e4e4e8" }}>
             <span>Work</span>
             <span>Documents</span>
           </div>
           <div className="flex-1" />
           {site.paymentLink && (
-            <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="text-[13px] px-5 py-2.5 rounded-full no-underline font-medium border" style={{ borderColor: "#e4e4e8", color: "#f4f4f7" }}>
+            <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="text-[14px] px-5 py-2.5 rounded-full no-underline font-medium border" style={{ borderColor: "#e4e4e8", color: "#f4f4f7" }}>
               Pay now
             </a>
           )}
@@ -360,14 +360,14 @@ export function AtriumSite({ site }: { site: Site }) {
         {site.paymentLink && <CheckoutCard site={site} />}
         {site.documents.length === 0 && !site.paymentLink && (
           <div className="rounded-2xl p-8 text-center" style={{ background: "#141418", border: "1px dashed #232329" }}>
-            <div className="text-[13.5px]" style={{ color: "#9a9aa4" }}>
+            <div className="text-[14.5px]" style={{ color: "#9a9aa4" }}>
               Documents and payment links will show up here as soon as {site.name} adds them.
             </div>
           </div>
         )}
       </div>
       <footer className="max-w-[1080px] mx-auto px-6 sm:px-10 py-8 border-t flex items-center gap-3" style={{ borderColor: "#1c1c22" }}>
-        <span className="text-[12px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}</span>
+        <span className="text-[13px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}</span>
         <div className="flex-1" />
         {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Primue</span></span>}
       </footer>
@@ -390,14 +390,14 @@ export function PortfolioSite({ site }: { site: Site }) {
           )}
           <span className="text-[14.5px] font-semibold tracking-[-0.01em]">{site.name}</span>
         </div>
-        <nav className="hidden sm:flex items-center gap-6 text-[13px]" style={{ color: "#6b6b76" }}>
+        <nav className="hidden sm:flex items-center gap-6 text-[14px]" style={{ color: "#6b6b76" }}>
           <span>Work</span>
           <span>Documents</span>
           <span>Contact</span>
         </nav>
         <div className="flex-1" />
         {site.paymentLink && (
-          <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="text-[13px] px-4 py-2 rounded-full no-underline font-medium border" style={{ borderColor: "#141414", color: "#141414" }}>
+          <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="text-[14px] px-4 py-2 rounded-full no-underline font-medium border" style={{ borderColor: "#141414", color: "#141414" }}>
             Pay now ↗
           </a>
         )}
@@ -440,19 +440,19 @@ export function PortfolioSite({ site }: { site: Site }) {
             <div className="flex items-start justify-between gap-3">
               <div className="text-[10.5px] uppercase tracking-[.08em]" style={{ color: "#9a9aa4" }}>Document</div>
               {d.paymentLink && (
-                <div className="text-[13px] font-semibold" style={{ color: site.brandColor }}>
+                <div className="text-[14px] font-semibold" style={{ color: site.brandColor }}>
                   {(d.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: d.paymentLink.currency.toUpperCase() })}
                 </div>
               )}
             </div>
             <h2 className="text-[21px] font-semibold mt-1 mb-3 tracking-[-0.01em]" style={{ color: "#141414" }}>{d.title}</h2>
-            <p className="text-[13.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#45454e" }}>{d.text}</p>
+            <p className="text-[14.5px] leading-[1.75] whitespace-pre-wrap m-0" style={{ color: "#45454e" }}>{d.text}</p>
             {d.paymentLink && (
               <a
                 href={d.paymentLink.url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 mt-4 text-[13px] font-medium px-5 py-2.5 rounded-full no-underline"
+                className="inline-flex items-center gap-2 mt-4 text-[14px] font-medium px-5 py-2.5 rounded-full no-underline"
                 style={{ background: "#141414", color: "#fff" }}
               >
                 Pay for {d.paymentLink.title}
@@ -467,7 +467,7 @@ export function PortfolioSite({ site }: { site: Site }) {
             <div className="text-[36px] font-bold">
               {(site.paymentLink.amountCents / 100).toLocaleString(undefined, { style: "currency", currency: site.paymentLink.currency.toUpperCase() })}
             </div>
-            <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="px-6 py-3 rounded-full no-underline text-[13.5px] font-medium" style={{ background: "#fff", color: "#141414" }}>
+            <a href={site.paymentLink.url} target="_blank" rel="noreferrer" className="px-6 py-3 rounded-full no-underline text-[14.5px] font-medium" style={{ background: "#fff", color: "#141414" }}>
               Pay now
             </a>
           </div>
@@ -515,7 +515,7 @@ export function LandingSite({ site }: { site: Site }) {
             <div className="flex flex-col gap-2.5 mt-2">
               <span className="text-[11px] tracking-[.1em] uppercase font-medium" style={{ color: "#6b6b76" }}>Included</span>
               {site.documents.map((d) => (
-                <div key={d.id} className="flex items-center gap-2.5 text-[13.5px]" style={{ color: "#c4c4cc" }}>
+                <div key={d.id} className="flex items-center gap-2.5 text-[14.5px]" style={{ color: "#c4c4cc" }}>
                   <span className="flex-none" style={{ color: site.brandColor }}><IconCheckCircle size={15} /></span>
                   {d.title}
                 </div>
@@ -548,15 +548,15 @@ export function LandingSite({ site }: { site: Site }) {
             </div>
           ) : (
             <div className="rounded-2xl p-7 sm:p-8 text-center flex flex-col gap-1.5" style={{ background: "#141418", border: "1px dashed #232329" }}>
-              <div className="text-[13.5px] font-medium">No payment set up yet</div>
-              <div className="text-[12.5px]" style={{ color: "#9a9aa4" }}>{site.name} hasn&rsquo;t attached a payment link to this page.</div>
+              <div className="text-[14.5px] font-medium">No payment set up yet</div>
+              <div className="text-[13.5px]" style={{ color: "#9a9aa4" }}>{site.name} hasn&rsquo;t attached a payment link to this page.</div>
             </div>
           )}
         </div>
       </section>
 
       <footer className="max-w-[1080px] mx-auto px-6 sm:px-10 py-8 border-t flex items-center gap-3 w-full" style={{ borderColor: "#1c1c22" }}>
-        <span className="text-[12px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}</span>
+        <span className="text-[13px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}</span>
         <div className="flex-1" />
         {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Primue</span></span>}
       </footer>
@@ -584,7 +584,7 @@ export default function PublicSitePage({ params }: { params: Promise<{ slug: str
       <div className="min-h-screen grid place-items-center" style={{ background: "#0c0c10", color: "#f4f4f7" }}>
         <div className="text-center">
           <div className="text-[20px] font-medium">This site isn&rsquo;t available.</div>
-          <div className="text-[13px] mt-1.5" style={{ color: "#9a9aa4" }}>It may not be published yet.</div>
+          <div className="text-[14px] mt-1.5" style={{ color: "#9a9aa4" }}>It may not be published yet.</div>
         </div>
       </div>
     );

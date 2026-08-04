@@ -89,17 +89,17 @@ export default function TemplatesPage() {
                 />
               ))}
             </div>
-            <span className="text-[12px] text-[var(--color-neutral-400)]">{tenantName}</span>
+            <span className="text-[13px] text-[var(--color-neutral-400)]">{tenantName}</span>
           </div>
 
-          <label className="radio gap-2 text-[12.5px] ml-2">
+          <label className="radio gap-2 text-[13.5px] ml-2">
             <input type="checkbox" checked={poweredBy} onChange={(e) => setPoweredBy(e.target.checked)} />
             <span className="dot" style={{ borderRadius: 5 }} />
             &ldquo;Powered by&rdquo; badge
           </label>
 
           <div className="flex-1" />
-          <button className="btn btn-secondary text-[12.5px] no-print" onClick={() => window.print()}>
+          <button className="btn btn-secondary text-[13.5px] no-print" onClick={() => window.print()}>
             <IconDownload size={13} />
             Print / Save as PDF
           </button>

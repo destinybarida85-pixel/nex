@@ -147,11 +147,11 @@ export default function TopBar() {
   }
 
   return (
-    <header className="flex items-center gap-2 sm:gap-3.5 pl-16 pr-3 py-3 sm:px-7 border-b border-[var(--color-divider)]">
+    <header className="flex items-center gap-2 sm:gap-3.5 pl-16 pr-3 py-3 sm:px-7 border-b border-[var(--color-divider)] no-print">
       <button
         type="button"
         onClick={() => setPaletteOpen(true)}
-        className="flex items-center gap-2.5 flex-1 min-w-0 md:flex-none md:w-[340px] px-3 py-[7px] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-neutral-500)] text-[13px] cursor-text hover:border-[var(--color-neutral-600)] transition-colors text-left"
+        className="flex items-center gap-2.5 flex-1 min-w-0 md:flex-none md:w-[340px] px-3 py-[7px] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-[var(--color-neutral-500)] text-[14px] cursor-text hover:border-[var(--color-neutral-600)] transition-colors text-left"
       >
         <IconSearch size={14} className="flex-none" />
         <span className="flex-1 hidden sm:inline truncate">Search or run a command…</span>
@@ -162,7 +162,7 @@ export default function TopBar() {
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
       <div className="flex-1 hidden md:block" />
       <div className="relative flex-none" ref={menuRef}>
-        <button className="btn btn-primary text-[13px] flex-none" onClick={() => setQuickCreateOpen((v) => !v)}>
+        <button className="btn btn-primary text-[14px] flex-none" onClick={() => setQuickCreateOpen((v) => !v)}>
           <IconPlus size={14} />
           <span className="hidden sm:inline">Quick create</span>
         </button>
@@ -175,7 +175,7 @@ export default function TopBar() {
               <a
                 key={item.label}
                 href={item.href}
-                className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-md text-[13px] no-underline text-[var(--color-text)] hover:bg-[var(--color-surface)] transition-colors"
+                className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-md text-[14px] no-underline text-[var(--color-text)] hover:bg-[var(--color-surface)] transition-colors"
                 onClick={() => setQuickCreateOpen(false)}
               >
                 <item.icon size={14} className="text-[var(--color-accent)]" />
@@ -202,14 +202,14 @@ export default function TopBar() {
           >
             <div className="px-2.5 py-1.5 text-[11px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">Notifications</div>
             {notifications.length === 0 ? (
-              <div className="px-2.5 py-4 text-[12.5px] text-[var(--color-neutral-500)] text-center">
+              <div className="px-2.5 py-4 text-[13.5px] text-[var(--color-neutral-500)] text-center">
                 Nothing yet — you&rsquo;ll see updates here when a document is signed or a payment comes in.
               </div>
             ) : (
               notifications.map((n) => {
                 const Icon = kindIcon[n.kind] || IconBell;
                 return (
-                  <div key={n.id} className="flex items-start gap-2.5 px-2.5 py-2 rounded-md text-[12.5px]">
+                  <div key={n.id} className="flex items-start gap-2.5 px-2.5 py-2 rounded-md text-[13.5px]">
                     <Icon size={14} className="text-[var(--color-accent)] flex-none mt-0.5" />
                     <div className="flex-1 min-w-0">
                       <div className="text-[var(--color-text)]">{n.title}</div>
@@ -237,14 +237,14 @@ export default function TopBar() {
             </div>
             <div className="max-h-[240px] overflow-y-auto p-2.5 flex flex-col gap-2">
               {chatMessages.length === 0 ? (
-                <div className="text-[12px] text-[var(--color-neutral-500)] text-center py-4">
+                <div className="text-[13px] text-[var(--color-neutral-500)] text-center py-4">
                   Send a message and our team will reply here — usually within a few hours.
                 </div>
               ) : (
                 chatMessages.map((m) => (
                   <div
                     key={m.id}
-                    className={`text-[12px] px-2.5 py-2 rounded-lg max-w-[85%] ${m.sender === "user" ? "self-end" : "self-start"}`}
+                    className={`text-[13px] px-2.5 py-2 rounded-lg max-w-[85%] ${m.sender === "user" ? "self-end" : "self-start"}`}
                     style={{ background: m.sender === "user" ? "var(--color-accent-900)" : "var(--color-surface)" }}
                   >
                     {m.body}
@@ -254,7 +254,7 @@ export default function TopBar() {
             </div>
             <div className="flex gap-1.5 p-2.5 border-t" style={{ borderColor: "var(--color-divider)" }}>
               <input
-                className="input text-[12px] flex-1"
+                className="input text-[13px] flex-1"
                 placeholder="Type a message…"
                 value={chatDraft}
                 onChange={(e) => setChatDraft(e.target.value)}

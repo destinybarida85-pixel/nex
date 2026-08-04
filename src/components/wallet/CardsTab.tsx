@@ -55,7 +55,7 @@ export default function CardsTab() {
           Stripe Issuing, which is a separate application with underwriting and
           isn't offered in every country. */}
       <div
-        className="flex items-start gap-2.5 p-3 rounded-lg text-[12px] leading-[1.6]"
+        className="flex items-start gap-2.5 p-3 rounded-lg text-[13px] leading-[1.6]"
         style={{ background: "color-mix(in srgb, #e0a35b 14%, transparent)", color: "#e0a35b" }}
       >
         <IconLock size={14} className="flex-none mt-0.5" />
@@ -120,7 +120,7 @@ export default function CardsTab() {
 
             <div className="card elev-sm p-4 gap-3">
               <div className="flex items-center justify-between">
-                <span className="text-[13px] font-medium">{card.label}</span>
+                <span className="text-[14px] font-medium">{card.label}</span>
                 <button className="btn btn-ghost text-[11.5px]" onClick={() => toggleReveal(i)}>
                   {card.revealed ? <IconEyeOff size={13} /> : <IconEye size={13} />}
                   {card.revealed ? "Hide details" : "Reveal details"}
@@ -129,13 +129,13 @@ export default function CardsTab() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-[12.5px]">{card.frozen ? "Card is frozen" : "Card is active"}</div>
+                  <div className="text-[13.5px]">{card.frozen ? "Card is frozen" : "Card is active"}</div>
                   <div className="text-[11px] text-[var(--color-neutral-500)]">
                     {card.frozen ? "No new transactions will be approved" : "Approving transactions normally"}
                   </div>
                 </div>
                 <button
-                  className={card.frozen ? "btn btn-primary text-[12px]" : "btn btn-secondary text-[12px]"}
+                  className={card.frozen ? "btn btn-primary text-[13px]" : "btn btn-secondary text-[13px]"}
                   onClick={() => toggleFreeze(i)}
                 >
                   <IconLock size={12} />
@@ -154,7 +154,7 @@ export default function CardsTab() {
                     min={0}
                     step={500}
                   />
-                  <span className="text-[12px] text-[var(--color-neutral-500)] flex-none">USD / mo</span>
+                  <span className="text-[13px] text-[var(--color-neutral-500)] flex-none">USD / mo</span>
                 </div>
               </div>
             </div>
@@ -164,23 +164,23 @@ export default function CardsTab() {
 
       {issuing ? (
         <div className="card elev-sm p-4 gap-2.5">
-          <div className="card-title text-[13px]">Issue a new card</div>
+          <div className="card-title text-[14px]">Issue a new card</div>
           <div className="flex gap-1.5">
             <input
-              className="input text-[12.5px]"
+              className="input text-[13.5px]"
               placeholder="e.g. Marketing team card"
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && issueCard()}
               autoFocus
             />
-            <button className="btn btn-primary text-[12.5px] flex-none" onClick={issueCard}>
+            <button className="btn btn-primary text-[13.5px] flex-none" onClick={issueCard}>
               Generate
             </button>
           </div>
         </div>
       ) : (
-        <button className="btn btn-secondary text-[13px] self-start" onClick={() => setIssuing(true)}>
+        <button className="btn btn-secondary text-[14px] self-start" onClick={() => setIssuing(true)}>
           <IconPlus size={13} />
           Issue new card
         </button>

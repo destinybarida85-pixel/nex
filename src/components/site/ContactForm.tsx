@@ -28,7 +28,7 @@ export default function ContactForm() {
           you wrote. If nothing opened, email us directly at{" "}
           <a href="mailto:hello@origin.io" className="text-[var(--color-accent-300)] no-underline">hello@origin.io</a>.
         </p>
-        <button className="btn btn-ghost text-[12.5px] self-start mt-1" onClick={() => setSent(false)}>
+        <button className="btn btn-ghost text-[13.5px] self-start mt-1" onClick={() => setSent(false)}>
           ← Send another message
         </button>
       </div>
@@ -74,7 +74,7 @@ export default function ContactForm() {
           style={{ resize: "vertical", fontFamily: "inherit" }}
         />
       </div>
-      <button type="submit" className="btn btn-primary text-[13.5px] self-start">Send message</button>
+      <button type="submit" className="btn btn-primary text-[14.5px] self-start">Send message</button>
       <div className="text-[11px] text-[var(--color-neutral-500)]">
         This opens your email client with the message ready to send. Primue has no backend to receive it directly.
       </div>

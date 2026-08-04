@@ -123,13 +123,13 @@ export default function CrmPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Sales pipeline</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">
+              <div className="text-muted text-[13.5px] mt-[3px]">
                 Drag a deal to move it between stages{live && " · Saved to your account"}
               </div>
             </div>
             <div className="flex-1 hidden sm:block" />
             <select
-              className="input text-[12.5px] w-[90px] flex-none"
+              className="input text-[13.5px] w-[90px] flex-none"
               value={displayCurrency}
               onChange={(e) => setDisplayCurrency(e.target.value)}
               aria-label="Display currency"
@@ -138,7 +138,7 @@ export default function CrmPage() {
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
-            <button className="btn btn-primary text-[13px]" onClick={() => setFormOpen((v) => !v)}>
+            <button className="btn btn-primary text-[14px]" onClick={() => setFormOpen((v) => !v)}>
               <IconPlus size={14} />
               New deal
             </button>
@@ -152,18 +152,18 @@ export default function CrmPage() {
           {formOpen && (
             <div className="card elev-sm p-4 gap-2.5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <input className="input text-[13px]" placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)} />
-                <input className="input text-[13px]" placeholder="Deal title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                <input className="input text-[13px]" placeholder="Value (e.g. 12000)" inputMode="decimal" value={value} onChange={(e) => setValue(e.target.value)} />
-                <input className="input text-[13px]" placeholder="Contact name" value={contact} onChange={(e) => setContact(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Deal title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Value (e.g. 12000)" inputMode="decimal" value={value} onChange={(e) => setValue(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Contact name" value={contact} onChange={(e) => setContact(e.target.value)} />
               </div>
-              <textarea className="input text-[13px]" style={{ minHeight: 60 }} placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
-              {error && <div className="text-[12px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+              <textarea className="input text-[14px]" style={{ minHeight: 60 }} placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
+              {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
               <div className="flex gap-1.5">
-                <button className="btn btn-primary text-[12.5px] flex-none" onClick={createDeal} disabled={creating}>
+                <button className="btn btn-primary text-[13.5px] flex-none" onClick={createDeal} disabled={creating}>
                   {creating ? "Adding…" : "Add deal"}
                 </button>
-                <button className="btn btn-secondary text-[12.5px] flex-none" onClick={() => setFormOpen(false)}>Cancel</button>
+                <button className="btn btn-secondary text-[13.5px] flex-none" onClick={() => setFormOpen(false)}>Cancel</button>
               </div>
             </div>
           )}

@@ -353,7 +353,7 @@ export default function WhiteLabelPage() {
                   type="button"
                   aria-label="Add a custom color"
                   onClick={() => colorPickerRef.current?.click()}
-                  className="w-[26px] h-[26px] rounded-lg border border-dashed border-[var(--color-divider)] grid place-items-center text-[var(--color-neutral-500)] text-[13px] cursor-pointer hover:border-[var(--color-neutral-600)] transition-colors"
+                  className="w-[26px] h-[26px] rounded-lg border border-dashed border-[var(--color-divider)] grid place-items-center text-[var(--color-neutral-500)] text-[14px] cursor-pointer hover:border-[var(--color-neutral-600)] transition-colors"
                 >
                   +
                 </button>
@@ -372,7 +372,7 @@ export default function WhiteLabelPage() {
             </div>
             <div className="field">
               <label>Custom domain (marketing/reference only)</label>
-              <input className="input font-mono text-[12.5px]" value={domain} onChange={(e) => setDomain(e.target.value)} />
+              <input className="input font-mono text-[13.5px]" value={domain} onChange={(e) => setDomain(e.target.value)} />
             </div>
 
             <div className="field">
@@ -386,7 +386,7 @@ export default function WhiteLabelPage() {
                   >
                     <input type="radio" name="template" className="mt-0.5" checked={template === t.id} onChange={() => setTemplate(t.id)} />
                     <div>
-                      <div className="text-[12.5px] font-medium">{t.name}</div>
+                      <div className="text-[13.5px] font-medium">{t.name}</div>
                       <div className="text-[11px] text-[var(--color-neutral-500)] leading-[1.5]">{t.why}</div>
                     </div>
                   </label>
@@ -397,9 +397,9 @@ export default function WhiteLabelPage() {
             <div className="field">
               <label>Website address</label>
               <div className="flex items-center gap-1.5">
-                <span className="text-[12px] text-[var(--color-neutral-500)] font-mono">primue.com/site/</span>
+                <span className="text-[13px] text-[var(--color-neutral-500)] font-mono">primue.com/site/</span>
                 <input
-                  className="input font-mono text-[12.5px] flex-1"
+                  className="input font-mono text-[13.5px] flex-1"
                   value={siteSlug}
                   onChange={(e) => {
                     setSlugTouched(true);
@@ -412,7 +412,7 @@ export default function WhiteLabelPage() {
             <div className="field">
               <label>Connect your own domain (e.g. destiny.mgt)</label>
               <input
-                className="input font-mono text-[12.5px]"
+                className="input font-mono text-[13.5px]"
                 placeholder="destiny.mgt"
                 value={customDomain}
                 onChange={(e) => setCustomDomain(e.target.value.toLowerCase())}
@@ -430,7 +430,7 @@ export default function WhiteLabelPage() {
             >
               <div className="flex items-center gap-2">
                 <IconPayments size={14} className="text-[var(--color-accent)]" />
-                <div className="text-[13px] font-medium">Getting paid</div>
+                <div className="text-[14px] font-medium">Getting paid</div>
               </div>
               <div className="text-[11.5px] text-[var(--color-neutral-400)] leading-[1.6] -mt-1.5">
                 Two separate things, both optional: a button on your page for a general ask, and a price on any one
@@ -438,12 +438,12 @@ export default function WhiteLabelPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <div className="text-[12px] font-medium">A &ldquo;Pay now&rdquo; button on your page</div>
+                <div className="text-[13px] font-medium">A &ldquo;Pay now&rdquo; button on your page</div>
                 <div className="text-[11px] text-[var(--color-neutral-500)]">
                   Good for a single flat ask, like a deposit — shows up on every page style, with or without documents.
                 </div>
                 {paymentLinks.length > 0 ? (
-                  <select className="input text-[12.5px]" value={selectedLinkId} onChange={(e) => setSelectedLinkId(e.target.value)}>
+                  <select className="input text-[13.5px]" value={selectedLinkId} onChange={(e) => setSelectedLinkId(e.target.value)}>
                     <option value="">No button — don&rsquo;t ask for a general payment</option>
                     {paymentLinks.map((l) => (
                       <option key={l.id} value={l.id}>
@@ -471,7 +471,7 @@ export default function WhiteLabelPage() {
                   const isOpen = pricingDocId === d.id;
                   return (
                     <div key={d.id} className="rounded-lg" style={isOpen ? { border: "1px solid var(--color-divider)" } : undefined}>
-                      <div className="flex items-center gap-2 text-[12.5px] py-1">
+                      <div className="flex items-center gap-2 text-[13.5px] py-1">
                         <label className="flex items-center gap-2 flex-1 min-w-0">
                           <input type="checkbox" checked={selectedDocIds.includes(d.id)} onChange={() => toggleDoc(d.id)} />
                           <span className="truncate">{d.title}</span>
@@ -520,16 +520,16 @@ export default function WhiteLabelPage() {
               </div>
               {docFormOpen ? (
                 <div className="flex flex-col gap-2 p-3 mt-2 rounded-lg border border-[var(--color-divider)]">
-                  <input className="input text-[12.5px]" placeholder="Document title (e.g. Service Agreement)" value={docTitle} onChange={(e) => setDocTitle(e.target.value)} />
+                  <input className="input text-[13.5px]" placeholder="Document title (e.g. Service Agreement)" value={docTitle} onChange={(e) => setDocTitle(e.target.value)} />
                   <textarea
-                    className="input text-[12.5px]"
+                    className="input text-[13.5px]"
                     style={{ minHeight: 100 }}
                     placeholder="Paste or write what clients should read..."
                     value={docText}
                     onChange={(e) => setDocText(e.target.value)}
                   />
                   {paymentLinks.length > 0 && (
-                    <select className="input text-[12.5px]" value={docPaymentLinkId} onChange={(e) => setDocPaymentLinkId(e.target.value)}>
+                    <select className="input text-[13.5px]" value={docPaymentLinkId} onChange={(e) => setDocPaymentLinkId(e.target.value)}>
                       <option value="">Free — no price on this document</option>
                       {paymentLinks.map((l) => (
                         <option key={l.id} value={l.id}>
@@ -540,10 +540,10 @@ export default function WhiteLabelPage() {
                   )}
                   {docError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{docError}</div>}
                   <div className="flex gap-1.5">
-                    <button className="btn btn-primary text-[12px] flex-none" onClick={createDocument} disabled={docSaving}>
+                    <button className="btn btn-primary text-[13px] flex-none" onClick={createDocument} disabled={docSaving}>
                       {docSaving ? "Saving…" : "Save document"}
                     </button>
-                    <button className="btn btn-secondary text-[12px] flex-none" onClick={() => setDocFormOpen(false)}>Cancel</button>
+                    <button className="btn btn-secondary text-[13px] flex-none" onClick={() => setDocFormOpen(false)}>Cancel</button>
                   </div>
                 </div>
               ) : (
@@ -560,14 +560,14 @@ export default function WhiteLabelPage() {
                 ))}
               </div>
             </div>
-            <label className="radio gap-2.5 text-[13px]">
+            <label className="radio gap-2.5 text-[14px]">
               <input type="checkbox" checked={poweredBy} onChange={(e) => setPoweredBy(e.target.checked)} />
               <span className="dot" style={{ borderRadius: 5 }} />
               Show &ldquo;Powered by&rdquo; badge to clients
               <span className="tag tag-outline text-[9.5px] ml-auto">{poweredBy ? "On" : "Off"}</span>
             </label>
             {!live && checked && (
-              <div className="p-2.5 rounded-lg text-[12px]" style={{ background: "color-mix(in srgb, #e0665f 15%, transparent)", color: "#e0665f" }}>
+              <div className="p-2.5 rounded-lg text-[13px]" style={{ background: "color-mix(in srgb, #e0665f 15%, transparent)", color: "#e0665f" }}>
                 {hasSession
                   ? tenantFetchError || "Couldn't load your account. Try reloading this page."
                   : "You’re not signed in right now, so nothing here can be saved. Sign in, then reload this page."}
@@ -575,17 +575,17 @@ export default function WhiteLabelPage() {
             )}
             {publishError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{publishError}</div>}
             {justSaved && (
-              <div className="p-2.5 rounded-lg text-[12.5px] font-medium flex items-center gap-2" style={{ background: "color-mix(in srgb, #63c3b2 18%, transparent)", color: "#63c3b2" }}>
+              <div className="p-2.5 rounded-lg text-[13.5px] font-medium flex items-center gap-2" style={{ background: "color-mix(in srgb, #63c3b2 18%, transparent)", color: "#63c3b2" }}>
                 <IconCheckCircle size={14} />
                 {live ? "Saved." : "Nothing was saved — you're not signed in (see the message above)."}
               </div>
             )}
             <div className="flex gap-2 mt-0.5 flex-wrap items-center">
-              <button className="btn btn-secondary text-[12.5px]" onClick={() => publishBranding()} disabled={publishing}>
+              <button className="btn btn-secondary text-[13.5px]" onClick={() => publishBranding()} disabled={publishing}>
                 {publishing ? "Saving…" : "Save changes"}
               </button>
               <button
-                className="btn btn-primary text-[12.5px]"
+                className="btn btn-primary text-[13.5px]"
                 onClick={() => publishBranding(!sitePublished)}
                 disabled={publishing || !live}
               >
@@ -593,7 +593,7 @@ export default function WhiteLabelPage() {
                 {sitePublished ? "Live · click to unpublish" : "Publish website"}
               </button>
               {sitePublished && (
-                <a href={`/site/${siteSlug}`} target="_blank" rel="noopener noreferrer" className="btn btn-ghost text-[12.5px]">
+                <a href={`/site/${siteSlug}`} target="_blank" rel="noopener noreferrer" className="btn btn-ghost text-[13.5px]">
                   View live site →
                 </a>
               )}
@@ -603,7 +603,7 @@ export default function WhiteLabelPage() {
                 </span>
               )}
             </div>
-            <a href="/templates" className="btn btn-ghost text-[12.5px] self-start">
+            <a href="/templates" className="btn btn-ghost text-[13.5px] self-start">
               View branded invoice &amp; email templates →
             </a>
           </div>

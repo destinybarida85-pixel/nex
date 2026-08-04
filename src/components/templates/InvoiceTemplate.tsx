@@ -39,13 +39,13 @@ export default function InvoiceTemplate({
             <div className="text-[20px] font-medium tracking-[0.04em]" style={{ color: tenantAccent }}>
               INVOICE
             </div>
-            <div className="text-[12px] mt-0.5" style={{ color: "#6b6b76" }}>
+            <div className="text-[13px] mt-0.5" style={{ color: "#6b6b76" }}>
               INV-2042
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 text-[12.5px]" style={{ color: "#4a4a54" }}>
+        <div className="grid grid-cols-2 gap-6 text-[13.5px]" style={{ color: "#4a4a54" }}>
           <div>
             <div className="text-[10px] tracking-[.08em] uppercase mb-1.5" style={{ color: "#9a9aa6" }}>Bill from</div>
             <div style={{ color: "#1a1a1f" }}>{tenantName}</div>
@@ -60,7 +60,7 @@ export default function InvoiceTemplate({
           </div>
         </div>
 
-        <div className="flex gap-8 text-[12px]" style={{ color: "#6b6b76" }}>
+        <div className="flex gap-8 text-[13px]" style={{ color: "#6b6b76" }}>
           <div>
             <div className="uppercase tracking-[.06em] text-[10px]">Invoice date</div>
             <div style={{ color: "#1a1a1f" }}>Jul 21, 2026</div>
@@ -75,7 +75,7 @@ export default function InvoiceTemplate({
           </div>
         </div>
 
-        <table className="w-full text-[12.5px]" style={{ borderCollapse: "collapse" }}>
+        <table className="w-full text-[13.5px]" style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: `1.5px solid ${tenantAccent}` }}>
               <th className="text-left pb-2 font-medium" style={{ color: "#6b6b76" }}>Description</th>
@@ -97,7 +97,7 @@ export default function InvoiceTemplate({
         </table>
 
         <div className="flex justify-end">
-          <div className="w-[220px] flex flex-col gap-1.5 text-[12.5px]">
+          <div className="w-[220px] flex flex-col gap-1.5 text-[13.5px]">
             <div className="flex justify-between" style={{ color: "#6b6b76" }}>
               <span>Subtotal</span>
               <span>$8,200.00</span>

@@ -33,17 +33,17 @@ export default function Pricing() {
           <div className="card-title">Starter</div>
           <div className="font-medium text-[34px]">
             {starterPrice}
-            <span className="text-[13px] text-[var(--color-neutral-500)]"> / user / mo</span>
+            <span className="text-[14px] text-[var(--color-neutral-500)]"> / user / mo</span>
           </div>
-          <div className="card-body text-[13px]">For a founder getting set up.</div>
-          <div className="flex flex-col gap-[7px] text-[12.5px] text-[var(--color-neutral-300)] mt-1">
+          <div className="card-body text-[14px]">For a founder getting set up.</div>
+          <div className="flex flex-col gap-[7px] text-[13.5px] text-[var(--color-neutral-300)] mt-1">
             <span>· Business wallet + 3 users</span>
             <span>· Unlimited AI documents</span>
             <span>· E-signatures included</span>
             <span className="text-[var(--color-neutral-600)]">· No digital stamps</span>
             <span>· Core dashboard &amp; invoicing</span>
           </div>
-          <a href="/signup" className="btn btn-secondary btn-block text-[13px] mt-auto">Start 7-day trial</a>
+          <a href="/signup" className="btn btn-secondary btn-block text-[14px] mt-auto">Start 7-day trial</a>
         </div>
 
         <div
@@ -56,10 +56,10 @@ export default function Pricing() {
           </div>
           <div className="font-medium text-[34px]">
             {growthPrice}
-            <span className="text-[13px] text-[var(--color-neutral-500)]"> / user / mo</span>
+            <span className="text-[14px] text-[var(--color-neutral-500)]"> / user / mo</span>
           </div>
-          <div className="card-body text-[13px]">For teams running the whole business on Primue.</div>
-          <div className="flex flex-col gap-[7px] text-[12.5px] text-[var(--color-neutral-300)] mt-1">
+          <div className="card-body text-[14px]">For teams running the whole business on Primue.</div>
+          <div className="flex flex-col gap-[7px] text-[13.5px] text-[var(--color-neutral-300)] mt-1">
             <span>· Unlimited AI documents &amp; e-signatures</span>
             <span>· E-signatures + official digital stamps</span>
             <span>· AI-generated premium certificates</span>
@@ -67,20 +67,20 @@ export default function Pricing() {
             <span>· White-label branding + custom domain</span>
             <span>· API access &amp; webhooks</span>
           </div>
-          <a href="/signup" className="btn btn-primary btn-block text-[13px] mt-auto">Start 7-day trial</a>
+          <a href="/signup" className="btn btn-primary btn-block text-[14px] mt-auto">Start 7-day trial</a>
         </div>
 
         <div className="card elev-sm p-[22px] gap-2.5 nx-price-card">
           <div className="card-title">Enterprise</div>
           <div className="font-medium text-[34px]">Custom</div>
-          <div className="card-body text-[13px]">For institutions, NGOs and government.</div>
-          <div className="flex flex-col gap-[7px] text-[12.5px] text-[var(--color-neutral-300)] mt-1">
+          <div className="card-body text-[14px]">For institutions, NGOs and government.</div>
+          <div className="flex flex-col gap-[7px] text-[13.5px] text-[var(--color-neutral-300)] mt-1">
             <span>· Multi-tenant Super Admin console</span>
             <span>· SSO, RBAC, audit &amp; residency controls</span>
             <span>· Dedicated banking partner setup</span>
             <span>· SLA 99.99% + priority support</span>
           </div>
-          <button className="btn btn-secondary btn-block text-[13px] mt-auto">Talk to sales</button>
+          <button className="btn btn-secondary btn-block text-[14px] mt-auto">Talk to sales</button>
         </div>
       </div>
     </section>

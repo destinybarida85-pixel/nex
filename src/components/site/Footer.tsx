@@ -12,7 +12,7 @@ export default function Footer() {
             </p>
             <div className="flex gap-2.5 mt-5 max-w-[440px]">
               <input className="input flex-1" placeholder="you@company.com" />
-              <a href="/signup" className="btn btn-primary text-[13.5px] flex-none">Get started</a>
+              <a href="/signup" className="btn btn-primary text-[14.5px] flex-none">Get started</a>
             </div>
           </div>
         </ScrollReveal>

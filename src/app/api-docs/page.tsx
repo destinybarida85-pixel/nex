@@ -26,7 +26,7 @@ export default function ApiPage() {
         </p>
 
         <div className="mt-9 rounded-xl overflow-hidden border" style={{ borderColor: "var(--color-divider)" }}>
-          <table className="table text-[13px]">
+          <table className="table text-[14px]">
             <thead>
               <tr>
                 <th>Method</th>
@@ -38,7 +38,7 @@ export default function ApiPage() {
               {endpoints.map((e) => (
                 <tr key={e.path}>
                   <td className="font-mono text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{e.method}</td>
-                  <td className="font-mono text-[12px]">{e.path}</td>
+                  <td className="font-mono text-[13px]">{e.path}</td>
                   <td className="text-[var(--color-neutral-400)]">{e.body}</td>
                 </tr>
               ))}
@@ -48,7 +48,7 @@ export default function ApiPage() {
 
         <div className="mt-10">
           <h2 className="text-[19px] tracking-[-0.01em]">How authentication works</h2>
-          <p className="text-[13.5px] text-[var(--color-neutral-400)] leading-[1.7] mt-3 max-w-[640px]">
+          <p className="text-[14.5px] text-[var(--color-neutral-400)] leading-[1.7] mt-3 max-w-[640px]">
             Requests carry a Supabase session cookie set at sign-in. Every route resolves the caller&rsquo;s tenant
             from that session server-side — a client can never pass a tenant ID and have it trusted. Webhook
             endpoints (like Stripe&rsquo;s) skip session auth entirely and instead verify a cryptographic signature
@@ -58,19 +58,19 @@ export default function ApiPage() {
 
         <div className="mt-10">
           <h2 className="text-[19px] tracking-[-0.01em]">Public API keys — on the roadmap</h2>
-          <p className="text-[13.5px] text-[var(--color-neutral-400)] leading-[1.7] mt-3 max-w-[640px]">
+          <p className="text-[14.5px] text-[var(--color-neutral-400)] leading-[1.7] mt-3 max-w-[640px]">
             A proper external API — scoped API keys, rate limits, published request/response schemas — isn&rsquo;t
             built yet. If programmatic access to your own data would unblock something you&rsquo;re building, tell
             us what you need.
           </p>
-          <a href="/contact" className="btn btn-secondary text-[13px] mt-4 inline-flex">
+          <a href="/contact" className="btn btn-secondary text-[14px] mt-4 inline-flex">
             Talk to us about API access <IconArrowRight size={13} />
           </a>
         </div>
 
         <div className="nx-footer-panel mt-14 flex items-center gap-3">
           <IconApi size={22} className="text-[var(--color-accent)] flex-none" />
-          <div className="text-[13.5px] text-[var(--color-neutral-300)] leading-[1.6] flex items-center gap-1.5">
+          <div className="text-[14.5px] text-[var(--color-neutral-300)] leading-[1.6] flex items-center gap-1.5">
             <IconCheckCircle size={14} className="text-[var(--color-accent)] flex-none" />
             Everything on this page reflects what&rsquo;s actually deployed right now, not a roadmap dressed up as
             shipped.

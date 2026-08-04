@@ -169,7 +169,7 @@ export async function POST(request: Request) {
   }
 
   const forwardedFor = request.headers.get("x-forwarded-for");
-  const { error: sigError } = await supabase.from("signatures").insert({
+  const insertRow = {
     document_id: doc!.id,
     signer_name: signerName,
     signer_email: signerEmail,
@@ -181,7 +181,18 @@ export async function POST(request: Request) {
     user_agent: request.headers.get("user-agent"),
     signed_at: signedAt,
     stamp_applied: stampApplied,
-  });
+    // The actual signature (image data URL, or the typed name for "type" mode)
+    // — kept in full, not just hashed, so it can be redrawn later. Falls back
+    // to the pre-0018 shape if that migration hasn't been run yet, rather than
+    // failing the whole signing over a column that doesn't exist yet.
+    signature_image: signatureData,
+  };
+  let { data: sigRow, error: sigError } = await supabase.from("signatures").insert(insertRow).select("id").single();
+  if (isMissingColumn(sigError)) {
+    const { signature_image: _signatureImage, ...withoutNewColumn } = insertRow;
+    void _signatureImage;
+    ({ data: sigRow, error: sigError } = await supabase.from("signatures").insert(withoutNewColumn).select("id").single());
+  }
   if (sigError) {
     return NextResponse.json({ error: sigError.message }, { status: 500 });
   }
@@ -232,5 +243,9 @@ export async function POST(request: Request) {
     signersRequired,
     signaturesSoFar,
     complete,
+    // Lets CompleteStep save stamp customization (chosen after this call
+    // returns) back onto the exact row it just created. Absent in the
+    // no-database demo path above, where there's no row to reference.
+    signatureRecordId: sigRow?.id ?? null,
   });
 }

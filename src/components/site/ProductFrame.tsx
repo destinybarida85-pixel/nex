@@ -105,7 +105,7 @@ function Rail({ active }: { active: View }) {
     >
       <div className="flex items-center gap-2 px-1.5 pb-3">
         <IconLogoMark size={18} />
-        <span className="text-[12.5px] font-medium text-[var(--color-text)]">Primue</span>
+        <span className="text-[13.5px] font-medium text-[var(--color-text)]">Primue</span>
       </div>
       {NAV.map((item) => {
         const on =

@@ -67,12 +67,12 @@ export default function SendInvoice({ invoiceId, title, amountLabel, senderName 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2 flex-wrap">
-        <a href={mailto} className="btn btn-primary text-[12px] gap-1.5">
+        <a href={mailto} className="btn btn-primary text-[13px] gap-1.5">
           <IconMail size={13} />
           Email this invoice
         </a>
         <button
-          className="btn btn-secondary text-[12px] gap-1.5"
+          className="btn btn-secondary text-[13px] gap-1.5"
           onClick={async () => {
             const ok = await copy(url);
             setCopyFailed(!ok);
@@ -85,7 +85,7 @@ export default function SendInvoice({ invoiceId, title, amountLabel, senderName 
           href={`/invoice/${invoiceId}`}
           target="_blank"
           rel="noreferrer"
-          className="btn btn-secondary text-[12px] gap-1.5"
+          className="btn btn-secondary text-[13px] gap-1.5"
         >
           <IconLink size={13} />
           Preview

@@ -28,10 +28,10 @@ export default function TransactionsCompact() {
               <r.icon size={13} />
             </span>
             <div className="flex-1 min-w-0">
-              <div className="text-[12.5px] truncate">{r.party}</div>
+              <div className="text-[13.5px] truncate">{r.party}</div>
               <div className="text-[10.5px] text-[var(--color-neutral-500)]">{r.meta}</div>
             </div>
-            <span className="text-[12px]" style={{ color: r.credit ? "var(--color-accent-300)" : "var(--color-neutral-400)" }}>
+            <span className="text-[13px]" style={{ color: r.credit ? "var(--color-accent-300)" : "var(--color-neutral-400)" }}>
               {r.amount}
             </span>
           </div>

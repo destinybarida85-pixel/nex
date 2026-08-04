@@ -6,6 +6,25 @@ import DocumentPaper from "@/components/document/DocumentPaper";
 import { documentAccents, documentLayouts, documentFonts, documentPaperTones, type DocumentLayout, type DocumentFont, type DocumentPaperTone } from "@/components/document/theme";
 import TemplatePicker, { type TemplateChoice } from "@/components/document/TemplatePicker";
 
+// A safety net independent of how well the AI behaved: whatever produced this
+// document, an unfilled [Bracket] left in the final text means it isn't
+// actually finished, and printing or sending it that way looks exactly like
+// the failure mode this exists to catch — a blank-riddled template mistaken
+// for a real document.
+function findPlaceholders(doc: DocumentData): string[] {
+  const pattern = /\[([^[\]]{1,60})\]/g;
+  const found = new Set<string>();
+  const scan = (text: string) => {
+    for (const m of text.matchAll(pattern)) found.add(m[1]);
+  };
+  scan(doc.title);
+  doc.body.forEach((s) => {
+    scan(s.heading);
+    scan(s.text);
+  });
+  return Array.from(found);
+}
+
 export type DocumentStep = { label: string; done: boolean };
 export type DocumentData = {
   title: string;
@@ -39,7 +58,12 @@ export default function DocumentPanel({
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
   const [sentLink, setSentLink] = useState<string | null>(null);
+  const [sentDocumentId, setSentDocumentId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [emailTo, setEmailTo] = useState("");
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   // Send options. Defaults match the old behaviour exactly — one signer, no
@@ -140,7 +164,10 @@ export default function DocumentPanel({
     setSending(true);
     setSendError("");
     setSentLink(null);
+    setSentDocumentId(null);
     setLinkCopied(false);
+    setEmailSent(false);
+    setEmailError("");
     try {
       const res = await fetch("/api/documents", {
         method: "POST",
@@ -160,6 +187,7 @@ export default function DocumentPanel({
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || "Couldn't create a shareable link.");
+      setSentDocumentId(data.document.id);
       setSentLink(`${window.location.origin}/sign/${data.document.id}`);
     } catch (err) {
       setSendError(err instanceof Error ? err.message : "Couldn't create a shareable link.");
@@ -179,8 +207,31 @@ export default function DocumentPanel({
     }
   }
 
+  async function emailDocument() {
+    if (!sentDocumentId || !sentLink || !emailTo.trim()) return;
+    setEmailSending(true);
+    setEmailError("");
+    setEmailSent(false);
+    try {
+      const res = await fetch(`/api/documents/${sentDocumentId}/send-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: emailTo.trim(), link: sentLink }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't send that email.");
+      setEmailSent(true);
+      setEmailTo("");
+    } catch (err) {
+      setEmailError(err instanceof Error ? err.message : "Couldn't send that email.");
+    } finally {
+      setEmailSending(false);
+    }
+  }
+
   const shown = editing ? draft : document;
   const isLetterheadLayout = layout === "executive" || layout === "letterhead" || layout === "editorial";
+  const placeholders = findPlaceholders(shown);
 
   return (
     <div className="flex-1 min-w-0 flex flex-col">
@@ -188,7 +239,7 @@ export default function DocumentPanel({
         <IconDocuments size={16} className="text-[var(--color-accent)]" />
         <div className="card-title text-[14px]">Document</div>
         <span className={`tag ${shown.statusTag} ml-auto`}>{editing ? "Editing" : shown.status}</span>
-        <button className="btn btn-secondary text-[12px] no-print" onClick={() => setPickerOpen(true)}>
+        <button className="btn btn-secondary text-[13px] no-print" onClick={() => setPickerOpen(true)}>
           <IconTemplates size={13} />
           Templates
         </button>
@@ -196,6 +247,22 @@ export default function DocumentPanel({
           <IconDownload size={14} />
         </button>
       </div>
+
+      {placeholders.length > 0 && (
+        <div
+          className="no-print mx-4 md:mx-6 mt-4 px-3.5 py-2.5 rounded-lg text-[13px] flex items-start gap-2"
+          style={{ background: "color-mix(in srgb, var(--color-accent-900) 45%, transparent)", border: "1px solid var(--color-accent-900)", color: "var(--color-accent-300)" }}
+        >
+          <span className="flex-1">
+            {placeholders.length === 1 ? "1 blank still needs filling" : `${placeholders.length} blanks still need filling`} before this is
+            ready to print or send: {placeholders.slice(0, 6).map((p) => `[${p}]`).join(", ")}
+            {placeholders.length > 6 ? ", …" : ""}
+          </span>
+          <button className="btn btn-secondary text-[11px] flex-none" style={{ padding: "3px 9px" }} onClick={startEditing}>
+            Fill them in
+          </button>
+        </div>
+      )}
 
       {pickerOpen && <TemplatePicker onPick={applyTemplate} onClose={() => setPickerOpen(false)} />}
 
@@ -226,10 +293,10 @@ export default function DocumentPanel({
 
         <div className="w-full md:w-[220px] flex-none flex flex-col gap-4">
           <div className="card elev-sm gap-2.5 p-4">
-            <div className="card-title text-[13px]">Signing status</div>
+            <div className="card-title text-[14px]">Signing status</div>
             <div className="flex flex-col gap-2.5 mt-1">
               {document.steps.map((step, i) => (
-                <div key={step.label} className="flex items-center gap-2.5 text-[12px]">
+                <div key={step.label} className="flex items-center gap-2.5 text-[13px]">
                   <span
                     className="w-[7px] h-[7px] rounded-full flex-none"
                     style={{ background: step.done ? "var(--color-accent)" : "var(--color-neutral-700)" }}
@@ -244,7 +311,7 @@ export default function DocumentPanel({
           </div>
 
           <div className="card elev-sm gap-2.5 p-4 no-print">
-            <div className="card-title text-[13px]">Document style</div>
+            <div className="card-title text-[14px]">Document style</div>
             <select className="input text-[11.5px]" value={layout} onChange={(e) => setLayout(e.target.value as DocumentLayout)}>
               {documentLayouts.map((l) => (
                 <option key={l.id} value={l.id}>
@@ -335,17 +402,17 @@ export default function DocumentPanel({
 
           {editing ? (
             <>
-              <button className="btn btn-primary btn-block text-[12.5px]" onClick={saveEditing}>
+              <button className="btn btn-primary btn-block text-[13.5px]" onClick={saveEditing}>
                 Save changes
               </button>
-              <button className="btn btn-secondary btn-block text-[12.5px]" onClick={cancelEditing}>
+              <button className="btn btn-secondary btn-block text-[13.5px]" onClick={cancelEditing}>
                 Cancel
               </button>
             </>
           ) : (
             <>
               <div className="card elev-sm gap-2.5 p-4 no-print">
-                <div className="card-title text-[13px]">Before you send</div>
+                <div className="card-title text-[14px]">Before you send</div>
 
                 <div className="flex flex-col gap-1">
                   <span className="text-[11px] text-[var(--color-neutral-500)]">Who signs?</span>
@@ -396,7 +463,7 @@ export default function DocumentPanel({
                 )}
               </div>
 
-              <button className="btn btn-primary btn-block text-[12.5px]" onClick={sendForSignature} disabled={sending}>
+              <button className="btn btn-primary btn-block text-[13.5px]" onClick={sendForSignature} disabled={sending}>
                 <IconESign size={14} />
                 {sending ? "Creating link…" : sendToPartner ? "Create signing link" : "Save & sign myself"}
               </button>
@@ -422,9 +489,29 @@ export default function DocumentPanel({
                       {sendToPartner ? "Open" : "Sign it now"}
                     </a>
                   </div>
+                  {sendToPartner && (
+                    <div className="flex flex-col gap-1.5 pt-1.5 mt-1 border-t" style={{ borderColor: "var(--color-divider)" }}>
+                      <span className="text-[10.5px] text-[var(--color-neutral-500)]">Or email it directly — no separate mail app needed</span>
+                      <div className="flex gap-1.5">
+                        <input
+                          className="input text-[11px] flex-1"
+                          type="email"
+                          placeholder="recipient@company.com"
+                          value={emailTo}
+                          onChange={(e) => setEmailTo(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && emailDocument()}
+                        />
+                        <button className="btn btn-secondary text-[11px] flex-none" onClick={emailDocument} disabled={emailSending || !emailTo.trim()}>
+                          {emailSending ? "Sending…" : "Send"}
+                        </button>
+                      </div>
+                      {emailSent && <span className="text-[10.5px]" style={{ color: "#63c3b2" }}>Sent.</span>}
+                      {emailError && <span className="text-[10.5px]" style={{ color: "var(--color-accent-300)" }}>{emailError}</span>}
+                    </div>
+                  )}
                 </div>
               )}
-              <button className="btn btn-secondary btn-block text-[12.5px]" onClick={startEditing}>
+              <button className="btn btn-secondary btn-block text-[13.5px]" onClick={startEditing}>
                 Edit document
               </button>
             </>

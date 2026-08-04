@@ -11,7 +11,7 @@ export default function TermsPage() {
   return (
     <LegalLayout kicker="Legal" title="Terms of Service" updated="August 3, 2026">
       <div
-        className="p-3.5 rounded-lg text-[13px] leading-[1.6]"
+        className="p-3.5 rounded-lg text-[14px] leading-[1.6]"
         style={{ background: "color-mix(in srgb, #e0a35b 14%, transparent)", color: "#e0a35b" }}
       >
         <strong>Draft — not yet reviewed by a lawyer.</strong> Complete everything in [square brackets] and have a

@@ -24,10 +24,10 @@ const steps = [
     copy: "Tell Primue AI what you need — an NDA, a services agreement, a deposit invoice. It drafts real, usable language in seconds, pulling in your business context automatically.",
     visual: (
       <div className="flex flex-col gap-2.5">
-        <div className="rounded-lg p-3 text-[12.5px] self-end max-w-[80%]" style={{ background: "var(--color-accent-900)", color: "var(--color-text)" }}>
+        <div className="rounded-lg p-3 text-[13.5px] self-end max-w-[80%]" style={{ background: "var(--color-accent-900)", color: "var(--color-text)" }}>
           Draft a services agreement for Northbeam Co., $6,200 deposit.
         </div>
-        <div className="rounded-lg p-3 text-[12.5px] max-w-[85%]" style={{ background: "var(--color-surface)" }}>
+        <div className="rounded-lg p-3 text-[13.5px] max-w-[85%]" style={{ background: "var(--color-surface)" }}>
           Done — I&rsquo;ve drafted the agreement with a $6,200 deposit clause. Review it on the right.
         </div>
       </div>
@@ -41,7 +41,7 @@ const steps = [
     copy: "Your client signs from any device — no account needed. Every signature is hashed and chained to the document, so tampering after the fact is mathematically detectable, not just promised.",
     visual: (
       <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-[12.5px]">
+        <div className="flex items-center gap-2 text-[13.5px]">
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#63c3b2" }} />
           <span style={{ color: "#63c3b2" }} className="font-medium">Signed &amp; sealed</span>
         </div>
@@ -59,7 +59,7 @@ const steps = [
     copy: "One click creates a genuine, live Stripe checkout link for the exact amount in the contract. Share it however you like — it's a real stripe.com page, not a mockup.",
     visual: (
       <div className="flex flex-col gap-2.5">
-        <div className="flex items-center justify-between text-[12.5px]">
+        <div className="flex items-center justify-between text-[13.5px]">
           <span>Northbeam Co. deposit</span>
           <span className="font-medium">$6,200.00</span>
         </div>
@@ -83,7 +83,7 @@ const steps = [
       <div className="flex flex-col gap-2.5">
         <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</div>
         <div className="font-medium text-[26px]">$54,810.44</div>
-        <div className="flex items-center gap-2 text-[12px]" style={{ color: "#63c3b2" }}>
+        <div className="flex items-center gap-2 text-[13px]" style={{ color: "#63c3b2" }}>
           <IconCheckCircle size={13} />
           +$6,200.00 from Northbeam Co.
         </div>
@@ -131,7 +131,7 @@ export default function WalletHowItWorksPage() {
           <div key={step.n} className="relative grid gap-6 md:grid-cols-[auto_1fr_1fr] items-center py-8">
             <div className="hidden md:flex flex-col items-center self-stretch">
               <span
-                className="w-9 h-9 rounded-full grid place-items-center text-[12px] font-medium flex-none"
+                className="w-9 h-9 rounded-full grid place-items-center text-[13px] font-medium flex-none"
                 style={{ background: "var(--color-accent-900)", color: "var(--color-accent-300)", border: "1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)" }}
               >
                 {step.n}
@@ -177,12 +177,12 @@ export default function WalletHowItWorksPage() {
             <IconShieldCheck size={20} className="text-[var(--color-accent)]" />
             <div>
               <div className="text-[15px] font-medium">Real signatures. Real payments. Nothing simulated.</div>
-              <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
+              <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-0.5">
                 Signature hashes are independently verifiable. Payments run through Stripe, settling to your own account.
               </div>
             </div>
           </div>
-          <a href="/signup" className="btn btn-primary text-[13.5px] flex-none">
+          <a href="/signup" className="btn btn-primary text-[14.5px] flex-none">
             Start free <IconArrowRight size={14} />
           </a>
         </div>

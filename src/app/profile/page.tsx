@@ -105,11 +105,11 @@ export default function ProfilePage() {
         <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0 max-w-[640px]">
           <div>
             <h3 className="m-0 text-[22px]">Profile</h3>
-            <div className="text-muted text-[12.5px] mt-[3px]">Your account and preferences</div>
+            <div className="text-muted text-[13.5px] mt-[3px]">Your account and preferences</div>
           </div>
 
           {checked && !hasSession && (
-            <div className="p-3 rounded-lg text-[12.5px]" style={{ background: "color-mix(in srgb, #e0665f 15%, transparent)", color: "#e0665f" }}>
+            <div className="p-3 rounded-lg text-[13.5px]" style={{ background: "color-mix(in srgb, #e0665f 15%, transparent)", color: "#e0665f" }}>
               You&rsquo;re not signed in, so there&rsquo;s no real profile to show here. Sign in, then reload this page.
             </div>
           )}
@@ -141,11 +141,11 @@ export default function ProfilePage() {
               </div>
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2">
-                  <button className="btn btn-secondary text-[12.5px]" onClick={() => fileRef.current?.click()} disabled={!live || uploading}>
+                  <button className="btn btn-secondary text-[13.5px]" onClick={() => fileRef.current?.click()} disabled={!live || uploading}>
                     {uploading ? "Uploading…" : "Upload photo"}
                   </button>
                   {avatarUrl && (
-                    <button className="btn btn-ghost text-[12.5px]" onClick={removeAvatar} disabled={!live}>
+                    <button className="btn btn-ghost text-[13.5px]" onClick={removeAvatar} disabled={!live}>
                       Remove
                     </button>
                   )}
@@ -167,7 +167,7 @@ export default function ProfilePage() {
               <div className="text-[11px] text-[var(--color-neutral-500)] mt-1">Changing your sign-in email isn&rsquo;t supported here yet.</div>
             </div>
             {error && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
-            <button className="btn btn-primary text-[12.5px] self-start" onClick={saveProfile} disabled={!live || saving}>
+            <button className="btn btn-primary text-[13.5px] self-start" onClick={saveProfile} disabled={!live || saving}>
               {saving ? "Saving…" : saved ? "Saved!" : "Save changes"}
             </button>
           </div>

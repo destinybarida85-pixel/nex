@@ -66,7 +66,7 @@ export default function DashboardHeader() {
     <div className="flex items-end gap-3.5 flex-wrap">
       <div>
         <h3 className="m-0 text-[22px]">{greeting()}, {firstName}</h3>
-        <div className="text-muted text-[12.5px] mt-[3px]">
+        <div className="text-muted text-[13.5px] mt-[3px]">
           {today} · Here&rsquo;s where {tenantName} stands.
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function DashboardHeader() {
           <span>Year</span>
         </label>
       </div>
-      <button className="btn btn-secondary text-[13px]" onClick={downloadStatement} disabled={transactions.length === 0}>
+      <button className="btn btn-secondary text-[14px]" onClick={downloadStatement} disabled={transactions.length === 0}>
         <IconDownload size={14} />
         Statement
       </button>

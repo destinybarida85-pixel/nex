@@ -23,7 +23,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <div className="relative flex items-center gap-2.5 mb-8 no-print">
         <IconLogoMark size={26} />
         <span className="font-medium text-[16px] text-[var(--color-text)]">Primue</span>
-        <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">certificate</span>
+        <span className="text-[13px] text-[var(--color-neutral-500)] ml-1">certificate</span>
       </div>
       {children}
     </div>
@@ -53,7 +53,7 @@ export default function PublicCertificatePage({ params }: { params: Promise<{ id
       <Shell>
         <div className="relative w-full max-w-[440px] mt-8 p-8 rounded-2xl bg-[var(--color-bg)] text-[var(--color-text)] text-center" style={{ boxShadow: "var(--shadow-lg)" }}>
           <div className="text-[16px] font-medium">This certificate isn&rsquo;t available.</div>
-          <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1.5">It may have been removed, or the link is incomplete.</div>
+          <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-1.5">It may have been removed, or the link is incomplete.</div>
         </div>
       </Shell>
     );
@@ -84,7 +84,7 @@ export default function PublicCertificatePage({ params }: { params: Promise<{ id
 
   return (
     <Shell>
-      <div className="relative w-full max-w-[760px] flex flex-col gap-4 print-area">
+      <div className="relative w-full max-w-[760px] flex flex-col gap-4 print-area-cert">
         <CertificatePaper
           design={cert.design}
           recipientName={cert.recipientName}
@@ -97,14 +97,14 @@ export default function PublicCertificatePage({ params }: { params: Promise<{ id
         />
 
         <div
-          className="no-print flex items-center justify-center gap-2 text-[12px] rounded-xl py-3"
+          className="no-print flex items-center justify-center gap-2 text-[13px] rounded-xl py-3"
           style={{ background: "var(--color-bg)", color: "#63c3b2", boxShadow: "var(--shadow-sm)" }}
         >
           <IconCheckCircle size={14} />
           Verified — this certificate record is held by {cert.issuerName || "the issuer"} on Primue.
         </div>
 
-        <button className="btn btn-secondary text-[12.5px] no-print self-center" onClick={printLandscape}>
+        <button className="btn btn-secondary text-[13.5px] no-print self-center" onClick={printLandscape}>
           <IconDownload size={13} />
           Print / Save as PDF
         </button>

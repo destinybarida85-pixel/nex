@@ -56,8 +56,8 @@ export default function MobileWalletPage() {
             ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
           <div className="flex justify-center gap-2 mt-3">
-            <button className="btn btn-primary text-[12.5px]" onClick={() => setShowTransfer(true)}>Transfer</button>
-            <button className="btn btn-secondary text-[12.5px]" onClick={() => setShowReceive(true)}>Deposit</button>
+            <button className="btn btn-primary text-[13.5px]" onClick={() => setShowTransfer(true)}>Transfer</button>
+            <button className="btn btn-secondary text-[13.5px]" onClick={() => setShowReceive(true)}>Deposit</button>
             <button className="btn btn-secondary btn-icon" aria-label="QR code" onClick={() => setShowReceive(true)}>
               <IconQrCode size={15} />
             </button>
@@ -85,7 +85,7 @@ export default function MobileWalletPage() {
 
         <div className="flex flex-col gap-0.5">
           <div className="flex items-baseline py-0.5 pb-1.5">
-            <span className="text-[13px] font-medium">Transactions</span>
+            <span className="text-[14px] font-medium">Transactions</span>
             <a href="#" className="ml-auto text-[11.5px] no-underline" style={{ color: "var(--color-accent-300)" }}>
               Filter
             </a>
@@ -102,10 +102,10 @@ export default function MobileWalletPage() {
                 <t.icon size={14} />
               </span>
               <div className="flex-1 min-w-0">
-                <div className="text-[13px]">{t.name}</div>
+                <div className="text-[14px]">{t.name}</div>
                 <div className="text-[10.5px] text-[var(--color-neutral-500)]">{t.meta}</div>
               </div>
-              <span className="text-[13px]" style={{ color: t.credit ? t.color : "var(--color-neutral-400)" }}>
+              <span className="text-[14px]" style={{ color: t.credit ? t.color : "var(--color-neutral-400)" }}>
                 {t.amount}
               </span>
             </div>

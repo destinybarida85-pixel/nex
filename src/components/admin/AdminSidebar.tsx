@@ -27,7 +27,7 @@ function AdminSidebarContent({ active }: { active: string }) {
         <a
           key={item.label}
           href={item.href}
-          className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] no-underline"
+          className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[14px] no-underline"
           style={
             item.label === active
               ? { color: "var(--color-accent-300)", background: "color-mix(in srgb, var(--color-accent-900) 65%, transparent)" }

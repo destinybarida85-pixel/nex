@@ -25,7 +25,7 @@ const steps = [
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-2.5">
           <span className="w-8 h-8 rounded-[9px] grid place-items-center font-medium text-[14px]" style={{ background: "color-mix(in srgb, var(--color-accent) 20%, transparent)", color: "var(--color-accent)" }}>A</span>
-          <span className="text-[13px] font-medium">Atlas Chambers</span>
+          <span className="text-[14px] font-medium">Atlas Chambers</span>
         </div>
         <div className="flex gap-2">
           {["#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"].map((c, i) => (
@@ -46,12 +46,12 @@ const steps = [
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 p-2.5 rounded-lg" style={{ background: "var(--color-surface)" }}>
           <IconDocuments size={14} className="text-[var(--color-accent)] flex-none" />
-          <span className="text-[12px] flex-1">Service Agreement</span>
+          <span className="text-[13px] flex-1">Service Agreement</span>
         </div>
         <div className="flex items-center gap-2 p-2.5 rounded-lg" style={{ background: "var(--color-surface)" }}>
           <IconLink size={14} className="text-[var(--color-accent)] flex-none" />
-          <span className="text-[12px] flex-1">Consulting deposit</span>
-          <span className="text-[12px] font-medium">$2,000.00</span>
+          <span className="text-[13px] flex-1">Consulting deposit</span>
+          <span className="text-[13px] font-medium">$2,000.00</span>
         </div>
       </div>
     ),
@@ -71,7 +71,7 @@ const steps = [
           <span className="ml-1.5 font-mono text-[9.5px] text-[var(--color-neutral-500)]">portal.atlaschambers.com</span>
         </div>
         <div className="p-4 flex flex-col items-center gap-1.5 text-center" style={{ background: "var(--color-bg)" }}>
-          <span className="text-[13px] font-medium">Atlas Chambers</span>
+          <span className="text-[14px] font-medium">Atlas Chambers</span>
           <span className="text-[10.5px] text-[var(--color-neutral-500)]">No Primue branding visible</span>
         </div>
       </div>
@@ -87,7 +87,7 @@ const steps = [
       <div className="flex flex-col gap-2">
         <div className="text-[11px] text-[var(--color-neutral-500)] uppercase tracking-[.06em]">Consulting deposit</div>
         <div className="font-medium text-[24px]">$2,000.00</div>
-        <div className="rounded-md text-center text-[12px] font-medium py-2" style={{ background: "var(--color-accent)", color: "#0c0c10" }}>
+        <div className="rounded-md text-center text-[13px] font-medium py-2" style={{ background: "var(--color-accent)", color: "#0c0c10" }}>
           Pay $2,000.00 now
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function WhiteLabelHowItWorksPage() {
           <div key={step.n} className="relative grid gap-6 md:grid-cols-[auto_1fr_1fr] items-center py-8">
             <div className="hidden md:flex flex-col items-center self-stretch">
               <span
-                className="w-9 h-9 rounded-full grid place-items-center text-[12px] font-medium flex-none"
+                className="w-9 h-9 rounded-full grid place-items-center text-[13px] font-medium flex-none"
                 style={{ background: "var(--color-accent-900)", color: "var(--color-accent-300)", border: "1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)" }}
               >
                 {step.n}
@@ -176,12 +176,12 @@ export default function WhiteLabelHowItWorksPage() {
             <IconShieldCheck size={20} className="text-[var(--color-accent)]" />
             <div>
               <div className="text-[15px] font-medium">One real link. Your brand, your document, your price.</div>
-              <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
+              <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-0.5">
                 Not a mockup — the mini site pulls your actual document and a live Stripe payment link.
               </div>
             </div>
           </div>
-          <a href="/signup" className="btn btn-primary text-[13.5px] flex-none">
+          <a href="/signup" className="btn btn-primary text-[14.5px] flex-none">
             Start free <IconArrowRight size={14} />
           </a>
         </div>

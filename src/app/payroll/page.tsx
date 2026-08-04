@@ -87,10 +87,10 @@ export default function PayrollPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Payroll</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">{live ? "Based on your real employee directory" : "August run · Meridian Studio"}</div>
+              <div className="text-muted text-[13.5px] mt-[3px]">{live ? "Based on your real employee directory" : "August run · Meridian Studio"}</div>
             </div>
             <div className="flex-1 hidden sm:block" />
-            <button className="btn btn-primary text-[13px]" onClick={runPayroll} disabled={allPaid || processing || run.length === 0}>
+            <button className="btn btn-primary text-[14px]" onClick={runPayroll} disabled={allPaid || processing || run.length === 0}>
               <IconPayroll size={14} />
               {processing ? "Processing…" : allPaid ? "Run complete" : "Run payroll"}
             </button>
@@ -121,7 +121,7 @@ export default function PayrollPage() {
 
           <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
             <div className="card-title text-sm">This run</div>
-            <table className="table text-[12.5px] min-w-[560px]">
+            <table className="table text-[13.5px] min-w-[560px]">
               <thead>
                 <tr>
                   <th>Employee</th>
@@ -162,7 +162,7 @@ export default function PayrollPage() {
 
           <div className="card elev-sm p-[16px_18px] gap-2.5 overflow-x-auto">
             <div className="card-title text-sm">Payslip history</div>
-            <table className="table text-[12.5px] min-w-[420px]">
+            <table className="table text-[13.5px] min-w-[420px]">
               <thead>
                 <tr>
                   <th>Period</th>

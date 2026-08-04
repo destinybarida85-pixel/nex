@@ -114,7 +114,7 @@ export default function WalkthroughScene() {
                 <span className="w-3 h-3 rounded-full" style={{ background: "#63c3b2" }} />
                 <div className="ml-3 flex items-center gap-2 px-3.5 py-1.5 rounded-md flex-1" style={{ background: "var(--color-bg)" }}>
                   <span className="w-3 h-3 rounded-full flex-none" style={{ background: stage.color, transition: "background 0.5s" }} />
-                  <span className="font-mono text-[13px] text-[var(--color-neutral-500)]">{stage.url}</span>
+                  <span className="font-mono text-[14px] text-[var(--color-neutral-500)]">{stage.url}</span>
                 </div>
               </div>
 
@@ -220,7 +220,7 @@ function AskScreen({ typed }: { typed: boolean }) {
     <div className="flex flex-col gap-4 h-full">
       <div className="flex items-center gap-2">
         <IconSparkle size={17} className="text-[var(--color-accent)]" />
-        <span className="text-[12.5px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">Primue AI</span>
+        <span className="text-[13.5px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">Primue AI</span>
       </div>
       <div className="flex-1 flex flex-col justify-center gap-3">
         <div className="rounded-xl p-4 text-[16px] self-end max-w-[68%] leading-[1.5]" style={{ background: "var(--color-accent-900)", color: "var(--color-text)" }}>
@@ -240,10 +240,10 @@ function DraftScreen({ fill }: { fill: boolean }) {
   return (
     <div className="flex gap-5 h-full">
       <div className="w-[36%] flex flex-col gap-2.5">
-        <div className="rounded-lg p-3 text-[13px]" style={{ background: "var(--color-accent-900)", color: "var(--color-text)" }}>
+        <div className="rounded-lg p-3 text-[14px]" style={{ background: "var(--color-accent-900)", color: "var(--color-text)" }}>
           Draft a services agreement…
         </div>
-        <div className="rounded-lg p-3 text-[13px] leading-[1.5]" style={{ background: "var(--color-surface)", color: "var(--color-neutral-400)" }}>
+        <div className="rounded-lg p-3 text-[14px] leading-[1.5]" style={{ background: "var(--color-surface)", color: "var(--color-neutral-400)" }}>
           Done — drafted with a $6,200 deposit clause. Review it →
         </div>
       </div>
@@ -253,7 +253,7 @@ function DraftScreen({ fill }: { fill: boolean }) {
         <div className="h-px my-1" style={{ background: "var(--color-divider)" }} />
         {["1. Scope of Services", "2. Deposit — $6,200 due on signing", "3. Term & Termination"].map((h, i) => (
           <div key={i} className="flex flex-col gap-1.5">
-            <div className="text-[12px] font-medium" style={{ color: "var(--color-accent-300)" }}>{h}</div>
+            <div className="text-[13px] font-medium" style={{ color: "var(--color-accent-300)" }}>{h}</div>
             {[100, 80].map((w, j) => (
               <span
                 key={j}
@@ -291,8 +291,8 @@ function SignScreen({ draw }: { draw: boolean }) {
         </svg>
         <div className="h-px" style={{ background: "var(--color-divider)" }} />
         <div className="flex items-center justify-between">
-          <span className="text-[12px] text-[var(--color-neutral-500)]">Signature</span>
-          <span className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: "#63c3b2" }}>
+          <span className="text-[13px] text-[var(--color-neutral-500)]">Signature</span>
+          <span className="flex items-center gap-1.5 text-[14px] font-medium" style={{ color: "#63c3b2" }}>
             <IconCheckCircle size={14} /> Signed &amp; sealed
           </span>
         </div>
@@ -307,10 +307,10 @@ function PayScreen({ paid }: { paid: boolean }) {
     <div className="flex flex-col gap-3 h-full items-center justify-center">
       <div className="w-[400px] rounded-xl overflow-hidden border" style={{ borderColor: "var(--color-divider)" }}>
         <div className="px-5 py-3 text-center" style={{ background: "var(--color-surface)" }}>
-          <span className="text-[13px] text-[var(--color-neutral-500)]">Northbeam Co. · Secure checkout</span>
+          <span className="text-[14px] text-[var(--color-neutral-500)]">Northbeam Co. · Secure checkout</span>
         </div>
         <div className="p-6 flex flex-col items-center gap-4" style={{ background: "var(--color-bg)" }}>
-          <span className="text-[12px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">Deposit</span>
+          <span className="text-[13px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">Deposit</span>
           <span className="text-[36px] font-medium">$6,200.00</span>
           <div
             className="w-full rounded-lg text-center py-3 text-[15px] font-medium flex items-center justify-center gap-2"
@@ -329,7 +329,7 @@ function LandScreen({ balance }: { balance: number }) {
   return (
     <div className="flex flex-col gap-4 h-full justify-center">
       <div className="rounded-xl p-6 flex flex-col gap-3.5" style={{ background: "linear-gradient(150deg, var(--color-surface), color-mix(in srgb, var(--color-accent-900) 55%, var(--color-surface)))" }}>
-        <span className="text-[12px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</span>
+        <span className="text-[13px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</span>
         <span className="text-[44px] font-medium tracking-[-0.015em] leading-none">
           ${balance.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
         </span>

@@ -122,7 +122,7 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
 
         <div className="flex flex-col p-1.5" style={{ maxHeight: "56vh", overflowY: "auto" }}>
           {results.length === 0 ? (
-            <div className="text-[12.5px] text-[var(--color-neutral-500)] text-center py-8">
+            <div className="text-[13.5px] text-[var(--color-neutral-500)] text-center py-8">
               No matches for &ldquo;{query}&rdquo;.
             </div>
           ) : (
@@ -131,7 +131,7 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
                 key={item.href + item.label}
                 onClick={() => go(item.href)}
                 onMouseEnter={() => setActiveIndex(i)}
-                className="flex items-center gap-2.5 px-2.5 py-[9px] rounded-md text-[13px] text-left cursor-pointer transition-colors"
+                className="flex items-center gap-2.5 px-2.5 py-[9px] rounded-md text-[14px] text-left cursor-pointer transition-colors"
                 style={{
                   background: i === activeIndex ? "var(--color-surface)" : "transparent",
                   color: "var(--color-text)",

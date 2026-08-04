@@ -81,21 +81,21 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <IconGlobe size={14} className="text-[var(--color-accent)]" />
-              <div className="card-title text-[13px]">Brand configuration</div>
+              <div className="card-title text-[14px]">Brand configuration</div>
             </div>
             <div className="card elev-sm gap-2.5 p-4">
-              <div className="flex items-center justify-between text-[12.5px]">
+              <div className="flex items-center justify-between text-[13.5px]">
                 <span className="text-[var(--color-neutral-500)]">Brand color</span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded-[4px]" style={{ background: tenant.brand }} />
                   {tenant.brandLabel}
                 </span>
               </div>
-              <div className="flex items-center justify-between text-[12.5px]">
+              <div className="flex items-center justify-between text-[13.5px]">
                 <span className="text-[var(--color-neutral-500)]">Custom domain</span>
                 <span className="font-mono text-[11px]">{tenant.domain}</span>
               </div>
-              <div className="flex items-center justify-between text-[12.5px]">
+              <div className="flex items-center justify-between text-[13.5px]">
                 <span className="text-[var(--color-neutral-500)]">&ldquo;Powered by&rdquo; badge</span>
                 <span className="tag tag-outline text-[9.5px]">{tenant.poweredBy ? "On" : "Off"}</span>
               </div>
@@ -105,14 +105,14 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <IconMessages size={14} className="text-[var(--color-accent)]" />
-              <div className="card-title text-[13px]">Contact</div>
+              <div className="card-title text-[14px]">Contact</div>
             </div>
             <div className="card elev-sm gap-2 p-4">
-              <div className="flex items-center justify-between text-[12.5px]">
+              <div className="flex items-center justify-between text-[13.5px]">
                 <span className="text-[var(--color-neutral-500)]">Primary contact</span>
                 <span>{tenant.contact}</span>
               </div>
-              <div className="flex items-center justify-between text-[12.5px]">
+              <div className="flex items-center justify-between text-[13.5px]">
                 <span className="text-[var(--color-neutral-500)]">Tenant since</span>
                 <span>{tenant.joined}</span>
               </div>
@@ -120,10 +120,10 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
           </div>
 
           <div>
-            <div className="card-title text-[13px] mb-2.5">Recent activity</div>
+            <div className="card-title text-[14px] mb-2.5">Recent activity</div>
             <div className="flex flex-col gap-2.5">
               {tenant.activity.map((a) => (
-                <div key={a.label} className="flex items-center gap-2.5 text-[12px]">
+                <div key={a.label} className="flex items-center gap-2.5 text-[13px]">
                   <span className="w-[6px] h-[6px] rounded-full flex-none" style={{ background: "var(--color-accent)" }} />
                   <span className="flex-1">{a.label}</span>
                   <span className="text-[var(--color-neutral-500)] font-mono text-[10.5px]">{a.meta}</span>
@@ -138,8 +138,8 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
         </div>
 
         <div className="flex gap-2 p-4 border-t border-[var(--color-divider)]">
-          <button className="btn btn-secondary flex-1 text-[12.5px]">View as tenant</button>
-          <button className="btn btn-secondary flex-1 text-[12.5px]">Suspend tenant</button>
+          <button className="btn btn-secondary flex-1 text-[13.5px]">View as tenant</button>
+          <button className="btn btn-secondary flex-1 text-[13.5px]">Suspend tenant</button>
         </div>
       </div>
     </div>

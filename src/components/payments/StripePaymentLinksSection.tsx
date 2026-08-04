@@ -89,7 +89,7 @@ export default function StripePaymentLinksSection() {
   if (loading) {
     return (
       <div className="card elev-sm p-[16px_18px]">
-        <div className="text-[12.5px] text-[var(--color-neutral-500)]">Loading payment links…</div>
+        <div className="text-[13.5px] text-[var(--color-neutral-500)]">Loading payment links…</div>
       </div>
     );
   }
@@ -103,7 +103,7 @@ export default function StripePaymentLinksSection() {
           <div className="card-title text-sm">Payment links</div>
         </div>
         <div className="overflow-x-auto">
-          <table className="table text-[12.5px] min-w-[440px]">
+          <table className="table text-[13.5px] min-w-[440px]">
             <thead>
               <tr>
                 <th>Name</th>
@@ -139,7 +139,7 @@ export default function StripePaymentLinksSection() {
         <div className="card-title text-sm">Payment links</div>
         <span className="tag tag-accent text-[9.5px]">Stripe connected</span>
         <div className="flex-1" />
-        <button className="btn btn-secondary text-[12px] gap-1.5" onClick={() => setFormOpen((v) => !v)}>
+        <button className="btn btn-secondary text-[13px] gap-1.5" onClick={() => setFormOpen((v) => !v)}>
           <IconPlus size={13} />
           New link
         </button>
@@ -147,15 +147,15 @@ export default function StripePaymentLinksSection() {
 
       {formOpen && (
         <div className="flex flex-col gap-2 p-3 rounded-lg" style={{ background: "var(--color-bg)" }}>
-          <input className="input text-[12.5px]" placeholder="What's this for? (e.g. Consulting deposit)" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input className="input text-[13.5px]" placeholder="What's this for? (e.g. Consulting deposit)" value={title} onChange={(e) => setTitle(e.target.value)} />
           <div className="flex gap-2">
-            <input className="input text-[12.5px]" placeholder="Amount (USD)" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
-            <select className="input text-[12.5px]" style={{ maxWidth: 130 }} value={kind} onChange={(e) => setKind(e.target.value as "one_time" | "recurring")}>
+            <input className="input text-[13.5px]" placeholder="Amount (USD)" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
+            <select className="input text-[13.5px]" style={{ maxWidth: 130 }} value={kind} onChange={(e) => setKind(e.target.value as "one_time" | "recurring")}>
               <option value="one_time">One-time</option>
               <option value="recurring">Recurring</option>
             </select>
             {kind === "recurring" && (
-              <select className="input text-[12.5px]" style={{ maxWidth: 110 }} value={interval} onChange={(e) => setIntervalValue(e.target.value as typeof interval)}>
+              <select className="input text-[13.5px]" style={{ maxWidth: 110 }} value={interval} onChange={(e) => setIntervalValue(e.target.value as typeof interval)}>
                 <option value="day">Daily</option>
                 <option value="week">Weekly</option>
                 <option value="month">Monthly</option>
@@ -163,15 +163,15 @@ export default function StripePaymentLinksSection() {
               </select>
             )}
           </div>
-          {error && <div className="text-[12px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
-          <button className="btn btn-primary text-[12.5px]" style={{ width: "fit-content" }} onClick={createLink} disabled={creating}>
+          {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+          <button className="btn btn-primary text-[13.5px]" style={{ width: "fit-content" }} onClick={createLink} disabled={creating}>
             {creating ? "Creating…" : "Create real payment link"}
           </button>
         </div>
       )}
 
       <div className="overflow-x-auto">
-        <table className="table text-[12.5px] min-w-[520px]">
+        <table className="table text-[13.5px] min-w-[520px]">
           <thead>
             <tr>
               <th>Name</th>

@@ -61,7 +61,7 @@ export default function PaymentsPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Payments</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">
+              <div className="text-muted text-[13.5px] mt-[3px]">
                 {live ? "Real payment links and transactions" : "Links, recurring billing and transfers for Meridian Studio"}
               </div>
             </div>

@@ -31,7 +31,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <div className="relative flex items-center gap-2.5 mb-8 no-print">
         <IconLogoMark size={26} />
         <span className="font-medium text-[16px] text-[var(--color-text)]">Primue</span>
-        <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">invoice</span>
+        <span className="text-[13px] text-[var(--color-neutral-500)] ml-1">invoice</span>
       </div>
       {children}
     </div>
@@ -64,7 +64,7 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
           style={{ boxShadow: "var(--shadow-lg)" }}
         >
           <div className="text-[16px] font-medium">This invoice isn&rsquo;t available.</div>
-          <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-1.5">
+          <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-1.5">
             It may have been removed, or the link is incomplete.
           </div>
         </div>
@@ -112,13 +112,13 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
                 <div className="text-[20px] font-medium tracking-[0.04em]" style={{ color: accent }}>
                   INVOICE
                 </div>
-                <div className="text-[12px] mt-0.5 font-mono" style={{ color: "#6b6b76" }}>
+                <div className="text-[13px] mt-0.5 font-mono" style={{ color: "#6b6b76" }}>
                   INV-{shortId}
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-8 flex-wrap text-[12px]" style={{ color: "#6b6b76" }}>
+            <div className="flex gap-8 flex-wrap text-[13px]" style={{ color: "#6b6b76" }}>
               <div>
                 <div className="uppercase tracking-[.06em] text-[10px]">Issued</div>
                 <div style={{ color: "#1a1a1f" }}>{longDate(invoice.issuedAt)}</div>
@@ -139,7 +139,7 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
               </div>
             </div>
 
-            <table className="w-full text-[12.5px]" style={{ borderCollapse: "collapse" }}>
+            <table className="w-full text-[13.5px]" style={{ borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: `1.5px solid ${accent}` }}>
                   <th className="text-left pb-2 font-medium" style={{ color: "#6b6b76" }}>Description</th>
@@ -158,7 +158,7 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
             </table>
 
             <div className="flex justify-end">
-              <div className="w-[220px] flex flex-col gap-1.5 text-[12.5px]">
+              <div className="w-[220px] flex flex-col gap-1.5 text-[13.5px]">
                 <div
                   className="flex justify-between text-[17px] font-medium pt-1.5"
                   style={{ borderTop: `1.5px solid ${accent}`, color: "#1a1a1f" }}
@@ -171,7 +171,7 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
 
             {settled ? (
               <div
-                className="rounded-lg p-4 flex items-center gap-2.5 text-[12.5px]"
+                className="rounded-lg p-4 flex items-center gap-2.5 text-[13.5px]"
                 style={{ background: "#e6f4ec", color: "#1f7a4d" }}
               >
                 <IconCheckCircle size={16} />
@@ -193,7 +193,7 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
             ) : (
-              <div className="rounded-lg p-4 text-[12px]" style={{ background: "#eceef0", color: "#4a4a54" }}>
+              <div className="rounded-lg p-4 text-[13px]" style={{ background: "#eceef0", color: "#4a4a54" }}>
                 This invoice is no longer accepting payment. Contact {from.name || "the sender"} if you believe
                 that&rsquo;s a mistake.
               </div>
@@ -208,7 +208,7 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
         </div>
 
         <button
-          className="btn btn-secondary text-[12.5px] no-print self-center"
+          className="btn btn-secondary text-[13.5px] no-print self-center"
           onClick={() => window.print()}
         >
           <IconDownload size={13} />

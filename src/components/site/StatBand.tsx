@@ -18,7 +18,7 @@ export default function StatBand() {
           <ScrollReveal key={s.label} delay={i * 0.06}>
             <div className="nx-stat-tile">
               <div className="font-medium text-[34px] tracking-[-0.01em]">{s.value}</div>
-              <div className="text-[12.5px] text-[var(--color-neutral-400)] mt-1">{s.label}</div>
+              <div className="text-[13.5px] text-[var(--color-neutral-400)] mt-1">{s.label}</div>
             </div>
           </ScrollReveal>
         ))}

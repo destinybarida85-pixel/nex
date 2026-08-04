@@ -22,7 +22,7 @@ const steps = [
     copy: "Send any document for signature. Your signer opens a link on any device — phone, tablet, laptop — and doesn't need an Primue account of their own. Same reason every real e-sign service works this way.",
     visual: (
       <div className="flex flex-col gap-2">
-        <div className="text-[12.5px] font-medium">Master Services Agreement</div>
+        <div className="text-[13.5px] font-medium">Master Services Agreement</div>
         <div className="text-[11px] text-[var(--color-neutral-500)]">Sent to Halcyon Ventures · Requires signature</div>
         <div className="flex gap-1.5 mt-1">
           {["Review", "Verify", "Sign", "Complete"].map((s, i) => (
@@ -69,7 +69,7 @@ const steps = [
     copy: "The signed document gets a certificate ID tied to its hash chain. Anyone can independently confirm the document hasn't been altered since it was signed — that's what makes it actually provable, not just logged.",
     visual: (
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-1.5 text-[12.5px]">
+        <div className="flex items-center gap-1.5 text-[13.5px]">
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#63c3b2" }} />
           <span style={{ color: "#63c3b2" }} className="font-medium">Signed &amp; sealed</span>
         </div>
@@ -111,7 +111,7 @@ export default function SigningHowItWorksPage() {
           <div key={step.n} className="relative grid gap-6 md:grid-cols-[auto_1fr_1fr] items-center py-8">
             <div className="hidden md:flex flex-col items-center self-stretch">
               <span
-                className="w-9 h-9 rounded-full grid place-items-center text-[12px] font-medium flex-none"
+                className="w-9 h-9 rounded-full grid place-items-center text-[13px] font-medium flex-none"
                 style={{ background: "var(--color-accent-900)", color: "var(--color-accent-300)", border: "1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)" }}
               >
                 {step.n}
@@ -148,12 +148,12 @@ export default function SigningHowItWorksPage() {
             <IconShieldCheck size={20} className="text-[var(--color-accent)]" />
             <div>
               <div className="text-[15px] font-medium">Independently verifiable, not just internally logged.</div>
-              <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
+              <div className="text-[13.5px] text-[var(--color-neutral-500)] mt-0.5">
                 The hash-chain math works the same way regardless of who's asking — it's not a trust-us claim.
               </div>
             </div>
           </div>
-          <a href="/signup" className="btn btn-primary text-[13.5px] flex-none">
+          <a href="/signup" className="btn btn-primary text-[14.5px] flex-none">
             Start free <IconArrowRight size={14} />
           </a>
         </div>

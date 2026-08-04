@@ -17,7 +17,7 @@ export default function HeroBalance() {
         <div>
           <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Wallet balance</div>
           <div className="font-medium text-[42px] tracking-[-0.015em] mt-1.5">$248,610.44</div>
-          <div className="text-[12px] text-[var(--color-neutral-500)] mt-1">•• 4417 · Column Bank N.A.</div>
+          <div className="text-[13px] text-[var(--color-neutral-500)] mt-1">•• 4417 · Column Bank N.A.</div>
         </div>
         <svg viewBox="0 0 400 60" className="w-full h-auto block" role="img" aria-label="Balance trend, 30 days">
           <defs>

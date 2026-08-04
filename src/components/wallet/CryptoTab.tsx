@@ -145,7 +145,7 @@ export default function CryptoTab() {
               {asset.symbol}
             </span>
             <div className="flex-1 min-w-0">
-              <div className="text-[13.5px] font-medium">{asset.name}</div>
+              <div className="text-[14.5px] font-medium">{asset.name}</div>
               <div className="text-[11px] text-[var(--color-neutral-500)]">
                 ${asset.price.toLocaleString()} / {asset.key.toUpperCase()}
               </div>
@@ -187,20 +187,20 @@ export default function CryptoTab() {
           {sendOpen === asset.key && (
             <div className="flex flex-col gap-2 p-3 rounded-lg" style={{ background: "var(--color-bg)" }}>
               <input
-                className="input text-[12px] font-mono"
+                className="input text-[13px] font-mono"
                 placeholder={`Recipient ${asset.key.toUpperCase()} address`}
                 value={sendTo}
                 onChange={(e) => setSendTo(e.target.value)}
               />
               <div className="flex gap-1.5">
                 <input
-                  className="input text-[12px]"
+                  className="input text-[13px]"
                   placeholder="Amount"
                   inputMode="decimal"
                   value={sendAmount}
                   onChange={(e) => setSendAmount(e.target.value)}
                 />
-                <button className="btn btn-primary text-[12px] flex-none" onClick={() => submitSend(asset)}>
+                <button className="btn btn-primary text-[13px] flex-none" onClick={() => submitSend(asset)}>
                   Send
                 </button>
               </div>
@@ -213,7 +213,7 @@ export default function CryptoTab() {
       ))}
 
       <div className="card elev-sm p-4 gap-2.5">
-        <div className="card-title text-[13px]">Recent crypto activity</div>
+        <div className="card-title text-[14px]">Recent crypto activity</div>
         <div className="flex flex-col">
           {activity.map((tx) => (
             <div key={tx.id} className="flex items-center gap-2.5 py-2">
@@ -221,10 +221,10 @@ export default function CryptoTab() {
                 {tx.type === "Received" ? <IconArrowDownCircle size={16} /> : <IconArrowUpCircle size={16} />}
               </span>
               <div className="flex-1 min-w-0">
-                <div className="text-[12.5px]">{tx.type} {tx.asset}</div>
+                <div className="text-[13.5px]">{tx.type} {tx.asset}</div>
                 <div className="text-[10px] font-mono text-[var(--color-neutral-600)] truncate">{tx.hash.slice(0, 24)}…</div>
               </div>
-              <span className="text-[12.5px]" style={{ color: tx.type === "Received" ? "#63c3b2" : "var(--color-neutral-400)" }}>
+              <span className="text-[13.5px]" style={{ color: tx.type === "Received" ? "#63c3b2" : "var(--color-neutral-400)" }}>
                 {tx.type === "Received" ? "+" : "-"}{tx.amount} {tx.asset}
               </span>
             </div>

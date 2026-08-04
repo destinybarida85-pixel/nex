@@ -117,10 +117,10 @@ export default function ProjectsPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div>
               <h3 className="m-0 text-[22px]">Projects</h3>
-              <div className="text-muted text-[12.5px] mt-[3px]">Track the work behind each client{live && " · saved to your account"}</div>
+              <div className="text-muted text-[13.5px] mt-[3px]">Track the work behind each client{live && " · saved to your account"}</div>
             </div>
             <div className="flex-1 hidden sm:block" />
-            <button className="btn btn-primary text-[13px]" onClick={() => setFormOpen((v) => !v)}>
+            <button className="btn btn-primary text-[14px]" onClick={() => setFormOpen((v) => !v)}>
               <IconPlus size={14} />
               New project
             </button>
@@ -129,16 +129,16 @@ export default function ProjectsPage() {
           {formOpen && (
             <div className="card elev-sm p-4 gap-2.5">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                <input className="input text-[13px]" placeholder="Project name" value={name} onChange={(e) => setName(e.target.value)} />
-                <input className="input text-[13px]" placeholder="Client (optional)" value={client} onChange={(e) => setClient(e.target.value)} />
-                <input className="input text-[13px]" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Project name" value={name} onChange={(e) => setName(e.target.value)} />
+                <input className="input text-[14px]" placeholder="Client (optional)" value={client} onChange={(e) => setClient(e.target.value)} />
+                <input className="input text-[14px]" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
               </div>
-              {error && <div className="text-[12px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+              {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
               <div className="flex gap-1.5">
-                <button className="btn btn-primary text-[12.5px] flex-none" onClick={addProject} disabled={creating}>
+                <button className="btn btn-primary text-[13.5px] flex-none" onClick={addProject} disabled={creating}>
                   {creating ? "Creating…" : "Create project"}
                 </button>
-                <button className="btn btn-secondary text-[12.5px] flex-none" onClick={() => setFormOpen(false)}>Cancel</button>
+                <button className="btn btn-secondary text-[13.5px] flex-none" onClick={() => setFormOpen(false)}>Cancel</button>
               </div>
             </div>
           )}
@@ -154,7 +154,7 @@ export default function ProjectsPage() {
 
           <div className="card elev-sm p-0 overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-[13px]" style={{ borderCollapse: "collapse" }}>
+              <table className="w-full text-[14px]" style={{ borderCollapse: "collapse" }}>
                 <thead>
                   <tr className="text-left text-[11px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">
                     <th className="p-[12px_16px] font-normal">Project</th>

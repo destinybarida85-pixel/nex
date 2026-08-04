@@ -106,7 +106,7 @@ body {
 
 body {
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.55;
   font-weight: 400;
 }
@@ -334,30 +334,16 @@ textarea.input { min-height: 90px; resize: vertical; }
 @media print {
   body * { visibility: hidden; }
   .print-area, .print-area * { visibility: visible; }
-  .print-area {
-    /* fixed, not absolute: this is often nested inside a position:relative card
-       (e.g. the signing flow's modal-style container), and absolute positioning
-       would resolve against that nearest ancestor instead of the actual page,
-       leaving a block of blank space above the content when printed. Fixed
-       positioning anchors to the page regardless of ancestor positioning. */
-    position: fixed; inset: 0; width: 100%; padding: 0;
+  /* display:none — not just visibility:hidden — on Sidebar/TopBar and every
+     other .no-print element, so their layout space is actually reclaimed
+     instead of merely made invisible. visibility:hidden alone was leaving a
+     Sidebar-width gap on the left and a TopBar-height gap up top on every
+     page that has them (assistant, templates, certificates), which is what
+     read as "lots of white space, I just need only the [content]". */
+  .no-print { display: none !important; }
+
+  .print-area, .print-area-cert {
     background: #fff !important; color: #1a1a1f !important; box-shadow: none !important;
-    /* Several consumers (certificate, invoice, DocumentPanel) also carry a
-       max-width narrower than the page. `inset:0` pins left AND right, but a
-       max-width cap stops the box from actually reaching the right edge —
-       browsers resolve that by leaving it pinned to the left, with the cap's
-       shortfall sitting as dead space on the right. `margin: 0 auto` (auto on
-       the sides only, not top/bottom, which stay 0 since inset already pins
-       those) is what makes an inset+max-width box centre instead of hug the
-       left edge — the same trick as centering a fixed-width block. */
-    margin: 0 auto;
-    /* Vertically centres whatever flex-column content the consumer already
-       declares (every current .print-area user sets its own flex/flex-col on
-       this same element) without touching display or flex-direction —
-       CompleteStep's certificate has two stacked print-visible blocks and
-       must stay in a column, so this only adds centering, it doesn't impose
-       a layout of its own. */
-    justify-content: center;
     /* Cards inside print-area (e.g. the signing certificate/audit card) are
        themed with these custom properties for the app's dark UI. Redefining
        them here — rather than patching every component individually — makes
@@ -374,7 +360,31 @@ textarea.input { min-height: 90px; resize: vertical; }
     --color-neutral-600: #86868f;
     --color-neutral-700: #b0b0b8;
   }
-  .no-print { display: none !important; }
+  /* Plain static flow, centred horizontally only. Used by anything that can
+     legitimately span more than one printed page — documents, invoices,
+     signed contracts. This class used to also set position:fixed;inset:0 to
+     escape ancestor padding, which worked for a one-page certificate but
+     actively breaks anything longer: Chrome (and most engines) re-paints a
+     fixed-position element on EVERY page of a multi-page print job, so a
+     two-page offer letter came out as the same page repeated, each one
+     restarting from the top — exactly the "scattered" duplication this was
+     reported as. Static flow has no such repeat behaviour and prints
+     correctly across any number of pages; it doesn't need fixed positioning
+     any more now that Sidebar/TopBar are properly display:none above. */
+  .print-area {
+    padding: 0;
+    margin: 0 auto;
+  }
+  /* Certificate-only: a single fixed-size landscape canvas, always exactly
+     one page, so there's nothing for position:fixed to duplicate onto — safe
+     here specifically because it can never be page 2. Kept full-bleed and
+     vertically centred, which is what an edge-to-edge certificate wants and
+     a multi-page document doesn't. */
+  .print-area-cert {
+    position: fixed; inset: 0; width: 100%; padding: 0;
+    margin: 0 auto;
+    display: flex; flex-direction: column; justify-content: center;
+  }
 }
 
 /* — live account feed (homepage wallet demo) — */

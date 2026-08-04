@@ -3,7 +3,7 @@ import { departments } from "./directory";
 export default function OrgChart() {
   return (
     <div className="card elev-sm p-[24px_20px] flex flex-col items-center gap-0">
-      <div className="card-title text-[13px] self-start mb-5">Organization chart</div>
+      <div className="card-title text-[14px] self-start mb-5">Organization chart</div>
 
       <div
         className="flex items-center gap-2.5 rounded-xl px-4 py-2.5"
@@ -16,7 +16,7 @@ export default function OrgChart() {
           A
         </span>
         <div>
-          <div className="text-[12.5px] font-medium">Amara Osei</div>
+          <div className="text-[13.5px] font-medium">Amara Osei</div>
           <div className="text-[10.5px] text-[var(--color-neutral-400)]">CEO &amp; Founder</div>
         </div>
       </div>
@@ -39,7 +39,7 @@ export default function OrgChart() {
                 >
                   {d.initial}
                 </span>
-                <div className="text-[12px] font-medium">{d.name}</div>
+                <div className="text-[13px] font-medium">{d.name}</div>
                 <div className="text-[10px] text-[var(--color-neutral-500)]">{d.head}</div>
                 <span className="tag tag-neutral text-[9px]">{d.count} reports</span>
               </div>

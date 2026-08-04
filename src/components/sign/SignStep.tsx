@@ -137,7 +137,7 @@ export default function SignStep({
         <IconPen size={18} className="text-[var(--color-accent)]" />
         <div>
           <h4 className="m-0 text-[18px]">Adopt your signature</h4>
-          {documentTitle && <div className="text-[12px] text-[var(--color-neutral-500)] mt-0.5">{documentTitle}</div>}
+          {documentTitle && <div className="text-[13px] text-[var(--color-neutral-500)] mt-0.5">{documentTitle}</div>}
         </div>
       </div>
 
@@ -198,7 +198,7 @@ export default function SignStep({
           />
           <div className="flex items-center justify-between">
             {penPicker}
-            <button className="btn btn-ghost text-[12px]" onClick={clearCanvas}>Clear</button>
+            <button className="btn btn-ghost text-[13px]" onClick={clearCanvas}>Clear</button>
           </div>
         </div>
       ) : (
@@ -224,12 +224,12 @@ export default function SignStep({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" className="btn btn-secondary text-[12px]" onClick={() => fileInputRef.current?.click()}>
+            <button type="button" className="btn btn-secondary text-[13px]" onClick={() => fileInputRef.current?.click()}>
               <IconCamera size={12} />
               {uploadedSignature ? "Replace photo" : "Upload photo"}
             </button>
             {uploadedSignature && (
-              <button type="button" className="btn btn-ghost text-[12px]" onClick={() => setUploadedSignature(null)}>
+              <button type="button" className="btn btn-ghost text-[13px]" onClick={() => setUploadedSignature(null)}>
                 Remove
               </button>
             )}

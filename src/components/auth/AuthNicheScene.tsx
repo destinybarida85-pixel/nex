@@ -92,7 +92,7 @@ export default function AuthNicheScene() {
         >
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#63c3b2" }} />
-            <span className="text-[12px] font-medium" style={{ color: "#63c3b2" }}>Signed &amp; sealed</span>
+            <span className="text-[13px] font-medium" style={{ color: "#63c3b2" }}>Signed &amp; sealed</span>
           </div>
           <div className="text-[9px] font-mono text-[var(--color-neutral-600)]">Certificate OG-CERT-8F21</div>
         </GlassCard>
@@ -107,7 +107,7 @@ export default function AuthNicheScene() {
           z={4}
           delay="0.45s"
         >
-          <div className="text-[13px] font-medium" style={{ color: "#e896c9" }}>▲ 18.4%</div>
+          <div className="text-[14px] font-medium" style={{ color: "#e896c9" }}>▲ 18.4%</div>
           <svg viewBox="0 0 150 34" className="w-full h-auto block" role="presentation">
             <polyline
               points="0,28 24,22 48,25 72,14 96,17 120,6 150,9"

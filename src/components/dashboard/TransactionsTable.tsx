@@ -56,10 +56,10 @@ export default function TransactionsTable() {
       <div className="flex items-baseline gap-2.5">
         <div className="card-title text-[15px]">Recent transactions</div>
         <div className="flex-1" />
-        <a href="/wallet" className="btn btn-ghost text-[12.5px]">View all</a>
+        <a href="/wallet" className="btn btn-ghost text-[13.5px]">View all</a>
       </div>
       <div className="overflow-x-auto -mx-1">
-        <table className="table text-[13px] min-w-[520px] px-1">
+        <table className="table text-[14px] min-w-[520px] px-1">
           <thead>
             <tr>
               <th>Counterparty</th>

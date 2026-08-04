@@ -90,11 +90,11 @@ export default function BillingPage() {
         <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0 max-w-[900px]">
           <div>
             <h3 className="m-0 text-[22px]">Billing</h3>
-            <div className="text-muted text-[12.5px] mt-[3px]">Manage your Primue subscription.</div>
+            <div className="text-muted text-[13.5px] mt-[3px]">Manage your Primue subscription.</div>
           </div>
 
           {loading ? (
-            <div className="text-[12.5px] text-[var(--color-neutral-500)]">Loading…</div>
+            <div className="text-[13.5px] text-[var(--color-neutral-500)]">Loading…</div>
           ) : isActive ? (
             <div className="card elev-sm p-5 gap-3">
               <div className="flex items-center gap-2">
@@ -104,10 +104,10 @@ export default function BillingPage() {
                 </div>
                 <span className="tag tag-accent text-[9.5px] ml-auto">{status}</span>
               </div>
-              <button className="btn btn-secondary text-[12.5px]" style={{ width: "fit-content" }} onClick={openPortal} disabled={working === "portal"}>
+              <button className="btn btn-secondary text-[13.5px]" style={{ width: "fit-content" }} onClick={openPortal} disabled={working === "portal"}>
                 {working === "portal" ? "Loading…" : "Manage billing"}
               </button>
-              {error && <div className="text-[12px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+              {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
             </div>
           ) : (
             <>
@@ -116,13 +116,13 @@ export default function BillingPage() {
                   <div key={p.key} className="card elev-sm p-5 gap-2.5">
                     <div className="card-title text-[15px]">{p.name}</div>
                     <div className="font-medium text-[26px]">{p.price}</div>
-                    <div className="flex flex-col gap-1.5 text-[12.5px] text-[var(--color-neutral-300)] mt-1">
+                    <div className="flex flex-col gap-1.5 text-[13.5px] text-[var(--color-neutral-300)] mt-1">
                       {p.features.map((f) => (
                         <span key={f}>· {f}</span>
                       ))}
                     </div>
                     <button
-                      className="btn btn-primary text-[12.5px] mt-2"
+                      className="btn btn-primary text-[13.5px] mt-2"
                       onClick={() => subscribe(p.key)}
                       disabled={working === p.key}
                     >
@@ -132,7 +132,7 @@ export default function BillingPage() {
                   </div>
                 ))}
               </div>
-              {error && <div className="text-[12px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+              {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
             </>
           )}
         </main>

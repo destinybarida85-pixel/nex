@@ -29,7 +29,7 @@ export default function AdminPage() {
             </div>
           </div>
           <div className="flex-1 hidden sm:block" />
-          <button className="btn btn-primary text-[12.5px]">
+          <button className="btn btn-primary text-[13.5px]">
             <IconPlus size={13} />
             New tenant
           </button>
@@ -58,7 +58,7 @@ export default function AdminPage() {
             </div>
           </div>
           <div className="overflow-x-auto">
-          <table className="table text-[12.5px] min-w-[560px]">
+          <table className="table text-[13.5px] min-w-[560px]">
             <thead>
               <tr>
                 <th>Organization</th>

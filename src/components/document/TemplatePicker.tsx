@@ -46,17 +46,17 @@ export default function TemplatePicker({
       <div className="dialog-backdrop" onClick={onClose}>
         <div className="dialog" style={{ maxWidth: 780, width: "100%" }} onClick={(e) => e.stopPropagation()}>
           <div className="dialog-title flex items-center gap-2">
-            <button className="btn btn-ghost text-[12px]" onClick={() => setChosen(null)}>
+            <button className="btn btn-ghost text-[13px]" onClick={() => setChosen(null)}>
               ← Templates
             </button>
-            <span className="text-[13px] text-[var(--color-neutral-400)] truncate">{chosen.name}</span>
+            <span className="text-[14px] text-[var(--color-neutral-400)] truncate">{chosen.name}</span>
             <button className="btn btn-icon btn-ghost ml-auto" aria-label="Close" onClick={onClose}>
               <IconX size={15} />
             </button>
           </div>
 
           <div className="dialog-body flex flex-col gap-4" style={{ maxHeight: "68vh", overflowY: "auto" }}>
-            <div className="text-[12.5px] text-[var(--color-neutral-400)]">
+            <div className="text-[13.5px] text-[var(--color-neutral-400)]">
               Now pick how it should look. Same words, different presentation — you can change this later too.
             </div>
 
@@ -73,7 +73,7 @@ export default function TemplatePicker({
                         background: layout === l.id ? "color-mix(in srgb, var(--color-accent-900) 45%, transparent)" : "var(--color-bg)",
                       }}
                     >
-                      <div className="text-[12.5px] font-medium text-[var(--color-text)] flex items-center gap-1.5">
+                      <div className="text-[13.5px] font-medium text-[var(--color-text)] flex items-center gap-1.5">
                         {l.premium && <span style={{ color: "var(--color-accent-300)" }}>★</span>}
                         {l.label}
                         {l.id === chosen.layout && (
@@ -105,7 +105,7 @@ export default function TemplatePicker({
                 </div>
 
                 <button
-                  className="btn btn-primary text-[12.5px]"
+                  className="btn btn-primary text-[13.5px]"
                   onClick={() => onPick({ template: chosen, layout, accentColor })}
                 >
                   Use this template
@@ -144,7 +144,7 @@ export default function TemplatePicker({
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: "var(--color-surface)" }}>
             <IconSearch size={14} className="text-[var(--color-neutral-500)] flex-none" />
             <input
-              className="flex-1 bg-transparent border-none outline-none text-[13px] text-[var(--color-text)]"
+              className="flex-1 bg-transparent border-none outline-none text-[14px] text-[var(--color-text)]"
               placeholder={`Search ${documentTemplates.length} templates…`}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -170,7 +170,7 @@ export default function TemplatePicker({
           </div>
 
           {results.length === 0 ? (
-            <div className="text-[12.5px] text-[var(--color-neutral-500)] text-center py-8">
+            <div className="text-[13.5px] text-[var(--color-neutral-500)] text-center py-8">
               No templates match &ldquo;{query}&rdquo;.
             </div>
           ) : (
@@ -182,7 +182,7 @@ export default function TemplatePicker({
                   className="text-left p-3 rounded-lg border cursor-pointer transition-colors hover:border-[var(--color-neutral-600)]"
                   style={{ borderColor: "var(--color-divider)", background: "var(--color-bg)" }}
                 >
-                  <div className="text-[13px] font-medium text-[var(--color-text)]">{t.name}</div>
+                  <div className="text-[14px] font-medium text-[var(--color-text)]">{t.name}</div>
                   <div className="text-[11px] text-[var(--color-neutral-500)] mt-0.5 flex items-center gap-1.5 flex-wrap">
                     {t.category}
                     <span className="opacity-40">·</span>
