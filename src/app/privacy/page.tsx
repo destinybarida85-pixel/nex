@@ -62,26 +62,25 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className={H}>2. Artificial intelligence — read this part</h2>
+        <h2 className={H}>2. How the AI features handle your content</h2>
         <p className="mt-2">
-          Several features (the AI Assistant, document drafting, and certificate wording) work by sending your
-          request <strong className={S}>and the content of the document being worked on</strong> to{" "}
-          <strong className={S}>Anthropic PBC</strong>, which operates the Claude models, so that text can be
-          generated and returned to you.
+          The AI Assistant, document drafting and certificate wording generate text using a specialist{" "}
+          <strong className={S}>third-party AI provider</strong>. To do that, the request you make and the document
+          being worked on are processed by that provider on our behalf, under a contract that requires them to keep
+          it confidential, use it only to return your result, and{" "}
+          <strong className={S}>not use it to train their models</strong>.
         </p>
         <p className="mt-2">
-          This means information you type into those features — including business terms, names, amounts and any
-          personal details you include — leaves our systems and is processed by Anthropic under their terms. Do not
-          put information into the AI features that you are not permitted to disclose to a third-party processor.
+          Content sent to the AI features is transmitted encrypted and is not retained by the provider for their own
+          purposes. As with any cloud service, use your judgement about what you put into it.
         </p>
         <p className="mt-2">
-          Features that do not use AI — your wallet, payment links, stored documents, signing and certificates — do
-          not send anything to Anthropic.
+          The rest of the Service does not involve AI at all — your wallet, payment links, stored documents, signing
+          and certificates are processed only by us and the providers listed below.
         </p>
         <p className="mt-2">
-          <strong className={S}>AI output is not advice.</strong> Drafts are a starting point. Anything with legal
-          or financial effect should be reviewed by a qualified professional before you rely on it or send it to
-          anyone.
+          <strong className={S}>AI output is a draft, not advice.</strong> Anything with legal or financial effect
+          should be reviewed by a qualified professional before you rely on it or send it to anyone.
         </p>
       </section>
 
@@ -98,7 +97,8 @@ export default function PrivacyPage() {
             details directly; we never see them.
           </li>
           <li>
-            <strong className={S}>Anthropic PBC</strong> — AI text generation, as described in section 2.
+            <strong className={S}>Our AI provider</strong> — text generation for the AI features, as described in
+            section 2. Named on request.
           </li>
           <li>
             <strong className={S}>Vercel</strong> — application hosting and delivery. Processes request metadata
