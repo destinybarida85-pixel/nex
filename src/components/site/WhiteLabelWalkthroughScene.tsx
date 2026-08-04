@@ -259,7 +259,7 @@ function ManagerView({ step }: { step: number }) {
   );
 }
 
-// The branded page the client sees — no Origin anywhere. Reused as the live
+// The branded page the client sees — no Primue anywhere. Reused as the live
 // preview (small) and the full client view (big).
 function BrandedPage({ hasDoc, hasPrice, paid, big }: { hasDoc: boolean; hasPrice: boolean; paid: boolean; big: boolean }) {
   const f = big ? 1 : 0.72;
@@ -296,7 +296,7 @@ function BrandedPage({ hasDoc, hasPrice, paid, big }: { hasDoc: boolean; hasPric
             >
               {paid ? (<><IconCheckCircle size={15 * f} /> Payment received</>) : (<>Pay $2,000.00 <IconArrowRight size={14 * f} /></>)}
             </div>
-            <span className="font-mono" style={{ fontSize: 9 * f, color: "#6b6b76" }}>Secured by Stripe · No Origin branding</span>
+            <span className="font-mono" style={{ fontSize: 9 * f, color: "#6b6b76" }}>Secured by Stripe · No Primue branding</span>
           </div>
         )}
       </div>

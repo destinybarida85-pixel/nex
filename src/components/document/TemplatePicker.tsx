@@ -200,7 +200,7 @@ export default function TemplatePicker({
 
           <div className="text-[11px] text-[var(--color-neutral-500)] leading-[1.6] pt-1">
             Templates marked <strong>outline</strong> (posters, flyers, ID cards, decks) give you the written content
-            structure — Origin produces text documents, not designed graphics, so you&rsquo;d take that copy into a
+            structure — Primue produces text documents, not designed graphics, so you&rsquo;d take that copy into a
             design tool for the final artwork.
           </div>
         </div>

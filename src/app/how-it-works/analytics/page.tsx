@@ -22,7 +22,7 @@ const steps = [
   {
     n: "03",
     kicker: "AI insights",
-    title: "Origin AI reads the numbers with you.",
+    title: "Primue AI reads the numbers with you.",
     copy: "Ask what's driving a change in spend or revenue, in plain language, instead of building a pivot table yourself.",
   },
 ];
@@ -43,7 +43,7 @@ export default function AnalyticsHowItWorksPage() {
             Your numbers, read in plain language.
           </h1>
           <p className="text-[16px] text-[var(--color-neutral-400)] max-w-[520px] mt-5 leading-[1.6]">
-            Revenue, expenses, and cash flow, visualized clearly — with Origin AI on hand to explain what changed.
+            Revenue, expenses, and cash flow, visualized clearly — with Primue AI on hand to explain what changed.
           </p>
           <div className="flex gap-2.5 mt-7 flex-wrap justify-center">
             <a href="/signup" className="btn btn-primary text-sm px-[22px] py-[11px]">Try it free</a>

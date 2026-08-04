@@ -92,7 +92,7 @@ export default function TransactionsTable() {
         </table>
       </div>
       {live && (
-        <div className="text-[10.5px] text-[var(--color-neutral-500)] mt-1">Live from your Origin wallet.</div>
+        <div className="text-[10.5px] text-[var(--color-neutral-500)] mt-1">Live from your Primue wallet.</div>
       )}
     </div>
   );

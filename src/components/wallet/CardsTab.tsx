@@ -47,6 +47,26 @@ export default function CardsTab() {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* These card numbers are generated locally and are not real — nothing is
+          issued and nothing can be spent. Saying so plainly is the point: a
+          screen that looks exactly like a working virtual-card product while
+          handing someone a number that declines everywhere is the kind of
+          thing a buyer only discovers at the worst moment. Real cards need
+          Stripe Issuing, which is a separate application with underwriting and
+          isn't offered in every country. */}
+      <div
+        className="flex items-start gap-2.5 p-3 rounded-lg text-[12px] leading-[1.6]"
+        style={{ background: "color-mix(in srgb, #e0a35b 14%, transparent)", color: "#e0a35b" }}
+      >
+        <IconLock size={14} className="flex-none mt-0.5" />
+        <div>
+          <strong>Preview only — these are not real cards.</strong> The numbers below are generated in your
+          browser for demonstration and cannot be used to pay for anything. Issuing a spendable card requires
+          Stripe Issuing, a separate application with its own approval, and it isn&rsquo;t available in every
+          country yet. Everything else in your wallet — balances, payment links, payouts — is real.
+        </div>
+      </div>
+
       {cards.map((card, i) => {
         const masked = card.number.replace(/\d(?=\d{4})/g, "•");
         return (
@@ -66,11 +86,22 @@ export default function CardsTab() {
             >
               <div className="flex items-center justify-between">
                 <span className="w-8 h-6 rounded-[4px]" style={{ background: "color-mix(in srgb, #fff 55%, transparent)" }} />
-                {card.frozen && (
-                  <span className="tag text-[9px]" style={{ background: "rgba(0,0,0,0.35)", color: "#fff" }}>
-                    <IconLock size={9} /> Frozen
+                <div className="flex items-center gap-1.5">
+                  {card.frozen && (
+                    <span className="tag text-[9px]" style={{ background: "rgba(0,0,0,0.35)", color: "#fff" }}>
+                      <IconLock size={9} /> Frozen
+                    </span>
+                  )}
+                  {/* On the card face too, not just the banner above — the card
+                      is the part that gets screenshotted and shown to someone
+                      who never saw the surrounding page. */}
+                  <span
+                    className="tag text-[9px] uppercase tracking-[0.08em]"
+                    style={{ background: "rgba(0,0,0,0.4)", color: "#fff" }}
+                  >
+                    Specimen
                   </span>
-                )}
+                </div>
               </div>
               <div>
                 <div className="font-mono text-[16px] tracking-[0.06em]" style={{ color: "#fff" }}>

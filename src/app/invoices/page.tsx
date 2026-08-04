@@ -146,7 +146,7 @@ export default function InvoicesPage() {
               </div>
               <div className="text-[11.5px] text-[var(--color-neutral-500)]">
                 Each one has its own web page your client can open and pay from. Email the link, or paste it into
-                a message — Origin doesn&rsquo;t send the email for you yet, so &ldquo;Email this invoice&rdquo;
+                a message — Primue doesn&rsquo;t send the email for you yet, so &ldquo;Email this invoice&rdquo;
                 opens your own mail app with everything already written.
               </div>
 
@@ -202,7 +202,7 @@ export default function InvoicesPage() {
             <div className="card-title text-sm">{live ? "Payments received" : "All invoices"}</div>
             {live && (
               <div className="text-[11px] text-[var(--color-neutral-500)] -mt-1">
-                Real money already collected. Origin doesn&rsquo;t track net-terms due dates yet, so the date
+                Real money already collected. Primue doesn&rsquo;t track net-terms due dates yet, so the date
                 column is when payment landed.
               </div>
             )}

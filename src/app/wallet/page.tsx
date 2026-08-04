@@ -135,7 +135,7 @@ export default function WalletPage() {
             <div>
               <h3 className="m-0 text-[22px]">Business Wallet</h3>
               <div className="text-muted text-[12.5px] mt-[3px]">
-                Your Origin business balance{live && " · Saved to your account"}
+                Your Primue business balance{live && " · Saved to your account"}
               </div>
             </div>
             <div className="flex-1 hidden sm:block" />
@@ -214,7 +214,7 @@ export default function WalletPage() {
                 <span className="tag tag-accent ml-auto text-[9.5px]">Stripe</span>
               </div>
               <div className="text-[12.5px] text-[var(--color-neutral-300)] leading-[1.6]">
-                Origin doesn&rsquo;t issue its own account numbers &mdash; real payments run through your own Stripe
+                Primue doesn&rsquo;t issue its own account numbers &mdash; real payments run through your own Stripe
                 account instead, so nothing here can bounce or mislead anyone.
               </div>
               <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">

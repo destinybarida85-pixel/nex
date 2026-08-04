@@ -62,10 +62,10 @@ export async function POST(request: Request) {
   const supabase = createAdminClient();
 
   // Best-effort: if whoever is completing this signature is signed into their own
-  // Origin account (e.g. the business owner sending or testing their own document),
+  // Primue account (e.g. the business owner sending or testing their own document),
   // attribute the resulting document to their tenant so it can show up in their
   // document list, be featured on their white-label site, and charge stamp credits
-  // correctly. External signers with no Origin account simply have no session here
+  // correctly. External signers with no Primue account simply have no session here
   // — /sign is intentionally reachable without one — and the document stays
   // unattributed, same as before.
   let authorTenantId: string | null = null;
@@ -164,7 +164,7 @@ export async function POST(request: Request) {
       stampCreditsRemaining = tenant?.stamp_credits ?? 0;
     }
   } else {
-    // No tenant to charge a credit against (a signer with no Origin account) — show the seal anyway.
+    // No tenant to charge a credit against (a signer with no Primue account) — show the seal anyway.
     stampApplied = true;
   }
 

@@ -5,7 +5,7 @@ import { isBackendConfigured } from "@/lib/backendStatus";
 
 // A real, external-facing endpoint: authenticate with "Authorization: Bearer <key>"
 // generated from Settings → API keys. This is the "link your own app/script to your
-// Origin account" surface — the same auth pattern any real public API uses.
+// Primue account" surface — the same auth pattern any real public API uses.
 export async function GET(request: Request) {
   if (!isBackendConfigured) return NextResponse.json({ error: "Backend isn't connected yet." }, { status: 200 });
 

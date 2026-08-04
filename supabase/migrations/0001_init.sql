@@ -1,4 +1,4 @@
--- Origin core schema
+-- Primue core schema
 -- Run this once in the Supabase SQL editor (or via `supabase db push` if using the CLI).
 
 create extension if not exists "pgcrypto";
@@ -71,7 +71,7 @@ create table if not exists crypto_transactions (
 create table if not exists documents (
   id uuid primary key default gen_random_uuid(),
   -- Nullable: a document sent out for signature may be signed by someone with
-  -- no Origin account of their own (the standard e-sign pattern). Only the
+  -- no Primue account of their own (the standard e-sign pattern). Only the
   -- sender needs a tenant; the signer doesn't.
   tenant_id uuid references tenants(id) on delete cascade,
   created_by uuid references auth.users(id) on delete set null,

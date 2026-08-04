@@ -20,7 +20,7 @@ const steps = [
     icon: IconGlobe,
     kicker: "Brand it",
     title: "Your name, your colors, your domain.",
-    copy: "Set your company name, logo, and brand color once. Every page a client sees — the mini site, invoices, emails — carries your brand. Origin stays invisible unless you choose to show it.",
+    copy: "Set your company name, logo, and brand color once. Every page a client sees — the mini site, invoices, emails — carries your brand. Primue stays invisible unless you choose to show it.",
     visual: (
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-2.5">
@@ -72,7 +72,7 @@ const steps = [
         </div>
         <div className="p-4 flex flex-col items-center gap-1.5 text-center" style={{ background: "var(--color-bg)" }}>
           <span className="text-[13px] font-medium">Atlas Chambers</span>
-          <span className="text-[10.5px] text-[var(--color-neutral-500)]">No Origin branding visible</span>
+          <span className="text-[10.5px] text-[var(--color-neutral-500)]">No Primue branding visible</span>
         </div>
       </div>
     ),
@@ -82,7 +82,7 @@ const steps = [
     icon: IconCheckCircle,
     kicker: "Read & pay",
     title: "They read it, they pay it, you're done.",
-    copy: "The client reads the document right there on the page, then pays through a genuine Stripe checkout. The payment settles to your account — Origin never touches the money.",
+    copy: "The client reads the document right there on the page, then pays through a genuine Stripe checkout. The payment settles to your account — Primue never touches the money.",
     visual: (
       <div className="flex flex-col gap-2">
         <div className="text-[11px] text-[var(--color-neutral-500)] uppercase tracking-[.06em]">Consulting deposit</div>
@@ -111,7 +111,7 @@ export default function WhiteLabelHowItWorksPage() {
             What your clients see is entirely up to you.
           </h1>
           <p className="text-[16px] text-[var(--color-neutral-400)] max-w-[520px] mt-5 leading-[1.6]">
-            You control the page: your brand, the document they read, and the price they pay. Origin runs
+            You control the page: your brand, the document they read, and the price they pay. Primue runs
             underneath, out of sight.
           </p>
           <div className="flex gap-2.5 mt-7 flex-wrap justify-center">

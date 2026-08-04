@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Origin: The Intelligent Business Operating System",
+  title: "Primue: The Intelligent Business Operating System",
   description:
     "AI-powered, white-label business OS with wallet, documents, e-signature, HR/payroll, CRM and analytics, built for startups, schools, NGOs, agencies and government.",
 };

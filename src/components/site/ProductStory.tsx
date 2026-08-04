@@ -84,7 +84,7 @@ export default function ProductStory() {
     <section className="max-w-[1160px] mx-auto px-6 pt-[64px] flex flex-col gap-[104px]">
       <ScrollReveal className="text-center max-w-[600px] mx-auto">
         <span className="card-kicker">Every module, one platform</span>
-        <h2 className="text-[34px] mt-2.5 tracking-[-0.02em]">Scroll through what Origin actually does.</h2>
+        <h2 className="text-[34px] mt-2.5 tracking-[-0.02em]">Scroll through what Primue actually does.</h2>
         <p className="text-sm text-[var(--color-neutral-400)] leading-[1.65] mt-2.5">
           Not a slide deck. The real modules, the real interface, running under one brand.
         </p>
@@ -131,7 +131,7 @@ export default function ProductStory() {
         kicker="AI Assistant"
         icon={IconSparkle}
         title="From prompt to finished document."
-        copy="Draft contracts, invoices, HR letters and reports in seconds. Origin AI understands your business context (clients, terms, prior documents), so drafts arrive nearly done."
+        copy="Draft contracts, invoices, HR letters and reports in seconds. Primue AI understands your business context (clients, terms, prior documents), so drafts arrive nearly done."
         cta="See how it works"
         ctaHref="/how-it-works/ai-assistant"
         visual={
@@ -141,7 +141,7 @@ export default function ProductStory() {
           >
             <div className="flex items-center gap-2">
               <IconSparkle size={15} className="text-[var(--color-accent)]" />
-              <span className="text-[13px] font-medium">Origin AI</span>
+              <span className="text-[13px] font-medium">Primue AI</span>
             </div>
             <div
               className="text-[13px] leading-[1.55] text-[var(--color-neutral-300)] px-3.5 py-3 rounded-lg"
@@ -282,7 +282,7 @@ export default function ProductStory() {
         kicker="True white-label"
         icon={IconGlobe}
         title="Your clients see your brand. Only yours."
-        copy="Logo, colors, domain, emails, PDFs, portal: every client-facing surface carries your identity. Origin runs invisibly behind the scenes, with a Super Admin console for the platform owner."
+        copy="Logo, colors, domain, emails, PDFs, portal: every client-facing surface carries your identity. Primue runs invisibly behind the scenes, with a Super Admin console for the platform owner."
         cta="See how it works"
         ctaHref="/how-it-works/whitelabel"
         tilt={7}

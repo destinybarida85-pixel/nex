@@ -47,7 +47,7 @@ export default function TemplatesPage() {
         <div>
           <h4 className="m-0 text-[19px]">Branded templates</h4>
           <div className="text-muted text-xs mt-0.5">
-            Every client-facing document and email carries the tenant&rsquo;s logo, color and domain. Origin stays invisible.
+            Every client-facing document and email carries the tenant&rsquo;s logo, color and domain. Primue stays invisible.
           </div>
           {!live && (
             <div className="text-[11.5px] mt-1.5" style={{ color: "var(--color-neutral-500)" }}>

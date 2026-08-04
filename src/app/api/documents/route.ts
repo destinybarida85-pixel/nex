@@ -21,7 +21,7 @@ export async function GET() {
 
 // Tenant-authored documents meant to be shown to clients (e.g. via the white-label
 // mini site) — distinct from documents created through the /sign flow, which may
-// belong to an external signer with no Origin account.
+// belong to an external signer with no Primue account.
 export async function POST(request: Request) {
   if (!isBackendConfigured) return NextResponse.json({ error: "Backend isn't connected yet." }, { status: 200 });
 

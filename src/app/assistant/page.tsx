@@ -10,14 +10,14 @@ import { IconSparkle } from "@/components/icons";
 const documents: Record<string, DocumentData> = {
   nda: {
     title: "Mutual Non-Disclosure Agreement",
-    meta: "Between Origin Inc. and Northbeam Co. · Drafted just now · v1",
+    meta: "Between Primue Inc. and Northbeam Co. · Drafted just now · v1",
     status: "Draft",
     statusTag: "tag-outline",
     body: [
       { heading: "1. Purpose", text: "The parties wish to explore a potential business relationship and, in connection with this opportunity, may disclose certain confidential information to one another." },
       { heading: "2. Confidential Information", text: "Confidential Information includes all non-public business, technical, and financial information disclosed by either party, whether oral or written, that is designated as confidential." },
       { heading: "3. Term", text: "This Agreement shall remain in effect for a period of two (2) years from the Effective Date, at which point the confidentiality obligations herein shall survive termination." },
-      { heading: "4. Governing Law", text: "This Agreement shall be governed by and construed in accordance with the laws of the state in which Origin Inc. is incorporated, without regard to conflict of law principles." },
+      { heading: "4. Governing Law", text: "This Agreement shall be governed by and construed in accordance with the laws of the state in which Primue Inc. is incorporated, without regard to conflict of law principles." },
     ],
     steps: [
       { label: "Drafted", done: true },
@@ -33,7 +33,7 @@ const documents: Record<string, DocumentData> = {
     body: [
       { heading: "Bill to", text: "Figment Design, 118 Harbor St, Suite 4B. Payment due within 15 days of the invoice date via wire, ACH, or payment link." },
       { heading: "Line items", text: "Brand identity system: $6,200.00. Design ops consulting (8 hrs): $1,600.00. Rush delivery fee: $400.00. Subtotal: $8,200.00. Tax (0%): $0.00." },
-      { heading: "Total due", text: "$8,200.00, payable to Origin Inc.'s connected business wallet. A payment link and PDF copy will be attached automatically once sent." },
+      { heading: "Total due", text: "$8,200.00, payable to Primue Inc.'s connected business wallet. A payment link and PDF copy will be attached automatically once sent." },
     ],
     steps: [
       { label: "Drafted", done: true },

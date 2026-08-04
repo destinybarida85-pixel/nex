@@ -80,7 +80,7 @@ export default function EmailTemplate({
           <span>{tenantName} · 118 Harbor St, Suite 4B</span>
           <span>
             Sent via secure e-signature · protected by tamper-evident signature hashing
-            {poweredBy ? " · Powered by Origin" : ""}
+            {poweredBy ? " · Powered by Primue" : ""}
           </span>
         </div>
       </div>

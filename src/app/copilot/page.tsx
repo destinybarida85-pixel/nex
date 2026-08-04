@@ -20,7 +20,7 @@ const starterPrompts = [
 const initialMessages: Message[] = [
   {
     role: "ai",
-    text: "I'm the Origin AI Assistant — tell me what you're trying to get done, and I'll help you figure out the right way to do it here, then hand you off to draft it. What's going on?",
+    text: "I'm the Primue AI Assistant — tell me what you're trying to get done, and I'll help you figure out the right way to do it here, then hand you off to draft it. What's going on?",
   },
 ];
 
@@ -88,7 +88,7 @@ export default function CopilotPage() {
           <div className="flex items-center gap-2 px-5 pt-16 md:pt-6 pb-4 border-b border-[var(--color-divider)]">
             <IconSparkle size={17} className="text-[var(--color-accent)]" />
             <div>
-              <div className="card-title text-[15px]">Origin AI Assistant</div>
+              <div className="card-title text-[15px]">Primue AI Assistant</div>
               <div className="text-[11.5px] text-[var(--color-neutral-500)]">
                 Advice on what to use, not the drafting itself —{" "}
                 <a href="/assistant" style={{ color: "var(--color-accent-300)" }}>go straight to the Document AI →</a>

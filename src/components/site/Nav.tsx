@@ -22,7 +22,7 @@ export default function Nav() {
           className="flex items-center gap-2 mr-auto no-underline text-[var(--color-text)]"
         >
           <IconLogoMark size={26} />
-          <span className="font-medium text-[17px]">Origin</span>
+          <span className="font-medium text-[17px]">Primue</span>
         </a>
 
         <nav className="hidden md:flex items-center gap-6">

@@ -258,7 +258,7 @@ export function ClaritySite({ site }: { site: Site }) {
       <footer className="relative max-w-[1080px] mx-auto px-6 sm:px-10 py-8 flex flex-wrap items-center gap-3 border-t" style={{ borderColor: "#1c1c22" }}>
         <span className="text-[12px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}. All rights reserved.</span>
         <div className="flex-1" />
-        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Origin</span></span>}
+        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Primue</span></span>}
       </footer>
     </div>
   );
@@ -369,7 +369,7 @@ export function AtriumSite({ site }: { site: Site }) {
       <footer className="max-w-[1080px] mx-auto px-6 sm:px-10 py-8 border-t flex items-center gap-3" style={{ borderColor: "#1c1c22" }}>
         <span className="text-[12px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}</span>
         <div className="flex-1" />
-        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Origin</span></span>}
+        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Primue</span></span>}
       </footer>
     </div>
   );
@@ -477,7 +477,7 @@ export function PortfolioSite({ site }: { site: Site }) {
       <footer className="max-w-[1120px] mx-auto px-6 sm:px-10 py-8 border-t flex items-center gap-3" style={{ borderColor: "#e4e4e0" }}>
         <span className="text-[11.5px]" style={{ color: "#9a9aa4" }}>© {new Date().getFullYear()} {site.name}</span>
         <div className="flex-1" />
-        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#9a9aa4" }}>Powered by Origin</span>}
+        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#9a9aa4" }}>Powered by Primue</span>}
       </footer>
     </div>
   );
@@ -558,7 +558,7 @@ export function LandingSite({ site }: { site: Site }) {
       <footer className="max-w-[1080px] mx-auto px-6 sm:px-10 py-8 border-t flex items-center gap-3 w-full" style={{ borderColor: "#1c1c22" }}>
         <span className="text-[12px]" style={{ color: "#6b6b76" }}>© {new Date().getFullYear()} {site.name}</span>
         <div className="flex-1" />
-        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Origin</span></span>}
+        {site.poweredByBadge && <span className="text-[11px]" style={{ color: "#6b6b76" }}>Powered by <span style={{ color: "#a3a3ad" }}>Primue</span></span>}
       </footer>
     </div>
   );

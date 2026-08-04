@@ -133,7 +133,7 @@ function SitePreview() {
         <div className="flex-1" />
         {powered && (
           <span className="text-[11px]" style={{ color: "#6b6b76" }}>
-            Powered by <span style={{ color: "#a3a3ad" }}>Origin</span>
+            Powered by <span style={{ color: "#a3a3ad" }}>Primue</span>
           </span>
         )}
       </footer>

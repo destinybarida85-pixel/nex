@@ -119,7 +119,7 @@ export default function InvoiceTemplate({
 
         {poweredBy && (
           <div className="text-center text-[10.5px]" style={{ color: "#9a9aa6" }}>
-            Powered by Origin
+            Powered by Primue
           </div>
         )}
       </div>

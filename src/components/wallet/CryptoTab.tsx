@@ -130,7 +130,7 @@ export default function CryptoTab() {
         </div>
         <div className="text-[11px] text-[var(--color-neutral-500)] mt-1">
           {live
-            ? "Persisted to your Origin account as an internal ledger, not a live blockchain. No real cryptocurrency is held or transferred."
+            ? "Persisted to your Primue account as an internal ledger, not a live blockchain. No real cryptocurrency is held or transferred."
             : "Demo balances only. Not connected to a real blockchain network, and no real cryptocurrency is held or transferred."}
         </div>
       </div>

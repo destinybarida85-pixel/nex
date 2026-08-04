@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IconSparkle, IconESign, IconLink, IconWallet, IconCheckCircle } from "@/components/icons";
 
-// The four beats of Origin's real loop: a contract drafts itself, gets signed,
+// The four beats of Primue's real loop: a contract drafts itself, gets signed,
 // a payment fires, money lands. This scene plays that out continuously on a
 // tilted 3D stage — the product's story, in motion.
 const STEPS = [

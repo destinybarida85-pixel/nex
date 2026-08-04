@@ -20,7 +20,7 @@ const today = new Date().toLocaleDateString("en-US", { month: "short", day: "num
 // but it's only ever a suggestion: shape and type stay independently
 // editable, same pattern as document layout vs. template.
 const stampTypes: { id: string; name: string; label: string; sub: string; defaultShape: StampShape }[] = [
-  { id: "official", name: "Official Stamp", label: "SEALED", sub: "ORIGIN E-SIGN", defaultShape: "round" },
+  { id: "official", name: "Official Stamp", label: "SEALED", sub: "PRIMUE E-SIGN", defaultShape: "round" },
   { id: "company", name: "Company Stamp", label: "COMPANY", sub: "AUTHORIZED", defaultShape: "badge" },
   { id: "signature", name: "Signature Stamp", label: "SIGNED", sub: "REPRODUCTION", defaultShape: "round" },
   { id: "date", name: "Date Stamp", label: today.toUpperCase(), sub: "DATE STAMPED", defaultShape: "rectangle" },

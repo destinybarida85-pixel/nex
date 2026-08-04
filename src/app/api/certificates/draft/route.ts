@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const SYSTEM_PROMPT = `You draft the text for a premium achievement certificate inside Origin, a business operating system. The user tells you who it's for and why. Respond with ONLY a JSON object, no prose before or after:
+const SYSTEM_PROMPT = `You draft the text for a premium achievement certificate inside Primue, a business operating system. The user tells you who it's for and why. Respond with ONLY a JSON object, no prose before or after:
 
 { "title": "string, 2-4 words, what kind of certificate (e.g. 'Completion', 'Excellence', 'Achievement', 'Appreciation')", "citation": "string, one formal sentence of citation text explaining what the recipient did to earn this, written in third person, no placeholders" }
 

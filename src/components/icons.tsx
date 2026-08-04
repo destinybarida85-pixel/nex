@@ -466,7 +466,7 @@ export function IconLogoMark({ size = 26, className }: IconProps) {
         flexShrink: 0,
       }}
     >
-      <Image src="/logo.png" alt="Origin" width={size} height={size} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      <Image src="/logo.png" alt="Primue" width={size} height={size} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
     </div>
   );
 }

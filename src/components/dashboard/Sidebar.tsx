@@ -133,7 +133,7 @@ function SidebarContent({
     <>
       <div className={`flex items-center gap-2.5 pb-4 ${collapsed ? "justify-center px-0" : "px-2"}`}>
         <IconLogoMark size={26} />
-        {!collapsed && <div className="font-medium text-[16px] tracking-[-0.01em]">Origin</div>}
+        {!collapsed && <div className="font-medium text-[16px] tracking-[-0.01em]">Primue</div>}
       </div>
 
       <button

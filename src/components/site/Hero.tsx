@@ -30,7 +30,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Origin's real loop — draft, sign, pay, land — playing out live, or a
+      {/* Primue's real loop — draft, sign, pay, land — playing out live, or a
           supplied hero asset if one has been dropped into public/hero/. */}
       <div className="relative max-w-[1000px] mx-auto px-6 pb-8">
         <HeroMedia />

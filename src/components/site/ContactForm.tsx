@@ -13,7 +13,7 @@ export default function ContactForm() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const subject = `[Origin contact] ${topic} from ${name || "Website visitor"}`;
+    const subject = `[Primue contact] ${topic} from ${name || "Website visitor"}`;
     const body = `${message}\n\nFrom: ${name}\n${email}`;
     window.location.href = `mailto:hello@origin.io?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSent(true);
@@ -76,7 +76,7 @@ export default function ContactForm() {
       </div>
       <button type="submit" className="btn btn-primary text-[13.5px] self-start">Send message</button>
       <div className="text-[11px] text-[var(--color-neutral-500)]">
-        This opens your email client with the message ready to send. Origin has no backend to receive it directly.
+        This opens your email client with the message ready to send. Primue has no backend to receive it directly.
       </div>
     </form>
   );

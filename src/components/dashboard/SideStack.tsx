@@ -21,7 +21,7 @@ export default function SideStack() {
       >
         <div className="flex items-center gap-2">
           <IconSparkle size={15} className="text-[var(--color-accent)]" />
-          <div className="card-title text-sm">Origin AI</div>
+          <div className="card-title text-sm">Primue AI</div>
           <span className="card-meta ml-auto">2 suggestions</span>
         </div>
         <div
@@ -36,7 +36,7 @@ export default function SideStack() {
         >
           Software spend rose 22% this quarter. Generate a cost-review report?
         </div>
-        <a href="/assistant" className="btn btn-primary btn-block text-[12.5px] mt-0.5">Ask Origin AI</a>
+        <a href="/assistant" className="btn btn-primary btn-block text-[12.5px] mt-0.5">Ask Primue AI</a>
       </div>
 
       <div className="card elev-sm p-[16px_18px] gap-2.5">

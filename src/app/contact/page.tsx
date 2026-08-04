@@ -14,7 +14,7 @@ export default function ContactPage() {
       <Nav />
       <main className="max-w-[960px] mx-auto px-6 pt-[64px] pb-20">
         <span className="card-kicker">Contact</span>
-        <h1 className="text-[32px] mt-2.5 tracking-[-0.015em] max-w-[520px]">Talk to the Origin team.</h1>
+        <h1 className="text-[32px] mt-2.5 tracking-[-0.015em] max-w-[520px]">Talk to the Primue team.</h1>
         <p className="text-sm text-[var(--color-neutral-400)] leading-[1.65] mt-2.5 max-w-[460px]">
           Questions about pricing, white-label setup, or a specific module? Send a message and we&rsquo;ll get back to
           you within one business day.
@@ -35,8 +35,8 @@ export default function ContactPage() {
               ))}
             </div>
             <div className="text-[12px] text-[var(--color-neutral-500)] leading-[1.6]">
-              Origin Inc. is a software platform. Payments made through Origin are processed by Stripe, not by
-              Origin directly.
+              Primue Inc. is a software platform. Payments made through Primue are processed by Stripe, not by
+              Primue directly.
             </div>
           </div>
         </div>

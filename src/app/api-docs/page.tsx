@@ -20,7 +20,7 @@ export default function ApiPage() {
         <span className="card-kicker">API</span>
         <h1 className="text-[34px] mt-2.5 tracking-[-0.02em]">The same API the product runs on.</h1>
         <p className="text-[15px] text-[var(--color-neutral-400)] mt-3 leading-[1.65] max-w-[640px]">
-          Origin doesn&rsquo;t have a separate, external developer API with its own keys yet — what&rsquo;s below is
+          Primue doesn&rsquo;t have a separate, external developer API with its own keys yet — what&rsquo;s below is
           the real internal API the app itself calls. Every route is session-authenticated and scoped to your
           tenant server-side, so a request can never read or write another tenant&rsquo;s data.
         </p>

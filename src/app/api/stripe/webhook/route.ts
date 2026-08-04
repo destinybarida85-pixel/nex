@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    // Origin's own subscription billing (a tenant paying Origin for their plan),
+    // Primue's own subscription billing (a tenant paying Primue for their plan),
     // distinguished from a one-time payment-link checkout by mode.
     if (session.mode === "subscription" && session.customer && session.subscription) {
       const subscription = await stripe.subscriptions.retrieve(session.subscription as string);

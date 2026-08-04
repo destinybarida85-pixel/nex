@@ -84,7 +84,7 @@ function Chrome({ children }: { children: React.ReactNode }) {
           ))}
         </span>
         {/* The address bar is the white-label promise made visible: the client
-            sees the tenant's own domain, not Origin's. */}
+            sees the tenant's own domain, not Primue's. */}
         <span
           className="mx-auto px-3 py-[3px] text-[10.5px] rounded-full"
           style={{ background: "var(--color-bg)", color: "var(--color-neutral-500)", border: "1px solid var(--color-divider)" }}
@@ -105,7 +105,7 @@ function Rail({ active }: { active: View }) {
     >
       <div className="flex items-center gap-2 px-1.5 pb-3">
         <IconLogoMark size={18} />
-        <span className="text-[12.5px] font-medium text-[var(--color-text)]">Origin</span>
+        <span className="text-[12.5px] font-medium text-[var(--color-text)]">Primue</span>
       </div>
       {NAV.map((item) => {
         const on =

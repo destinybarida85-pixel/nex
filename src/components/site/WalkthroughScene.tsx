@@ -220,7 +220,7 @@ function AskScreen({ typed }: { typed: boolean }) {
     <div className="flex flex-col gap-4 h-full">
       <div className="flex items-center gap-2">
         <IconSparkle size={17} className="text-[var(--color-accent)]" />
-        <span className="text-[12.5px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">Origin AI</span>
+        <span className="text-[12.5px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">Primue AI</span>
       </div>
       <div className="flex-1 flex flex-col justify-center gap-3">
         <div className="rounded-xl p-4 text-[16px] self-end max-w-[68%] leading-[1.5]" style={{ background: "var(--color-accent-900)", color: "var(--color-text)" }}>
@@ -229,7 +229,7 @@ function AskScreen({ typed }: { typed: boolean }) {
         </div>
       </div>
       <div className="flex items-center gap-2 px-5 py-4 rounded-xl" style={{ background: "var(--color-surface)" }}>
-        <span className="text-[14px] text-[var(--color-neutral-500)] flex-1">Ask Origin to draft anything…</span>
+        <span className="text-[14px] text-[var(--color-neutral-500)] flex-1">Ask Primue to draft anything…</span>
         <span className="w-9 h-9 rounded-lg grid place-items-center text-[16px]" style={{ background: "var(--color-accent)", color: "#0c0c10" }}>↑</span>
       </div>
     </div>
@@ -249,7 +249,7 @@ function DraftScreen({ fill }: { fill: boolean }) {
       </div>
       <div className="flex-1 rounded-xl p-5 flex flex-col gap-3" style={{ background: "var(--color-surface)" }}>
         <div className="text-[16px] font-medium">Services Agreement</div>
-        <div className="text-[11px] text-[var(--color-neutral-500)]">Origin Inc · Northbeam Co.</div>
+        <div className="text-[11px] text-[var(--color-neutral-500)]">Primue Inc · Northbeam Co.</div>
         <div className="h-px my-1" style={{ background: "var(--color-divider)" }} />
         {["1. Scope of Services", "2. Deposit — $6,200 due on signing", "3. Term & Termination"].map((h, i) => (
           <div key={i} className="flex flex-col gap-1.5">

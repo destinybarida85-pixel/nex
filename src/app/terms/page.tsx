@@ -4,9 +4,9 @@ export default function TermsPage() {
   return (
     <LegalLayout kicker="Legal" title="Terms of Service" updated="July 21, 2026">
       <p>
-        These Terms of Service (&ldquo;Terms&rdquo;) govern access to and use of Origin, a white-label business operating
+        These Terms of Service (&ldquo;Terms&rdquo;) govern access to and use of Primue, a white-label business operating
         system covering business wallets, AI-assisted documents, e-signature, HR &amp; payroll, CRM and analytics (the
-        &ldquo;Service&rdquo;), provided by Origin Inc. (&ldquo;Origin,&rdquo; &ldquo;we&rdquo;). By creating an account or using
+        &ldquo;Service&rdquo;), provided by Primue Inc. (&ldquo;Primue,&rdquo; &ldquo;we&rdquo;). By creating an account or using
         the Service, you agree to these Terms on behalf of yourself and, if applicable, the organization you represent.
       </p>
 
@@ -22,8 +22,8 @@ export default function TermsPage() {
       <section>
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">2. Payment services</h2>
         <p className="mt-2">
-          Origin is a software platform, not a bank or a payment processor. Payments made through the Service are
-          processed by Stripe, subject to Stripe&rsquo;s own terms and applicable regulation. Origin does not hold or
+          Primue is a software platform, not a bank or a payment processor. Payments made through the Service are
+          processed by Stripe, subject to Stripe&rsquo;s own terms and applicable regulation. Primue does not hold or
           custody funds on your behalf, and is not responsible for the acts or omissions of Stripe, except as required
           by law.
         </p>
@@ -60,9 +60,9 @@ export default function TermsPage() {
       <section>
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">6. White-label &amp; sub-tenants</h2>
         <p className="mt-2">
-          If you operate a white-label instance of Origin for your own clients (a &ldquo;Tenant Operator&rdquo;), you are
+          If you operate a white-label instance of Primue for your own clients (a &ldquo;Tenant Operator&rdquo;), you are
           responsible for your clients&rsquo; compliance with these Terms, for the accuracy of your own branding, and for
-          providing your clients with a privacy notice covering their use of your branded portal. Origin remains the
+          providing your clients with a privacy notice covering their use of your branded portal. Primue remains the
           underlying processor of the Service infrastructure.
         </p>
       </section>
@@ -79,7 +79,7 @@ export default function TermsPage() {
       <section>
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">8. Intellectual property</h2>
         <p className="mt-2">
-          Origin retains all rights to the Service, its software, and its branding. You retain all rights to the content and
+          Primue retains all rights to the Service, its software, and its branding. You retain all rights to the content and
           data you upload or generate through the Service (&ldquo;Customer Data&rdquo;) and grant us a limited license to
           host and process it solely to provide the Service to you.
         </p>
@@ -98,7 +98,7 @@ export default function TermsPage() {
         <h2 className="text-[18px] text-[var(--color-text)] font-medium">10. Disclaimers &amp; limitation of liability</h2>
         <p className="mt-2">
           The Service is provided &ldquo;as is&rdquo; without warranties of any kind, express or implied. To the maximum
-          extent permitted by law, Origin will not be liable for indirect, incidental, or consequential damages, and our
+          extent permitted by law, Primue will not be liable for indirect, incidental, or consequential damages, and our
           total liability for any claim will not exceed the fees you paid in the 12 months preceding the claim.
         </p>
       </section>

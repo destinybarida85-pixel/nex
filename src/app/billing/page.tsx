@@ -90,7 +90,7 @@ export default function BillingPage() {
         <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0 max-w-[900px]">
           <div>
             <h3 className="m-0 text-[22px]">Billing</h3>
-            <div className="text-muted text-[12.5px] mt-[3px]">Manage your Origin subscription.</div>
+            <div className="text-muted text-[12.5px] mt-[3px]">Manage your Primue subscription.</div>
           </div>
 
           {loading ? (

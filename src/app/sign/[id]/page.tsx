@@ -29,7 +29,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <div className="nx-grid-bg absolute inset-0 pointer-events-none" />
       <div className="relative flex items-center gap-2.5 mb-8">
         <IconLogoMark size={26} />
-        <span className="font-medium text-[16px] text-[var(--color-text)]">Origin</span>
+        <span className="font-medium text-[16px] text-[var(--color-text)]">Primue</span>
         <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">e-signature</span>
       </div>
       {children}

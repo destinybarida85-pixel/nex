@@ -133,7 +133,7 @@ export default function SettingsPage() {
         <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0 max-w-[720px]">
           <div>
             <h3 className="m-0 text-[22px]">Settings</h3>
-            <div className="text-muted text-[12.5px] mt-[3px]">Your business, your team, and how Origin is set up.</div>
+            <div className="text-muted text-[12.5px] mt-[3px]">Your business, your team, and how Primue is set up.</div>
           </div>
 
           <div className="card elev-sm p-5 gap-3.5">
@@ -210,7 +210,7 @@ export default function SettingsPage() {
               <span className="tag tag-neutral ml-auto text-[10px]">{apiKeys.filter((k) => !k.revoked_at).length} active</span>
             </div>
             <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
-              Generate a key so your own app or script can read your Origin data. Send it as{" "}
+              Generate a key so your own app or script can read your Primue data. Send it as{" "}
               <code className="font-mono">Authorization: Bearer &lt;key&gt;</code> to <code className="font-mono">/api/v1/documents</code>.
             </div>
 

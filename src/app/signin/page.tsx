@@ -70,7 +70,7 @@ function SignInForm() {
     <AuthShell>
       <div className="flex items-center gap-3 mb-11">
         <IconLogoMark size={34} />
-        <span style={{ fontSize: 19, fontWeight: 600 }}>Origin</span>
+        <span style={{ fontSize: 19, fontWeight: 600 }}>Primue</span>
       </div>
       <div className="mb-9">
         <h4 className="m-0" style={{ fontSize: 42, lineHeight: 1.1, fontWeight: 700 }}>Welcome back</h4>

@@ -59,7 +59,7 @@ export default function SendInvoice({ invoiceId, title, amountLabel, senderName 
   ].join("\n");
 
   // mailto: opens whatever mail app the recipient's computer already uses, with
-  // everything filled in. Origin does not send this email itself — no mail
+  // everything filled in. Primue does not send this email itself — no mail
   // provider is connected yet — so this is the honest version: one click to a
   // pre-written email you press send on.
   const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;

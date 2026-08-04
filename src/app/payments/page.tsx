@@ -44,7 +44,7 @@ export default function PaymentsPage() {
         setKpis([
           { label: "Processed · 30d", value: `$${(processed30d / 100).toLocaleString()}`, metaLabel: "Real, from your wallet" },
           { label: "Active payment links", value: String(links.filter((l) => l.status === "active").length), metaLabel: `${totalUses} uses total` },
-          { label: "Recurring plans", value: "Origin plans only", metaLabel: "see /billing for your own plan" },
+          { label: "Recurring plans", value: "Primue plans only", metaLabel: "see /billing for your own plan" },
           { label: "Refunds issued", value: "$0.00", metaLabel: "Refunds run through Stripe directly" },
         ]);
         setLive(true);

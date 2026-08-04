@@ -1,4 +1,4 @@
--- Origin's own subscription billing (tenants paying Origin, not the payment-links
+-- Primue's own subscription billing (tenants paying Primue, not the payment-links
 -- feature where tenants get paid by their own clients).
 -- Run this once in the Supabase SQL editor, after 0002_stripe.sql.
 

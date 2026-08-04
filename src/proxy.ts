@@ -1,11 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Routes that hold real business data and require a signed-in Origin account.
-// Deliberately excludes /sign (external signers often have no Origin account
+// Routes that hold real business data and require a signed-in Primue account.
+// Deliberately excludes /sign (external signers often have no Primue account
 // of their own — same reason real e-sign services work this way) and
 // /tenant-login (a white-label tenant's own branded portal, unrelated to
-// Origin's own auth).
+// Primue's own auth).
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/wallet",

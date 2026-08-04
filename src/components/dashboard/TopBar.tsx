@@ -213,7 +213,7 @@ export default function TopBar() {
             style={{ background: "var(--color-bg)", borderColor: "var(--color-divider)", boxShadow: "var(--shadow-md)" }}
           >
             <div className="px-2.5 py-2 text-[11px] tracking-[.06em] uppercase text-[var(--color-neutral-500)] border-b" style={{ borderColor: "var(--color-divider)" }}>
-              Chat with Origin support
+              Chat with Primue support
             </div>
             <div className="max-h-[240px] overflow-y-auto p-2.5 flex flex-col gap-2">
               {chatMessages.length === 0 ? (

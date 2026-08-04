@@ -19,7 +19,7 @@ const steps = [
     icon: IconESign,
     kicker: "Send it",
     title: "No account needed on their end.",
-    copy: "Send any document for signature. Your signer opens a link on any device — phone, tablet, laptop — and doesn't need an Origin account of their own. Same reason every real e-sign service works this way.",
+    copy: "Send any document for signature. Your signer opens a link on any device — phone, tablet, laptop — and doesn't need an Primue account of their own. Same reason every real e-sign service works this way.",
     visual: (
       <div className="flex flex-col gap-2">
         <div className="text-[12.5px] font-medium">Master Services Agreement</div>
@@ -52,7 +52,7 @@ const steps = [
     icon: IconLock,
     kicker: "It's hashed and chained",
     title: "Tamper-evidence, not just a promise.",
-    copy: "Origin computes SHA-256 hashes of the document and signature, then chains this record to the previous one. Change anything in an earlier record, and every hash after it stops matching — provably.",
+    copy: "Primue computes SHA-256 hashes of the document and signature, then chains this record to the previous one. Change anything in an earlier record, and every hash after it stops matching — provably.",
     visual: (
       <div className="flex flex-col gap-2 font-mono text-[10.5px]" style={{ color: "var(--color-neutral-400)" }}>
         <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full flex-none" style={{ background: "#63c3b2" }} />document_hash: 8f21a9…</div>
@@ -96,7 +96,7 @@ export default function SigningHowItWorksPage() {
             Provable, not just promised.
           </h1>
           <p className="text-[16px] text-[var(--color-neutral-400)] max-w-[520px] mt-5 leading-[1.6]">
-            Most e-sign tools just log that a click happened. Origin hash-chains every signature to the document it
+            Most e-sign tools just log that a click happened. Primue hash-chains every signature to the document it
             belongs to, so tampering after the fact is mathematically detectable.
           </p>
           <div className="flex gap-2.5 mt-7 flex-wrap justify-center">

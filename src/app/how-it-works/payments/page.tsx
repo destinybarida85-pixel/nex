@@ -19,7 +19,7 @@ const steps = [
     icon: IconPlus,
     kicker: "Create a link",
     title: "Name it, price it, done in seconds.",
-    copy: "One-time or recurring — a workshop ticket, a retainer, a deposit. Set a title and an amount, and Origin creates a genuine Stripe Payment Link on your own account.",
+    copy: "One-time or recurring — a workshop ticket, a retainer, a deposit. Set a title and an amount, and Primue creates a genuine Stripe Payment Link on your own account.",
     visual: (
       <div className="flex flex-col gap-2.5">
         <input className="input text-[12.5px]" disabled value="Consulting deposit" />
@@ -67,7 +67,7 @@ const steps = [
     icon: IconWallet,
     kicker: "Get paid",
     title: "Money settles to you. Your ledger updates itself.",
-    copy: "Stripe settles the payment to your own bank account — Origin never touches it. A webhook simultaneously credits your Origin wallet balance, so your records stay in sync automatically.",
+    copy: "Stripe settles the payment to your own bank account — Primue never touches it. A webhook simultaneously credits your Primue wallet balance, so your records stay in sync automatically.",
     visual: (
       <div className="flex flex-col gap-2">
         <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</div>
@@ -148,7 +148,7 @@ export default function PaymentsHowItWorksPage() {
           <div className="flex items-center gap-3">
             <IconShieldCheck size={20} className="text-[var(--color-accent)]" />
             <div>
-              <div className="text-[15px] font-medium">Origin never holds your money.</div>
+              <div className="text-[15px] font-medium">Primue never holds your money.</div>
               <div className="text-[12.5px] text-[var(--color-neutral-500)] mt-0.5">
                 Stripe processes the charge and settles directly to your account — that's what makes this legal to run today.
               </div>

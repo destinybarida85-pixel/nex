@@ -64,7 +64,7 @@ export default function KpiCards() {
           {formatCents(balanceCents)}
         </div>
         <div className="card-meta whitespace-nowrap">
-          {live ? "Your Origin wallet" : "Demo wallet balance"}
+          {live ? "Your Primue wallet" : "Demo wallet balance"}
         </div>
       </div>
 

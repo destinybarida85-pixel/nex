@@ -30,7 +30,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <div className="nx-grid-bg absolute inset-0 pointer-events-none no-print" />
       <div className="relative flex items-center gap-2.5 mb-8 no-print">
         <IconLogoMark size={26} />
-        <span className="font-medium text-[16px] text-[var(--color-text)]">Origin</span>
+        <span className="font-medium text-[16px] text-[var(--color-text)]">Primue</span>
         <span className="text-[12px] text-[var(--color-neutral-500)] ml-1">invoice</span>
       </div>
       {children}
@@ -201,7 +201,7 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
 
             {from.poweredBy && (
               <div className="text-center text-[10.5px]" style={{ color: "#9a9aa6" }}>
-                Powered by Origin
+                Powered by Primue
               </div>
             )}
           </div>

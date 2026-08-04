@@ -85,7 +85,7 @@ export default function SignUpPage() {
       <AuthShell>
         <div className="flex items-center gap-3 mb-11">
           <IconLogoMark size={34} />
-          <span style={{ fontSize: 19, fontWeight: 600 }}>Origin</span>
+          <span style={{ fontSize: 19, fontWeight: 600 }}>Primue</span>
         </div>
         <div className="mb-4">
           <h4 className="m-0" style={{ fontSize: 38, lineHeight: 1.1, fontWeight: 700 }}>Check your email</h4>
@@ -109,7 +109,7 @@ export default function SignUpPage() {
     <AuthShell>
       <div className="flex items-center gap-3 mb-11">
         <IconLogoMark size={34} />
-        <span style={{ fontSize: 19, fontWeight: 600 }}>Origin</span>
+        <span style={{ fontSize: 19, fontWeight: 600 }}>Primue</span>
       </div>
       <div className="mb-9">
         <h4 className="m-0" style={{ fontSize: 42, lineHeight: 1.1, fontWeight: 700 }}>Create your account</h4>
@@ -176,7 +176,7 @@ export default function SignUpPage() {
       </form>
 
       <div className="text-[13.5px] leading-[1.5] text-[var(--color-neutral-600)] text-center mt-6">
-        By continuing, you agree to Origin&rsquo;s Terms of Service and Privacy Policy.
+        By continuing, you agree to Primue&rsquo;s Terms of Service and Privacy Policy.
       </div>
 
       <div className="text-[15px] text-[var(--color-neutral-500)] text-center mt-6">

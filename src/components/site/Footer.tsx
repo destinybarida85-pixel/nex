@@ -18,7 +18,7 @@ export default function Footer() {
         </ScrollReveal>
       </div>
       <div className="flex gap-[22px] mt-10 text-[11.5px] text-[var(--color-neutral-600)] flex-wrap">
-        <span className="mr-auto">© 2026 Origin Inc.</span>
+        <span className="mr-auto">© 2026 Primue Inc.</span>
         <a href="/security" className="text-inherit no-underline">Security</a>
         <a href="/api-docs" className="text-inherit no-underline">API</a>
         <a href="/#pricing" className="text-inherit no-underline">Pricing</a>

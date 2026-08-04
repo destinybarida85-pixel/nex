@@ -16,7 +16,7 @@ const pillars = [
   {
     icon: IconWallet,
     title: "Payments through Stripe",
-    body: "Origin never sees or stores card numbers. Payments run through Stripe's hosted checkout, which is PCI-DSS compliant. Origin only ever stores the resulting transaction record — never card data.",
+    body: "Primue never sees or stores card numbers. Payments run through Stripe's hosted checkout, which is PCI-DSS compliant. Primue only ever stores the resulting transaction record — never card data.",
   },
   {
     icon: IconGlobe,
@@ -39,7 +39,7 @@ export default function SecurityPage() {
       <Nav />
       <main className="max-w-[900px] mx-auto px-6 pt-[64px] pb-20">
         <span className="card-kicker">Security</span>
-        <h1 className="text-[34px] mt-2.5 tracking-[-0.02em]">How Origin actually protects your data.</h1>
+        <h1 className="text-[34px] mt-2.5 tracking-[-0.02em]">How Primue actually protects your data.</h1>
         <p className="text-[15px] text-[var(--color-neutral-400)] mt-3 leading-[1.65] max-w-[620px]">
           Not a checklist of buzzwords — this page describes the real mechanisms behind the product, in plain
           language, so you know exactly what&rsquo;s protecting your business data.

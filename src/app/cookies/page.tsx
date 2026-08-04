@@ -4,7 +4,7 @@ export default function CookiesPage() {
   return (
     <LegalLayout kicker="Legal" title="Cookie Policy" updated="July 21, 2026">
       <p>
-        This Cookie Policy explains how Origin Inc. (&ldquo;Origin,&rdquo; &ldquo;we&rdquo;) uses cookies and similar local
+        This Cookie Policy explains how Primue Inc. (&ldquo;Primue,&rdquo; &ldquo;we&rdquo;) uses cookies and similar local
         storage technologies on our marketing site and inside the Service.
       </p>
 

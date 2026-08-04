@@ -21,7 +21,7 @@ const steps = [
     icon: IconSparkle,
     kicker: "Draft",
     title: "Ask the AI Assistant for the contract.",
-    copy: "Tell Origin AI what you need — an NDA, a services agreement, a deposit invoice. It drafts real, usable language in seconds, pulling in your business context automatically.",
+    copy: "Tell Primue AI what you need — an NDA, a services agreement, a deposit invoice. It drafts real, usable language in seconds, pulling in your business context automatically.",
     visual: (
       <div className="flex flex-col gap-2.5">
         <div className="rounded-lg p-3 text-[12.5px] self-end max-w-[80%]" style={{ background: "var(--color-accent-900)", color: "var(--color-text)" }}>
@@ -78,7 +78,7 @@ const steps = [
     icon: IconWallet,
     kicker: "Get paid",
     title: "Money lands. Your ledger updates itself.",
-    copy: "The moment they pay, a webhook credits your Origin wallet balance and logs the transaction — no manual reconciliation, no spreadsheet. You just watch the number go up.",
+    copy: "The moment they pay, a webhook credits your Primue wallet balance and logs the transaction — no manual reconciliation, no spreadsheet. You just watch the number go up.",
     visual: (
       <div className="flex flex-col gap-2.5">
         <div className="text-[11px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Available balance</div>

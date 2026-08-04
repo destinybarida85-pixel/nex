@@ -4,7 +4,7 @@ export default function PrivacyPage() {
   return (
     <LegalLayout kicker="Legal" title="Privacy Policy" updated="July 21, 2026">
       <p>
-        Origin Inc. (&ldquo;Origin,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) provides a white-label business
+        Primue Inc. (&ldquo;Primue,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) provides a white-label business
         operating system covering business wallets, AI-assisted documents, e-signature, HR &amp; payroll, CRM and analytics
         (the &ldquo;Service&rdquo;). This Privacy Policy explains what information we collect, how we use it, and the
         choices you have. It applies to visitors of our marketing site and to organizations and individuals who use the
@@ -20,7 +20,7 @@ export default function PrivacyPage() {
         <p className="mt-2">
           <strong className="text-[var(--color-text)] font-medium">Business &amp; financial data</strong>: transaction
           records, invoices, payroll runs, and documents you create or upload in the Service. Real payments are processed
-          by Stripe, and Origin stores the associated records needed to display them back to you.
+          by Stripe, and Primue stores the associated records needed to display them back to you.
         </p>
         <p className="mt-2">
           <strong className="text-[var(--color-text)] font-medium">Usage data</strong>: pages visited, features used,

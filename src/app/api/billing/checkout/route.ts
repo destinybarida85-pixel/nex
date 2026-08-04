@@ -7,7 +7,7 @@ const PRICE_IDS: Record<string, string | undefined> = {
   growth: process.env.STRIPE_GROWTH_PRICE_ID,
 };
 
-// Real Stripe Checkout in subscription mode, with a 7-day trial — this is Origin
+// Real Stripe Checkout in subscription mode, with a 7-day trial — this is Primue
 // charging the tenant for their plan, separate from the payment-links feature
 // where the tenant charges their own clients.
 export async function POST(request: Request) {

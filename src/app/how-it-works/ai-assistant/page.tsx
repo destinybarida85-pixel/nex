@@ -61,7 +61,7 @@ function LiveTypingDemo() {
     <div className="rounded-xl p-5 flex flex-col gap-3 border min-h-[220px]" style={{ background: "var(--color-bg)", borderColor: "var(--color-divider)", boxShadow: "var(--shadow-md)" }}>
       <div className="flex items-center gap-2">
         <IconSparkle size={14} className="text-[var(--color-accent)]" />
-        <span className="text-[11px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">Origin AI</span>
+        <span className="text-[11px] tracking-[.06em] uppercase text-[var(--color-neutral-500)]">Primue AI</span>
       </div>
 
       {showPrompt && (
@@ -103,7 +103,7 @@ const steps = [
     icon: IconMessages,
     kicker: "Just ask",
     title: "Type what you need, in plain English.",
-    copy: "No templates to hunt for. Tell Origin AI what you're drafting — an NDA, an invoice, an offer letter, a report — the same way you'd ask a colleague.",
+    copy: "No templates to hunt for. Tell Primue AI what you're drafting — an NDA, an invoice, an offer letter, a report — the same way you'd ask a colleague.",
   },
   {
     n: "02",

@@ -397,7 +397,7 @@ export default function WhiteLabelPage() {
             <div className="field">
               <label>Website address</label>
               <div className="flex items-center gap-1.5">
-                <span className="text-[12px] text-[var(--color-neutral-500)] font-mono">origin.app/site/</span>
+                <span className="text-[12px] text-[var(--color-neutral-500)] font-mono">primue.com/site/</span>
                 <input
                   className="input font-mono text-[12.5px] flex-1"
                   value={siteSlug}
@@ -617,7 +617,7 @@ export default function WhiteLabelPage() {
                 <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
                 <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
                 <span className="w-2 h-2 rounded-full bg-[var(--color-neutral-700)]" />
-                <span className="ml-2.5 font-mono text-[10.5px] text-[var(--color-neutral-500)]">origin.app/site/{siteSlug}</span>
+                <span className="ml-2.5 font-mono text-[10.5px] text-[var(--color-neutral-500)]">primue.com/site/{siteSlug}</span>
               </div>
               <div style={{ height: 400, overflow: "hidden", position: "relative" }}>
                 <div style={{ transform: "scale(0.42)", transformOrigin: "top left", width: "238%", pointerEvents: "none" }}>
@@ -629,7 +629,7 @@ export default function WhiteLabelPage() {
               {sitePublished ? "This is live — anyone with the link can see it." : "Publish to make this a real, reachable page for your clients."}
             </div>
             <div className="text-[10.5px] text-[var(--color-neutral-500)] leading-[1.6]">
-              <strong className="text-[var(--color-text)]">origin.app/site/{siteSlug}</strong> is your free included web address —
+              <strong className="text-[var(--color-text)]">primue.com/site/{siteSlug}</strong> is your free included web address —
               it works as soon as you publish, no domain purchase needed. Adding your own domain above is optional, for when
               you want your own brand in the URL bar too.
             </div>
