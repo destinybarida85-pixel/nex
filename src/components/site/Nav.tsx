@@ -1,19 +1,6 @@
-"use client";
-
-import { useState } from "react";
-import { IconMenu, IconX, IconLogoMark } from "@/components/icons";
-
-const links = [
-  { href: "/#product", label: "Product" },
-  { href: "/#wallet", label: "Wallet" },
-  { href: "/#whitelabel", label: "White-label" },
-  { href: "/#modules", label: "Modules" },
-  { href: "/#pricing", label: "Pricing" },
-];
+import { IconLogoMark } from "@/components/icons";
 
 export default function Nav() {
-  const [open, setOpen] = useState(false);
-
   return (
     <header className="sticky top-0 z-20 bg-[color-mix(in_srgb,var(--color-bg)_82%,transparent)] backdrop-blur-md border-b border-[var(--color-divider)]">
       <div className="max-w-[1160px] mx-auto flex items-center gap-6 px-6 py-3.5">
@@ -25,51 +12,11 @@ export default function Nav() {
           <span className="font-medium text-[17px]">Primue</span>
         </a>
 
-        <nav className="hidden md:flex items-center gap-6">
-          {links.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="text-[14.5px] no-underline text-[var(--color-neutral-400)] hover:text-[var(--color-text)] transition-colors"
-            >
-              {l.label}
-            </a>
-          ))}
-        </nav>
-        <div className="hidden md:flex items-center gap-6">
-          <a href="/signin" className="btn btn-secondary text-[14px]">Sign in</a>
-          <a href="/signup" className="btn btn-primary text-[14px]">Get started</a>
-        </div>
-
-        <div className="md:hidden">
-          <button
-            className="btn btn-icon btn-secondary"
-            aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <IconX size={18} /> : <IconMenu size={18} />}
-          </button>
+        <div className="flex items-center gap-2.5 sm:gap-6">
+          <a href="/signin" className="btn btn-secondary text-[13px] sm:text-[14px]">Sign in</a>
+          <a href="/signup" className="btn btn-primary text-[13px] sm:text-[14px]">Get started</a>
         </div>
       </div>
-
-      {open && (
-        <div className="md:hidden border-t border-[var(--color-divider)] px-6 py-4 flex flex-col gap-4">
-          {links.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              className="text-[14px] no-underline text-[var(--color-neutral-300)]"
-            >
-              {l.label}
-            </a>
-          ))}
-          <div className="flex gap-2.5 pt-2">
-            <a href="/signin" className="btn btn-secondary text-[14px] flex-1">Sign in</a>
-            <a href="/signup" className="btn btn-primary text-[14px] flex-1">Get started</a>
-          </div>
-        </div>
-      )}
     </header>
   );
 }
