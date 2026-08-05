@@ -34,7 +34,16 @@ export default function Hero() {
           supplied hero asset if one has been dropped into public/hero/. */}
       <div className="relative max-w-[1000px] mx-auto px-6 pb-8">
         <HeroMedia />
-        <div className="flex items-center justify-center gap-2 -mt-2">
+        {/* mt-2, not a negative margin: HeroMedia's fallback (ProductFrame) is
+            a fixed design scaled down to fit the container, so its own
+            internal padding shrinks with it on narrow screens. A fixed
+            negative margin here doesn't shrink along with it — on mobile the
+            frame gets scaled down enough that -8px lands on actual frame
+            content (the last row of the invoices table) instead of the
+            whitespace below it, which is exactly what was in the screenshot
+            this was reported from. A small positive gap has no such failure
+            mode at any scale. */}
+        <div className="flex items-center justify-center gap-2 mt-2">
           <span className="text-[11px] tracking-[.06em] uppercase text-[var(--color-neutral-600)]">
             Draft · Sign · Pay · Land — one continuous flow
           </span>

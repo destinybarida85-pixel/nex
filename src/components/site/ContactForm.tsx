@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const topics = ["General question", "Sales", "Support", "Partnerships", "Press"];
 
@@ -11,11 +11,21 @@ export default function ContactForm() {
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
 
+  // Lets a link elsewhere on the site (the Enterprise plan's "Talk to
+  // sales") land here with the right topic already selected, instead of
+  // dropping someone into a blank form after they specifically asked for
+  // sales. Read client-side off the real URL rather than useSearchParams —
+  // this only needs to run once on mount, not react to navigation.
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("topic");
+    if (requested && topics.includes(requested)) setTopic(requested);
+  }, []);
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const subject = `[Primue contact] ${topic} from ${name || "Website visitor"}`;
     const body = `${message}\n\nFrom: ${name}\n${email}`;
-    window.location.href = `mailto:hello@origin.io?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:destinybarida85@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSent(true);
   }
 
@@ -24,9 +34,9 @@ export default function ContactForm() {
       <div className="card elev-sm p-6 gap-2">
         <div className="card-title text-[16px]">Your email client should be opening now.</div>
         <p className="card-body">
-          We prefilled a message to <strong className="text-[var(--color-text)] font-medium">hello@origin.io</strong> with what
+          We prefilled a message to <strong className="text-[var(--color-text)] font-medium">destinybarida85@gmail.com</strong> with what
           you wrote. If nothing opened, email us directly at{" "}
-          <a href="mailto:hello@origin.io" className="text-[var(--color-accent-300)] no-underline">hello@origin.io</a>.
+          <a href="mailto:destinybarida85@gmail.com" className="text-[var(--color-accent-300)] no-underline">destinybarida85@gmail.com</a>.
         </p>
         <button className="btn btn-ghost text-[13.5px] self-start mt-1" onClick={() => setSent(false)}>
           ← Send another message

@@ -80,7 +80,7 @@ export default function Pricing() {
             <span>· Dedicated banking partner setup</span>
             <span>· SLA 99.99% + priority support</span>
           </div>
-          <button className="btn btn-secondary btn-block text-[14px] mt-auto">Talk to sales</button>
+          <a href="/contact?topic=Sales" className="btn btn-secondary btn-block text-[14px] mt-auto">Talk to sales</a>
         </div>
       </div>
     </section>
