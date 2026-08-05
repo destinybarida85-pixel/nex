@@ -27,13 +27,21 @@ export default function SuccessBanner() {
             </a>
           </div>
 
-          <div className="relative h-full min-h-[320px]">
+          <div className="relative h-full min-h-[380px]">
+            {/* object-position top: source is a tall portrait crop (face +
+                logo in the upper two-thirds) — the default center crop was
+                cutting the face off once squeezed into this wide, shorter
+                banner slot. */}
             <img
               src="/hero/success-banner.webp"
               alt=""
               aria-hidden
               className="w-full h-full object-cover block"
-              style={{ maskImage: "linear-gradient(to left, black 60%, transparent 100%)", WebkitMaskImage: "linear-gradient(to left, black 60%, transparent 100%)" }}
+              style={{
+                objectPosition: "center 15%",
+                maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+              }}
             />
             {/* Real notification shape, not a decorative graphic — matches
                 what actually appears in the app's own TopBar bell dropdown. */}
