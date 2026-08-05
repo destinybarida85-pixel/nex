@@ -479,6 +479,20 @@ textarea.input { min-height: 90px; resize: vertical; }
   .nx-auth-card { animation: none !important; }
 }
 
+/* — homepage hero visual: slow idle float, layered under TiltCard's own
+   mouse-follow transform so the two don't fight (this one only ever moves
+   vertically, TiltCard only ever rotates/scales). */
+@keyframes nx-hero-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -9px, 0); }
+}
+.nx-hero-float {
+  animation: nx-hero-float 8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-hero-float { animation: none !important; }
+}
+
 /* — homepage cinematic hero scene (the "4D act": the product loop playing out) — */
 @keyframes nx-scene-drift {
   0%, 100% { transform: rotateX(19deg) rotateZ(-1deg) translateY(0); }

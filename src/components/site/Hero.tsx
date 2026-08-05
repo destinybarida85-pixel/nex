@@ -1,4 +1,5 @@
 import HeroMedia from "@/components/site/HeroMedia";
+import TiltCard from "@/components/site/TiltCard";
 
 export default function Hero() {
   return (
@@ -33,7 +34,17 @@ export default function Hero() {
       {/* Primue's real loop — draft, sign, pay, land — playing out live, or a
           supplied hero asset if one has been dropped into public/hero/. */}
       <div className="relative max-w-[1000px] mx-auto px-6 pb-8">
-        <HeroMedia />
+        {/* TiltCard for real depth on mouse move (the same primitive already
+            used throughout ProductStory below), plus a slow idle float so
+            the hero has motion even before anyone touches it — this is the
+            "3D motion" that was asked for, kept to genuine depth/parallax
+            rather than a rendered 3D scene, which was explicitly disliked
+            earlier. */}
+        <div className="nx-hero-float">
+          <TiltCard maxTilt={4} scale={1.008}>
+            <HeroMedia />
+          </TiltCard>
+        </div>
         {/* mt-2, not a negative margin: HeroMedia's fallback (ProductFrame) is
             a fixed design scaled down to fit the container, so its own
             internal padding shrinks with it on narrow screens. A fixed
