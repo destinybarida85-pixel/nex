@@ -7,13 +7,26 @@ import { isPendingMigration } from "@/lib/schema";
 // Lists every business this login can switch into (see migration 0020),
 // plus which one is active right now — active isn't a membership property,
 // it's just whichever tenant profiles.tenant_id currently points at.
+//
+// Reads on the admin client for the same reason POST writes on it: tenants'
+// only SELECT policy is "id = auth_tenant_id()" — the CURRENTLY ACTIVE
+// tenant only. That's fine for every other place in the app, which only
+// ever needs to read the one tenant you're in, but this endpoint's whole job
+// is listing every business you're NOT currently in too — under the
+// session client, the tenants(name) join silently comes back null for all
+// of those (RLS filters per-row inside the join, not just the top-level
+// query), which surfaced as a business showing up in the switcher with no
+// name and no way to click it. requireTenant() already confirms who's
+// asking; the membership row itself, not client input, decides what they
+// can see.
 export async function GET() {
   if (!isBackendConfigured) return NextResponse.json({ configured: false });
 
-  const { error, status, supabase, tenantId, userId } = await requireTenant();
+  const { error, status, tenantId, userId } = await requireTenant();
   if (error) return NextResponse.json({ configured: true, error }, { status });
 
-  const { data: memberships, error: listError } = await supabase!
+  const admin = createAdminClient();
+  const { data: memberships, error: listError } = await admin
     .from("memberships")
     .select("tenant_id, role, tenants(name)")
     .eq("user_id", userId)
