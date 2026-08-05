@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireTenant } from "@/lib/requireTenant";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import { isPendingMigration } from "@/lib/schema";
 
@@ -35,16 +36,31 @@ export async function GET() {
 
 // Adds a new business to this login and switches to it immediately — "create
 // a business" without a reason to land you somewhere you didn't just create.
+//
+// Runs on the admin client, not the caller's session client. tenants only
+// ever got read/update RLS policies (0001_init.sql) — creating one was never
+// meant to happen outside handle_new_user()'s own SECURITY DEFINER trigger,
+// which is exactly why a plain session-scoped insert here fails RLS outright.
+// The wallet_accounts insert has the same shape of problem one step further
+// in: its policy checks tenant_id = auth_tenant_id(), but auth_tenant_id()
+// still reads the OLD active tenant until the profiles update below runs, so
+// even a correctly-RLS'd tenants insert would still fail creating a wallet
+// for the brand new one. Using the admin client sidesteps both instead of
+// growing a policy just to let this one endpoint run itself — every value
+// written still derives from userId, which requireTenant() already verified
+// against the real session, never from client input.
 export async function POST(request: Request) {
   if (!isBackendConfigured) return NextResponse.json({ error: "Backend isn't connected yet." }, { status: 200 });
 
-  const { error, status, supabase, userId } = await requireTenant();
+  const { error, status, userId } = await requireTenant();
   if (error) return NextResponse.json({ error }, { status });
 
   const { name } = (await request.json()) as { name?: string };
   if (!name?.trim()) return NextResponse.json({ error: "Give the new business a name." }, { status: 400 });
 
-  const { data: tenant, error: tenantError } = await supabase!
+  const admin = createAdminClient();
+
+  const { data: tenant, error: tenantError } = await admin
     .from("tenants")
     .insert({ name: name.trim(), owner_id: userId })
     .select("id, name")
@@ -54,12 +70,12 @@ export async function POST(request: Request) {
   }
   if (tenantError) return NextResponse.json({ error: tenantError.message }, { status: 500 });
 
-  const { error: memberError } = await supabase!
+  const { error: memberError } = await admin
     .from("memberships")
     .insert({ user_id: userId, tenant_id: tenant.id, role: "owner" });
   if (memberError) return NextResponse.json({ error: memberError.message }, { status: 500 });
 
-  await supabase!.from("wallet_accounts").insert({
+  await admin.from("wallet_accounts").insert({
     tenant_id: tenant.id,
     label: "Primary",
     account_number: String(Math.floor(Math.random() * 1e10)).padStart(10, "0"),
@@ -67,7 +83,7 @@ export async function POST(request: Request) {
     balance_cents: 0,
   });
 
-  await supabase!.from("profiles").update({ tenant_id: tenant.id }).eq("id", userId);
+  await admin.from("profiles").update({ tenant_id: tenant.id }).eq("id", userId);
 
   return NextResponse.json({ configured: true, business: { tenantId: tenant.id, name: tenant.name, role: "owner" } });
 }
