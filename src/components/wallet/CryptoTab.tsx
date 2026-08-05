@@ -170,8 +170,16 @@ export default function CryptoTab() {
         {/* Not a caveat buried in fine print — this is the single most
             important fact on this screen, so it gets the same visual weight
             as the number above it. An internal ledger that merely looks like
-            a wallet is exactly the kind of screen someone trusts by mistake. */}
-        <div className="text-[12px] mt-1.5 flex items-start gap-1.5" style={{ color: "#e0a35b" }}>
+            a wallet is exactly the kind of screen someone trusts by mistake.
+            Blended toward the local text colour rather than a fixed amber:
+            plain amber reads fine on this card's original dark surface but
+            has poor contrast on a light one, and this card's background
+            changes with whatever theme it's mounted in (see the wallet
+            page's light-mode variable override) — mixing toward
+            var(--color-text) darkens it automatically on light surfaces and
+            keeps it warm on dark ones, instead of needing two hard-coded
+            colours. */}
+        <div className="text-[12px] mt-1.5 flex items-start gap-1.5" style={{ color: "color-mix(in srgb, #e0a35b 65%, var(--color-text) 35%)" }}>
           <IconArrowUpCircle size={13} className="flex-none mt-0.5 rotate-45" />
           <span>
             {live

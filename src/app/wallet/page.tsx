@@ -135,6 +135,43 @@ export default function WalletPage() {
 
   const filter = hideBalances ? { filter: "blur(7px)" } : undefined;
 
+  // Redefines the design system's own CSS custom properties for this page's
+  // content only — the exact mechanism the print stylesheet already uses to
+  // turn the same dark components white on paper, reused here instead of a
+  // second parallel set of "light" class names. Everything under this node
+  // (cards, buttons, tags, the seg control, both other tabs) already reads
+  // colour exclusively through var(--color-*), so it re-themes for free
+  // without touching Cards or Crypto individually. Sidebar/TopBar sit outside
+  // this node on purpose — the rest of the app stays exactly as dark as it
+  // was, only the wallet's own content area gets the lighter, warmer
+  // treatment that was actually asked for.
+  //
+  // The explicit `color` here matters beyond decoration: body's own `color:
+  // var(--color-text)` already resolved to the dark-mode value before this
+  // point, and plain inherited `color` doesn't re-evaluate against a variable
+  // redefined further down the tree — only an element that reads the
+  // variable itself does. Setting it here, on the same element that redefines
+  // the variable, gives every descendant with no colour of its own (most of
+  // .card-title, plain transaction text, etc.) the correct dark-on-light
+  // value through ordinary inheritance instead of turning up unreadably pale.
+  const lightTheme = {
+    "--color-bg": "#f4f4f7",
+    "--color-surface": "#ffffff",
+    "--color-text": "#14141b",
+    color: "#14141b",
+    "--color-divider": "rgba(20,20,27,0.09)",
+    "--color-neutral-400": "#6b6b76",
+    "--color-neutral-500": "#85858f",
+    "--color-neutral-600": "#a3a3ab",
+    "--color-neutral-700": "#c2c2c9",
+    "--color-accent": "#6552c8",
+    "--color-accent-300": "#5d5294",
+    "--shadow-sm": "0 1px 2px rgba(20,20,30,0.07)",
+    "--shadow-md": "0 6px 20px rgba(20,20,30,0.09)",
+    "--shadow-lg": "0 16px 40px rgba(20,20,30,0.14)",
+    background: "var(--color-bg)",
+  } as React.CSSProperties;
+
   // Parsed back out of the display string rather than kept as a separate
   // numeric field — WalletTx has always stored amount pre-formatted (both the
   // demo data and the live-mode mapper build it that way), so this reads
@@ -151,11 +188,11 @@ export default function WalletPage() {
       <Sidebar active="Business Wallet" />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
-        <main className="p-4 pt-16 sm:p-[24px_28px_28px] flex flex-col gap-5 min-w-0">
+        <main className="p-4 pt-16 sm:p-[24px_28px_32px] flex flex-col gap-5 min-w-0" style={lightTheme}>
           <div className="flex items-end gap-3 flex-wrap">
             <div>
-              <h3 className="m-0 text-[22px]">Business Wallet</h3>
-              <div className="text-muted text-[13.5px] mt-[3px]">
+              <h3 className="m-0 text-[22px]" style={{ color: "var(--color-text)" }}>Business Wallet</h3>
+              <div className="text-[13.5px] mt-[3px]" style={{ color: "var(--color-neutral-500)" }}>
                 Your Primue business balance{live && " · Saved to your account"}
               </div>
             </div>
