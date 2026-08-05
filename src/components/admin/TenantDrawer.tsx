@@ -1,11 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IconX, IconGlobe, IconMessages } from "@/components/icons";
+import { IconX, IconGlobe } from "@/components/icons";
 import type { Tenant } from "./tenants";
 
-export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | null; onClose: () => void }) {
+function money(cents: number) {
+  return `$${(cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+export default function TenantDrawer({
+  tenant,
+  onClose,
+  onChanged,
+}: {
+  tenant: Tenant | null;
+  onClose: () => void;
+  onChanged: () => void;
+}) {
   const [entered, setEntered] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (tenant) {
@@ -24,6 +38,28 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
   }, [onClose]);
 
   if (!tenant) return null;
+
+  async function toggleSuspend() {
+    setBusy(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/tenants/${tenant!.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ suspended: !tenant!.suspended }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't update that tenant.");
+      onChanged();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't update that tenant.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const initial = tenant.name.charAt(0).toUpperCase();
+  const brand = tenant.brandColor || "var(--color-accent)";
 
   return (
     <div className="fixed inset-0 z-30 flex justify-end">
@@ -44,15 +80,17 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--color-divider)]">
           <span
             className="w-9 h-9 rounded-[10px] grid place-items-center font-medium text-[15px] flex-none"
-            style={{ background: `color-mix(in srgb, ${tenant.brand} 18%, transparent)`, color: tenant.brand }}
+            style={{ background: `color-mix(in srgb, ${brand} 18%, transparent)`, color: brand }}
           >
-            {tenant.initial}
+            {initial}
           </span>
           <div className="min-w-0">
-            <div className="text-[15px] font-medium truncate">{tenant.org}</div>
-            <div className="text-[11px] font-mono text-[var(--color-neutral-500)] truncate">{tenant.domain}</div>
+            <div className="text-[15px] font-medium truncate">{tenant.name}</div>
+            <div className="text-[11px] font-mono text-[var(--color-neutral-500)] truncate">{tenant.domain || "No custom domain"}</div>
           </div>
-          <span className={`tag ${tenant.statusTag} ml-auto flex-none`}>{tenant.status}</span>
+          <span className={`tag ${tenant.suspended ? "tag-outline" : "tag-accent"} ml-auto flex-none`}>
+            {tenant.suspended ? "Suspended" : tenant.subscriptionStatus}
+          </span>
           <button className="btn btn-icon btn-secondary flex-none" aria-label="Close" onClick={onClose}>
             <IconX size={14} />
           </button>
@@ -62,7 +100,7 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
           <div className="grid grid-cols-2 gap-3">
             <div className="card elev-sm gap-1 p-3">
               <div className="text-[10px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Plan</div>
-              <span className={`tag ${tenant.planTag} self-start`}>{tenant.plan}</span>
+              <span className="tag tag-neutral self-start capitalize">{tenant.plan}</span>
             </div>
             <div className="card elev-sm gap-1 p-3">
               <div className="text-[10px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Users</div>
@@ -70,11 +108,11 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
             </div>
             <div className="card elev-sm gap-1 p-3">
               <div className="text-[10px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Wallet vol · 30d</div>
-              <div className="text-[17px] font-medium">{tenant.volume}</div>
+              <div className="text-[17px] font-medium">{money(tenant.walletVolume30dCents)}</div>
             </div>
             <div className="card elev-sm gap-1 p-3">
               <div className="text-[10px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">MRR</div>
-              <div className="text-[17px] font-medium">{tenant.mrr}</div>
+              <div className="text-[17px] font-medium">{money(tenant.mrrCents)}</div>
             </div>
           </div>
 
@@ -87,48 +125,32 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
               <div className="flex items-center justify-between text-[13.5px]">
                 <span className="text-[var(--color-neutral-500)]">Brand color</span>
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-[4px]" style={{ background: tenant.brand }} />
-                  {tenant.brandLabel}
+                  <span className="w-3 h-3 rounded-[4px]" style={{ background: brand }} />
+                  <span className="font-mono text-[11px]">{tenant.brandColor || "default"}</span>
                 </span>
               </div>
               <div className="flex items-center justify-between text-[13.5px]">
                 <span className="text-[var(--color-neutral-500)]">Custom domain</span>
-                <span className="font-mono text-[11px]">{tenant.domain}</span>
+                <span className="font-mono text-[11px]">{tenant.domain || "—"}</span>
               </div>
               <div className="flex items-center justify-between text-[13.5px]">
                 <span className="text-[var(--color-neutral-500)]">&ldquo;Powered by&rdquo; badge</span>
-                <span className="tag tag-outline text-[9.5px]">{tenant.poweredBy ? "On" : "Off"}</span>
+                <span className="tag tag-outline text-[9.5px]">{tenant.poweredByBadge ? "On" : "Off"}</span>
               </div>
             </div>
           </div>
 
           <div>
-            <div className="flex items-center gap-2 mb-2.5">
-              <IconMessages size={14} className="text-[var(--color-accent)]" />
-              <div className="card-title text-[14px]">Contact</div>
-            </div>
+            <div className="card-title text-[14px] mb-2.5">Contact</div>
             <div className="card elev-sm gap-2 p-4">
               <div className="flex items-center justify-between text-[13.5px]">
-                <span className="text-[var(--color-neutral-500)]">Primary contact</span>
-                <span>{tenant.contact}</span>
+                <span className="text-[var(--color-neutral-500)]">Owner</span>
+                <span className="truncate">{tenant.ownerEmail || "—"}</span>
               </div>
               <div className="flex items-center justify-between text-[13.5px]">
                 <span className="text-[var(--color-neutral-500)]">Tenant since</span>
-                <span>{tenant.joined}</span>
+                <span>{new Date(tenant.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span>
               </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="card-title text-[14px] mb-2.5">Recent activity</div>
-            <div className="flex flex-col gap-2.5">
-              {tenant.activity.map((a) => (
-                <div key={a.label} className="flex items-center gap-2.5 text-[13px]">
-                  <span className="w-[6px] h-[6px] rounded-full flex-none" style={{ background: "var(--color-accent)" }} />
-                  <span className="flex-1">{a.label}</span>
-                  <span className="text-[var(--color-neutral-500)] font-mono text-[10.5px]">{a.meta}</span>
-                </div>
-              ))}
             </div>
           </div>
 
@@ -137,9 +159,11 @@ export default function TenantDrawer({ tenant, onClose }: { tenant: Tenant | nul
           </div>
         </div>
 
-        <div className="flex gap-2 p-4 border-t border-[var(--color-divider)]">
-          <button className="btn btn-secondary flex-1 text-[13.5px]">View as tenant</button>
-          <button className="btn btn-secondary flex-1 text-[13.5px]">Suspend tenant</button>
+        <div className="flex flex-col gap-2 p-4 border-t border-[var(--color-divider)]">
+          {error && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+          <button className="btn btn-secondary btn-block text-[13.5px]" onClick={toggleSuspend} disabled={busy}>
+            {busy ? "Working…" : tenant.suspended ? "Unsuspend tenant" : "Suspend tenant"}
+          </button>
         </div>
       </div>
     </div>
