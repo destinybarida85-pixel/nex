@@ -12,6 +12,7 @@ import {
   IconEmployees,
   IconAnalytics,
   IconGlobe,
+  IconShieldCheck,
 } from "@/components/icons";
 
 function VisualFrame({ children }: { children: React.ReactNode }) {
@@ -132,6 +133,33 @@ const modules = [
           ))}
         </div>
       </VisualFrame>
+    ),
+  },
+  {
+    id: "certificates",
+    kicker: "Certificates",
+    icon: IconShieldCheck,
+    title: "Premium certificates, issued in your name.",
+    copy: "AI-drafted, professionally designed certificates for achievements, completion, or recognition — 15 designs, fully editable, sealed with your own stamp.",
+    replaces: "Replaces hiring a designer for one-off certificates, or a separate certificate-generator subscription.",
+    timeframe: "Minutes from prompt to a printable, sealed certificate.",
+    cta: "See how it works",
+    ctaHref: "/certificates",
+    visual: (
+      <div
+        className="rounded-xl p-5 flex flex-col justify-between h-full min-h-[160px]"
+        style={{
+          background: "linear-gradient(120deg, #1a2436 55%, #c9a227 220%)",
+          border: "1px solid var(--color-divider)",
+        }}
+      >
+        <div className="text-[10px] tracking-[.1em] uppercase" style={{ color: "#e8d9a0" }}>Certificate</div>
+        <div>
+          <div className="text-[18px] font-medium" style={{ color: "#fff" }}>Certificate of Achievement</div>
+          <div className="text-[11px] mt-1" style={{ color: "#c8cede" }}>Presented to Amara Okafor</div>
+        </div>
+        <div className="text-[9.5px]" style={{ color: "#9aa3ba" }}>Issued by your business · sealed &amp; signed</div>
+      </div>
     ),
   },
   {
@@ -335,18 +363,28 @@ export default function ProductStory() {
           is the consolidation itself, so the ask belongs at the level of
           "replace everything," not repeated eight times over. */}
       <ScrollReveal>
-        <div
-          className="rounded-2xl p-8 flex flex-col items-center text-center gap-3"
-          style={{
-            background: "linear-gradient(150deg, var(--color-surface), color-mix(in srgb, var(--color-accent-900) 55%, var(--color-surface)))",
-            border: "1px solid var(--color-divider)",
-          }}
-        >
-          <h3 className="text-[24px] tracking-[-0.015em] m-0">Replace all of it. Keep just one login.</h3>
-          <p className="text-sm text-[var(--color-neutral-400)] max-w-[480px]">
-            Everything above, under your own brand, for less than most of these cost separately.
-          </p>
-          <a href="/signup" className="btn btn-primary text-sm px-[22px] py-[11px] mt-1">Start free →</a>
+        <div className="relative rounded-2xl overflow-hidden" style={{ border: "1px solid var(--color-divider)" }}>
+          <img
+            src="/hero/team-banner.webp"
+            alt=""
+            aria-hidden
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: "center 30%" }}
+          />
+          {/* Dark gradient over the photo, not a flat scrim — keeps the
+              text readable without hiding the photo entirely, same
+              technique as the success banner above it. */}
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(0deg, var(--color-bg) 12%, color-mix(in srgb, var(--color-bg) 55%, transparent) 55%, color-mix(in srgb, var(--color-bg) 25%, transparent) 100%)" }}
+          />
+          <div className="relative p-10 md:p-14 flex flex-col items-center text-center gap-3">
+            <h3 className="text-[26px] tracking-[-0.015em] m-0" style={{ color: "#fff" }}>Replace all of it. Keep just one login.</h3>
+            <p className="text-sm max-w-[480px]" style={{ color: "rgba(255,255,255,0.75)" }}>
+              Everything above, under your own brand, for less than most of these cost separately.
+            </p>
+            <a href="/signup" className="btn btn-primary text-sm px-[22px] py-[11px] mt-1">Start free →</a>
+          </div>
         </div>
       </ScrollReveal>
     </section>

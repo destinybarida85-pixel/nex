@@ -41,12 +41,29 @@ export async function POST(request: Request) {
           : priceId === process.env.STRIPE_STARTER_PRICE_ID
             ? "starter"
             : "starter";
+
+      // Signup bonus certificate credits, per the pricing page: Starter gets
+      // 1 one-time, Growth gets 10 one-time (on top of whatever they already
+      // have, same as the paid credit-pack purchase below — never a reset).
+      // checkout.session.completed only fires once per actual checkout, not
+      // on monthly renewals, which is exactly the "one-time" the pricing
+      // page promises rather than something needing separate renewal logic.
+      const SIGNUP_BONUS_CREDITS: Record<string, number> = { starter: 1, growth: 10 };
+      const bonus = SIGNUP_BONUS_CREDITS[plan] ?? 0;
+
+      const { data: tenant } = await supabase
+        .from("tenants")
+        .select("id, certificate_credits")
+        .eq("stripe_customer_id", session.customer as string)
+        .maybeSingle();
+
       await supabase
         .from("tenants")
         .update({
           subscription_id: subscription.id,
           plan,
           subscription_status: subscription.status,
+          ...(tenant ? { certificate_credits: (tenant.certificate_credits ?? 0) + bonus } : {}),
         })
         .eq("stripe_customer_id", session.customer as string);
     }
