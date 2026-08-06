@@ -162,9 +162,24 @@ export async function POST(request: Request) {
 
   if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
     const subscription = event.data.object as Stripe.Subscription;
+
+    // Non-payment is the one condition, besides an admin's own judgment call,
+    // that should lock a tenant out: Stripe already retried the card and gave
+    // up ("unpaid") or the subscription is over ("canceled"). Deliberately
+    // one-directional — recovering the subscription does NOT auto-unsuspend,
+    // because a boolean `suspended` column can't tell "locked out for
+    // non-payment" apart from "an admin suspended this for abuse"; silently
+    // clearing the flag here could undo that second, unrelated decision.
+    // Restoring access after a fixed payment is a deliberate admin action in
+    // the Super Admin console, same as suspending it was.
+    const lockedOutForNonPayment = subscription.status === "unpaid" || subscription.status === "canceled";
+
     await supabase
       .from("tenants")
-      .update({ subscription_status: subscription.status })
+      .update({
+        subscription_status: subscription.status,
+        ...(lockedOutForNonPayment ? { suspended: true } : {}),
+      })
       .eq("stripe_customer_id", subscription.customer as string);
   }
 

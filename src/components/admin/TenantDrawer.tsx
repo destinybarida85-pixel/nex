@@ -161,6 +161,11 @@ export default function TenantDrawer({
 
         <div className="flex flex-col gap-2 p-4 border-t border-[var(--color-divider)]">
           {error && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
+          {tenant.suspended && (tenant.subscriptionStatus === "unpaid" || tenant.subscriptionStatus === "canceled") && (
+            <div className="text-[11.5px] text-[var(--color-neutral-500)]">
+              Auto-suspended for non-payment — Stripe subscription is {tenant.subscriptionStatus}. Unsuspending won&rsquo;t fix billing; the tenant still needs to update their card.
+            </div>
+          )}
           <button className="btn btn-secondary btn-block text-[13.5px]" onClick={toggleSuspend} disabled={busy}>
             {busy ? "Working…" : tenant.suspended ? "Unsuspend tenant" : "Suspend tenant"}
           </button>
