@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isPendingMigration } from "@/lib/schema";
 
 // Routes that hold real business data and require a signed-in Primue account.
 // Deliberately excludes /sign (external signers often have no Primue account
@@ -84,6 +85,27 @@ export async function proxy(request: NextRequest) {
 
   if (user && isAuthPage) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // A suspended tenant's data is already locked down at the API layer
+  // (requireTenant() rejects with 403), but the page shell itself doesn't
+  // call that — it renders the layout and lets client components fetch
+  // their own data, silently falling back to demo placeholders on any
+  // fetch failure. Without this check a suspended owner just sees a
+  // dashboard full of generic demo numbers instead of a clear "you're
+  // suspended" message, which looks like things are working fine.
+  if (user && isProtected && !isAdminRoute && pathname !== "/suspended") {
+    const { data: profile } = await supabase.from("profiles").select("tenant_id").eq("id", user.id).maybeSingle();
+    if (profile?.tenant_id) {
+      const { data: tenant, error: tenantError } = await supabase
+        .from("tenants")
+        .select("suspended")
+        .eq("id", profile.tenant_id)
+        .maybeSingle();
+      if (!isPendingMigration(tenantError) && tenant?.suspended) {
+        return NextResponse.redirect(new URL("/suspended", request.url));
+      }
+    }
   }
 
   return response;
