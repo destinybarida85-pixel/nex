@@ -8,7 +8,8 @@ import ReceiveModal from "@/components/wallet/ReceiveModal";
 import PayoutModal from "@/components/wallet/PayoutModal";
 import CardsTab from "@/components/wallet/CardsTab";
 import CryptoTab from "@/components/wallet/CryptoTab";
-import { initialTransactions, beneficiaries, type WalletTx } from "@/components/wallet/data";
+import Beneficiaries from "@/components/payments/Beneficiaries";
+import { initialTransactions, type WalletTx } from "@/components/wallet/data";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import { IconDownload, IconSend, IconReceive, IconArrowUpCircle, IconArrowDownCircle, IconEye, IconEyeOff } from "@/components/icons";
@@ -301,26 +302,7 @@ export default function WalletPage() {
               )}
             </div>
 
-            <div className="card elev-sm p-[16px_18px] gap-1">
-              <div className="card-title text-sm mb-1.5">Beneficiaries</div>
-              <div className="flex flex-col">
-                {beneficiaries.map((b) => (
-                  <div key={b.name} className="flex items-center gap-2.5 py-2.5 border-b last:border-b-0" style={{ borderColor: "var(--color-divider)" }}>
-                    <span
-                      className="w-8 h-8 rounded-full grid place-items-center text-[12px] font-medium flex-none"
-                      style={{ background: `color-mix(in srgb, ${avatarColor(b.name)} 20%, transparent)`, color: avatarColor(b.name) }}
-                    >
-                      {b.name.charAt(0)}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[13.5px] truncate">{b.name}</div>
-                      <div className="text-[10.5px] text-[var(--color-neutral-500)]">{b.bank}</div>
-                    </div>
-                    <span className="font-mono text-[11px] text-[var(--color-neutral-500)]">{b.account}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <Beneficiaries />
           </div>
           </>
           )}
