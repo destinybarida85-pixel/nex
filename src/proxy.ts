@@ -26,6 +26,7 @@ const PROTECTED_PREFIXES = [
   "/templates",
   "/whitelabel",
   "/mobile",
+  "/vip",
 ];
 
 const AUTH_PAGES = ["/signin", "/signup"];

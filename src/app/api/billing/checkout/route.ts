@@ -5,6 +5,7 @@ import { getStripe, isStripeConfigured } from "@/lib/stripe";
 const PRICE_IDS: Record<string, string | undefined> = {
   starter: process.env.STRIPE_STARTER_PRICE_ID,
   growth: process.env.STRIPE_GROWTH_PRICE_ID,
+  vip: process.env.STRIPE_VIP_PRICE_ID,
 };
 
 // Real Stripe Checkout in subscription mode, with a 7-day trial — this is Primue
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
   const plan: string = body.plan ?? "";
   const priceId = PRICE_IDS[plan];
   if (!priceId) {
-    return NextResponse.json({ error: "Pick a valid plan (starter or growth)." }, { status: 400 });
+    return NextResponse.json({ error: "Pick a valid plan (starter, growth, or vip)." }, { status: 400 });
   }
 
   const stripe = getStripe();

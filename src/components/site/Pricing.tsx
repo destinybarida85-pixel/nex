@@ -83,6 +83,30 @@ export default function Pricing() {
           </div>
           <a href="/contact?topic=Sales" className="btn btn-secondary btn-block text-[14px] mt-auto">Talk to sales</a>
         </div>
+
+        <div
+          className="card elev-md p-[22px] gap-2.5 nx-price-card"
+          style={{ background: "#0a0a0a", border: "1px solid #fff", color: "#f5f5f5" }}
+        >
+          <div className="flex items-center">
+            <div className="card-title" style={{ color: "#fff" }}>VIP</div>
+            <span className="tag ml-auto text-[9.5px]" style={{ border: "1px solid #fff", color: "#fff" }}>Done for you</span>
+          </div>
+          <div className="font-medium text-[34px]" style={{ color: "#fff" }}>
+            $249
+            <span className="text-[14px]" style={{ color: "#8a8a8a" }}> / mo</span>
+          </div>
+          <div className="text-[14px]" style={{ color: "#a8a8a8" }}>You send the word — Primue AI drafts the work.</div>
+          <div className="flex flex-col gap-[7px] text-[13.5px] mt-1" style={{ color: "#c8c8c8" }}>
+            <span>· Everything in Growth</span>
+            <span>· Text or voice — say what you need, any time</span>
+            <span>· Primue AI drafts replies, invoices, follow-ups, task lists</span>
+            <span>· You review and send — nothing goes out on its own</span>
+          </div>
+          <a href="/vip" className="btn btn-block text-[14px] mt-auto" style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }}>
+            Go VIP
+          </a>
+        </div>
       </div>
     </section>
   );

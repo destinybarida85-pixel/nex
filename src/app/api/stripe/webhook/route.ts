@@ -54,11 +54,13 @@ export async function POST(request: Request) {
       const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
       const priceId = subscription.items.data[0]?.price.id;
       const plan =
-        priceId === process.env.STRIPE_GROWTH_PRICE_ID
-          ? "growth"
-          : priceId === process.env.STRIPE_STARTER_PRICE_ID
-            ? "starter"
-            : "starter";
+        priceId === process.env.STRIPE_VIP_PRICE_ID
+          ? "vip"
+          : priceId === process.env.STRIPE_GROWTH_PRICE_ID
+            ? "growth"
+            : priceId === process.env.STRIPE_STARTER_PRICE_ID
+              ? "starter"
+              : "starter";
 
       // Signup bonus certificate credits, per the pricing page: Starter gets
       // 1 one-time, Growth gets 10 one-time (on top of whatever they already
