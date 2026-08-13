@@ -1,3 +1,9 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useHasSession } from "@/lib/useSession";
+import { isBackendConfigured } from "@/lib/backendStatus";
+
 type WalletTx = { direction: "credit" | "debit"; amount_cents: number; created_at: string };
 
 const CHART_W = 760;
@@ -35,8 +41,26 @@ function pathFor(values: number[], max: number) {
     .join(" ");
 }
 
-export default function RevenueChart({ transactions, live }: { transactions?: WalletTx[]; live?: boolean }) {
-  const months = live && transactions ? buildMonthlySeries(transactions) : null;
+export default function RevenueChart() {
+  const { hasSession, checked } = useHasSession();
+  const [live, setLive] = useState(false);
+  const [transactions, setTransactions] = useState<WalletTx[]>([]);
+
+  useEffect(() => {
+    if (!checked || !isBackendConfigured || !hasSession) return;
+    fetch("/api/wallet")
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data.configured) return;
+        setTransactions(data.transactions ?? []);
+        setLive(true);
+      })
+      .catch(() => {
+        // Stay on the demo path on any failure.
+      });
+  }, [checked, hasSession]);
+
+  const months = live ? buildMonthlySeries(transactions) : null;
   const max = months ? Math.max(1, ...months.map((m) => Math.max(m.revenue, m.expense))) : 0;
   const revenuePath = months ? pathFor(months.map((m) => m.revenue), max) : null;
   const expensePath = months ? pathFor(months.map((m) => m.expense), max) : null;
