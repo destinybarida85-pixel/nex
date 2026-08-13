@@ -4,6 +4,24 @@ import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createNotification } from "@/lib/notify";
 
+type SupabaseAdmin = ReturnType<typeof createAdminClient>;
+
+// Best-effort, tenant-visible record of "something happened to my account" —
+// never allowed to fail the webhook itself, since a logging hiccup here must
+// not risk breaking real billing/credit/suspension logic.
+async function logWebhookEvent(
+  supabase: SupabaseAdmin,
+  tenantId: string | null,
+  eventType: string,
+  detail: string
+) {
+  try {
+    await supabase.from("webhook_events").insert({ tenant_id: tenantId, event_type: eventType, detail });
+  } catch {
+    // Non-fatal — this table may not exist yet on a pre-migration deploy.
+  }
+}
+
 // Stripe calls this directly (no user session), so it verifies the request via
 // the webhook signature instead, and uses the service-role client to write
 // across tenants. Configure this URL as a webhook endpoint in the Stripe
@@ -66,6 +84,8 @@ export async function POST(request: Request) {
           ...(tenant ? { certificate_credits: (tenant.certificate_credits ?? 0) + bonus } : {}),
         })
         .eq("stripe_customer_id", session.customer as string);
+
+      await logWebhookEvent(supabase, tenant?.id ?? null, "checkout.session.completed", `Subscribed to ${plan}`);
     }
 
     if (session.mode === "payment" && session.metadata?.kind === "stamp_credits" && session.metadata.tenant_id) {
@@ -76,6 +96,7 @@ export async function POST(request: Request) {
           .from("tenants")
           .update({ stamp_credits: tenant.stamp_credits + credits })
           .eq("id", session.metadata.tenant_id);
+        await logWebhookEvent(supabase, session.metadata.tenant_id, "checkout.session.completed", `+${credits} stamp credits`);
       }
     }
 
@@ -87,6 +108,7 @@ export async function POST(request: Request) {
           .from("tenants")
           .update({ certificate_credits: tenant.certificate_credits + credits })
           .eq("id", session.metadata.tenant_id);
+        await logWebhookEvent(supabase, session.metadata.tenant_id, "checkout.session.completed", `+${credits} certificate credits`);
       }
     }
 
@@ -154,6 +176,13 @@ export async function POST(request: Request) {
               counterparty: session.customer_details?.email || "a customer",
               reference: link.title,
             });
+
+            await logWebhookEvent(
+              supabase,
+              link.tenant_id,
+              "checkout.session.completed",
+              `${link.title} — ${(session.amount_total / 100).toLocaleString(undefined, { style: "currency", currency: (session.currency || "usd").toUpperCase() })}`
+            );
           }
         }
       }
@@ -174,6 +203,12 @@ export async function POST(request: Request) {
     // the Super Admin console, same as suspending it was.
     const lockedOutForNonPayment = subscription.status === "unpaid" || subscription.status === "canceled";
 
+    const { data: subTenant } = await supabase
+      .from("tenants")
+      .select("id")
+      .eq("stripe_customer_id", subscription.customer as string)
+      .maybeSingle();
+
     await supabase
       .from("tenants")
       .update({
@@ -181,6 +216,13 @@ export async function POST(request: Request) {
         ...(lockedOutForNonPayment ? { suspended: true } : {}),
       })
       .eq("stripe_customer_id", subscription.customer as string);
+
+    await logWebhookEvent(
+      supabase,
+      subTenant?.id ?? null,
+      event.type,
+      lockedOutForNonPayment ? `Subscription ${subscription.status} — account suspended` : `Subscription status: ${subscription.status}`
+    );
   }
 
   return NextResponse.json({ received: true });
