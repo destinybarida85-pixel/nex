@@ -1,21 +1,34 @@
 import { NextResponse } from "next/server";
 import { requireTenant } from "@/lib/requireTenant";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import { isPendingMigration } from "@/lib/schema";
 
 const SELECT_FIELDS =
+  "name, domain, custom_domain, brand_color, powered_by_badge, stamp_credits, plan, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id, external_website_url";
+const SELECT_FIELDS_NO_EXTERNAL_SITE =
   "name, domain, custom_domain, brand_color, powered_by_badge, stamp_credits, plan, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id";
 
+// This endpoint backs a lot of pages, well beyond VIP, so a field gated on a
+// migration that hasn't run yet must degrade instead of breaking every one
+// of them — same TENANT_COLUMNS-fallback pattern used in /api/admin.
 export async function GET() {
   if (!isBackendConfigured) return NextResponse.json({ configured: false });
 
   const { error, status, supabase, tenantId } = await requireTenant();
   if (error) return NextResponse.json({ configured: true, error }, { status });
 
-  const { data: tenant, error: tenantError } = await supabase!
+  let { data: tenant, error: tenantError } = await supabase!
     .from("tenants")
     .select(SELECT_FIELDS)
     .eq("id", tenantId)
     .single();
+  if (isPendingMigration(tenantError)) {
+    ({ data: tenant, error: tenantError } = await supabase!
+      .from("tenants")
+      .select(SELECT_FIELDS_NO_EXTERNAL_SITE)
+      .eq("id", tenantId)
+      .single());
+  }
   if (tenantError) return NextResponse.json({ error: tenantError.message }, { status: 500 });
 
   return NextResponse.json({ configured: true, tenant });
@@ -49,6 +62,7 @@ export async function PATCH(request: Request) {
     siteTemplate?: string;
     siteDocumentIds?: string[];
     sitePaymentLinkId?: string | null;
+    externalWebsiteUrl?: string | null;
   };
 
   const update: Record<string, unknown> = {};
@@ -64,13 +78,25 @@ export async function PATCH(request: Request) {
   if (body.siteTemplate && ["clarity", "ledger", "atrium", "portfolio", "landing"].includes(body.siteTemplate)) update.site_template = body.siteTemplate;
   if (Array.isArray(body.siteDocumentIds)) update.site_document_ids = body.siteDocumentIds;
   if (body.sitePaymentLinkId !== undefined) update.site_payment_link_id = body.sitePaymentLinkId || null;
+  if (body.externalWebsiteUrl !== undefined) update.external_website_url = body.externalWebsiteUrl?.trim() || null;
 
-  const { data: tenant, error: updateError } = await supabase!
+  let { data: tenant, error: updateError } = await supabase!
     .from("tenants")
     .update(update)
     .eq("id", tenantId)
     .select(SELECT_FIELDS)
     .single();
+  if (isPendingMigration(updateError) && "external_website_url" in update) {
+    return NextResponse.json({ error: "This isn't set up on the database yet — run the latest migration first." }, { status: 409 });
+  }
+  if (isPendingMigration(updateError)) {
+    ({ data: tenant, error: updateError } = await supabase!
+      .from("tenants")
+      .update(update)
+      .eq("id", tenantId)
+      .select(SELECT_FIELDS_NO_EXTERNAL_SITE)
+      .single());
+  }
   if (updateError) {
     const message = updateError.message.includes("duplicate key") ? "That website address is already taken." : updateError.message;
     return NextResponse.json({ error: message }, { status: 500 });
