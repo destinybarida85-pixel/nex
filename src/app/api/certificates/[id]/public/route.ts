@@ -41,6 +41,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       title: cert.title,
       citation: cert.citation,
       issuerName: cert.issuer_name || tenant?.name || "",
+      issuerLogoUrl: tenant?.logo_url ?? null,
       issuedAt: cert.issued_at,
       accentColor: cert.accent_color,
       style: cert.style ?? {},

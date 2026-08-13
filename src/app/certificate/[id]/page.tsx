@@ -11,6 +11,7 @@ type Certificate = {
   title: string;
   citation: string;
   issuerName: string;
+  issuerLogoUrl: string | null;
   issuedAt: string;
   accentColor: string | null;
   style?: CertificateStyle;
@@ -101,7 +102,11 @@ export default function PublicCertificatePage({ params }: { params: Promise<{ id
           style={{ background: "var(--color-bg)", color: "#63c3b2", boxShadow: "var(--shadow-sm)" }}
         >
           <IconCheckCircle size={14} />
-          Verified — this certificate record is held by {cert.issuerName || "the issuer"} on Primue.
+          Verified — this certificate record is held by
+          {cert.issuerLogoUrl && (
+            <img src={cert.issuerLogoUrl} alt="" style={{ width: 16, height: 16, borderRadius: 4, objectFit: "cover" }} />
+          )}
+          {cert.issuerName || "the issuer"} on Primue.
         </div>
 
         <button className="btn btn-secondary text-[13.5px] no-print self-center" onClick={printLandscape}>
