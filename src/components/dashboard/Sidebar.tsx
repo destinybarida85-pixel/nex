@@ -43,7 +43,7 @@ type NavItem = { label: string; icon: React.ComponentType<{ size?: number }>; hr
 const primaryNav: NavItem[] = [
   { label: "Dashboard", icon: IconDashboard, href: "/dashboard" },
   { label: "AI Assistant", icon: IconSparkle, href: "/copilot", badge: "New" },
-  { label: "VIP", icon: IconShieldCheck, href: "/vip", badge: "VIP" },
+  { label: "VIP", icon: IconShieldCheck, href: "/vip/console", badge: "VIP" },
 ];
 
 const moneyNav: NavItem[] = [
