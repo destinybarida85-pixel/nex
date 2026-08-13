@@ -5,6 +5,7 @@ import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import VipSidebar, { type VipSection } from "@/components/vip/VipSidebar";
 import RequestsPanel from "@/components/vip/panels/RequestsPanel";
+import FinancePanel from "@/components/vip/panels/FinancePanel";
 import DocumentsPanel from "@/components/vip/panels/DocumentsPanel";
 import CertificatesPanel from "@/components/vip/panels/CertificatesPanel";
 import IntegrationsPanel from "@/components/vip/panels/IntegrationsPanel";
@@ -89,6 +90,7 @@ export default function VipConsolePage() {
       <VipSidebar active={section} onSelect={setSection} tenantName={tenantName} />
       <main className="flex-1 min-w-0 p-8">
         {section === "requests" && <RequestsPanel />}
+        {section === "finance" && <FinancePanel />}
         {section === "documents" && <DocumentsPanel />}
         {section === "certificates" && <CertificatesPanel />}
         {section === "integrations" && <IntegrationsPanel />}

@@ -1,11 +1,12 @@
 "use client";
 
-import { IconLogoMark, IconSparkle, IconDocuments, IconShieldCheck, IconGlobe } from "@/components/icons";
+import { IconLogoMark, IconSparkle, IconDocuments, IconShieldCheck, IconGlobe, IconWallet } from "@/components/icons";
 
-export type VipSection = "requests" | "documents" | "certificates" | "integrations";
+export type VipSection = "requests" | "finance" | "documents" | "certificates" | "integrations";
 
 const NAV: { id: VipSection; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
   { id: "requests", label: "Requests", icon: IconSparkle },
+  { id: "finance", label: "Finance", icon: IconWallet },
   { id: "documents", label: "Documents", icon: IconDocuments },
   { id: "certificates", label: "Certificates", icon: IconShieldCheck },
   { id: "integrations", label: "Integrations", icon: IconGlobe },
