@@ -1,0 +1,2 @@
+echo "Running production build before push (catches what dev mode won't)..."
+npm run build

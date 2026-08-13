@@ -1,0 +1,31 @@
+name: Build check
+
+# Independent of any local machine: this is the safety net for the exact
+# failure that happened on 2026-08-13 — every deploy silently failed for
+# ~14 hours because nobody ran a real production build, only `next dev`
+# (which is far more lenient about type errors than `next build`). The
+# Husky pre-push hook stops this locally; this workflow catches it even if
+# a push somehow bypasses that (a fresh clone without `npm install`, a
+# `--no-verify` push, a different machine).
+#
+# No secrets required — this app is built to run its build step with zero
+# env vars configured (every real integration gates itself behind an
+# `isBackendConfigured` check rather than hard-failing), verified directly
+# before writing this workflow.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
