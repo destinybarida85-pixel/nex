@@ -4,9 +4,9 @@ import { isBackendConfigured } from "@/lib/backendStatus";
 import { isPendingMigration } from "@/lib/schema";
 
 const SELECT_FIELDS =
-  "name, domain, custom_domain, brand_color, powered_by_badge, stamp_credits, plan, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id, external_website_url";
+  "name, domain, custom_domain, brand_color, powered_by_badge, stamp_credits, plan, subscription_status, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id, external_website_url";
 const SELECT_FIELDS_NO_EXTERNAL_SITE =
-  "name, domain, custom_domain, brand_color, powered_by_badge, stamp_credits, plan, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id";
+  "name, domain, custom_domain, brand_color, powered_by_badge, stamp_credits, plan, subscription_status, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id";
 
 // This endpoint backs a lot of pages, well beyond VIP, so a field gated on a
 // migration that hasn't run yet must degrade instead of breaking every one

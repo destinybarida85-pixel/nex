@@ -1,8 +1,8 @@
 "use client";
 
-import { IconLogoMark, IconSparkle, IconDocuments, IconShieldCheck, IconGlobe, IconWallet, IconActivity, IconTemplates } from "@/components/icons";
+import { IconLogoMark, IconSparkle, IconDocuments, IconShieldCheck, IconGlobe, IconWallet, IconActivity, IconTemplates, IconPerson } from "@/components/icons";
 
-export type VipSection = "requests" | "finance" | "intelligence" | "documents" | "certificates" | "whitelabel" | "integrations";
+export type VipSection = "requests" | "finance" | "intelligence" | "documents" | "certificates" | "whitelabel" | "integrations" | "account";
 
 const NAV: { id: VipSection; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
   { id: "requests", label: "Requests", icon: IconSparkle },
@@ -12,6 +12,7 @@ const NAV: { id: VipSection; label: string; icon: React.ComponentType<{ size?: n
   { id: "certificates", label: "Certificates", icon: IconShieldCheck },
   { id: "whitelabel", label: "White-label", icon: IconTemplates },
   { id: "integrations", label: "Integrations", icon: IconGlobe },
+  { id: "account", label: "Account", icon: IconPerson },
 ];
 
 export default function VipSidebar({

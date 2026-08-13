@@ -11,6 +11,7 @@ import DocumentsPanel from "@/components/vip/panels/DocumentsPanel";
 import CertificatesPanel from "@/components/vip/panels/CertificatesPanel";
 import IntegrationsPanel from "@/components/vip/panels/IntegrationsPanel";
 import WhiteLabelPanel from "@/components/vip/panels/WhiteLabelPanel";
+import AccountPanel from "@/components/vip/panels/AccountPanel";
 
 const vipVars = {
   "--color-bg": "#0a0a0a",
@@ -98,6 +99,7 @@ export default function VipConsolePage() {
         {section === "certificates" && <CertificatesPanel />}
         {section === "whitelabel" && <WhiteLabelPanel />}
         {section === "integrations" && <IntegrationsPanel />}
+        {section === "account" && <AccountPanel />}
       </main>
     </div>
   );
