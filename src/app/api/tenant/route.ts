@@ -3,7 +3,7 @@ import { requireTenant } from "@/lib/requireTenant";
 import { isBackendConfigured } from "@/lib/backendStatus";
 
 const SELECT_FIELDS =
-  "name, domain, custom_domain, brand_color, powered_by_badge, stamp_credits, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id";
+  "name, domain, custom_domain, brand_color, powered_by_badge, stamp_credits, plan, logo_url, header_image_url, site_slug, site_published, site_template, site_document_ids, site_payment_link_id";
 
 export async function GET() {
   if (!isBackendConfigured) return NextResponse.json({ configured: false });
