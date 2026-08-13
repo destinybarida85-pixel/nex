@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="grid gap-3.5 grid-cols-1 lg:grid-cols-[2fr_1fr]">
-            <RevenueChart transactions={transactions} live={live} />
+            <RevenueChart />
             <HealthScore score={82} />
           </div>
 

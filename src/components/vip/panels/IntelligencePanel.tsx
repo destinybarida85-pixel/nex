@@ -72,7 +72,7 @@ export default function IntelligencePanel() {
       {!loading && recs.length === 0 && !error && (
         <div className="card elev-sm gap-1 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
           <div className="flex items-center gap-2">
-            <IconSparkle size={14} style={{ color: "#8fd6a8" }} />
+            <span style={{ color: "#8fd6a8" }}><IconSparkle size={14} /></span>
             <span className="text-[13.5px]" style={{ color: "#fff" }}>You&rsquo;re caught up.</span>
           </div>
           <div className="text-[12.5px]" style={{ color: "#8a8a8a" }}>
@@ -85,7 +85,7 @@ export default function IntelligencePanel() {
         {recs.map((r, i) => (
           <div key={i} className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
             <div className="flex items-center gap-2">
-              <IconSparkle size={13} style={{ color: "#fff" }} />
+              <span style={{ color: "#fff" }}><IconSparkle size={13} /></span>
               <span className="text-[13.5px] font-medium" style={{ color: "#fff" }}>{r.headline}</span>
             </div>
             <div className="text-[12.5px]" style={{ color: "#a8a8a8" }}>{r.detail}</div>

@@ -136,7 +136,7 @@ export default function LiveAntScene({
       cube.style.boxShadow = "0 0 14px color-mix(in srgb, var(--color-accent, #9184d9) 70%, transparent)";
       cube.style.opacity = "0";
       cube.style.transition = "transform 0.5s cubic-bezier(.34,1.56,.64,1), opacity 0.4s";
-      stack.appendChild(cube);
+      stack!.appendChild(cube);
       requestAnimationFrame(() => {
         cube.style.opacity = "1";
         cube.style.transform = "translate(-50%, 0) scale(1)";
@@ -154,7 +154,7 @@ export default function LiveAntScene({
     function maybeResetCycle(now: number) {
       if (!cycleResetAt || now < cycleResetAt) return;
       cycleResetAt = 0;
-      Array.from(stack.children).forEach((child, i) => {
+      Array.from(stack!.children).forEach((child, i) => {
         const el = child as HTMLElement;
         el.style.transition = "transform 0.4s ease-in, opacity 0.4s ease-in";
         el.style.transitionDelay = `${i * 40}ms`;
@@ -162,7 +162,7 @@ export default function LiveAntScene({
         el.style.transform += " scale(0.3)";
       });
       setTimeout(() => {
-        stack.innerHTML = "";
+        stack!.innerHTML = "";
       }, 500);
       blocksDelivered = 0;
     }
@@ -240,16 +240,16 @@ export default function LiveAntScene({
     raf = requestAnimationFrame(tick);
 
     const onResize = () => {
-      width = container.clientWidth;
-      height = container.clientHeight;
+      width = container!.clientWidth;
+      height = container!.clientHeight;
     };
     window.addEventListener("resize", onResize);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
-      layer.innerHTML = "";
-      stack.innerHTML = "";
+      layer!.innerHTML = "";
+      stack!.innerHTML = "";
     };
   }, [structureAnchor]);
 
