@@ -6,6 +6,7 @@ import { isBackendConfigured } from "@/lib/backendStatus";
 import VipSidebar, { type VipSection } from "@/components/vip/VipSidebar";
 import RequestsPanel from "@/components/vip/panels/RequestsPanel";
 import FinancePanel from "@/components/vip/panels/FinancePanel";
+import IntelligencePanel from "@/components/vip/panels/IntelligencePanel";
 import DocumentsPanel from "@/components/vip/panels/DocumentsPanel";
 import CertificatesPanel from "@/components/vip/panels/CertificatesPanel";
 import IntegrationsPanel from "@/components/vip/panels/IntegrationsPanel";
@@ -91,6 +92,7 @@ export default function VipConsolePage() {
       <main className="flex-1 min-w-0 p-8">
         {section === "requests" && <RequestsPanel />}
         {section === "finance" && <FinancePanel />}
+        {section === "intelligence" && <IntelligencePanel />}
         {section === "documents" && <DocumentsPanel />}
         {section === "certificates" && <CertificatesPanel />}
         {section === "integrations" && <IntegrationsPanel />}
