@@ -25,14 +25,32 @@ function fitFontSize(text: string, base: number, floor: number, maxLen: number) 
   return base - (base - floor) * t;
 }
 
-// A shared "roughen" filter gives every shape the slightly uneven, ink-on-a-
-// worn-stamp edge from the reference images, instead of a perfectly crisp
-// vector line that reads as a screenshot rather than a stamp.
+// Real ink on paper isn't a flat, evenly-saturated fill — a hand-pressed
+// stamp leaves patchy density (thicker where the pad touched more), a soft
+// bleed a fraction of a millimetre past the crisp edge (fibres wicking the
+// ink outward), and fine grain from the paper texture underneath. This filter
+// builds that in three layers instead of the single edge-wobble it used to
+// be: (1) the existing edge displacement, so lines aren't laser-crisp, (2) a
+// coarse turbulence field turned into an alpha mask and punched through the
+// shape, so some patches read lighter/worn instead of solid, (3) a blurred,
+// low-opacity duplicate underneath for the soft bleed halo.
 function RoughFilter({ uid }: { uid: string }) {
   return (
-    <filter id={`rough-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves={2} seed={3} result="noise" />
-      <feDisplacementMap in="SourceGraphic" in2="noise" scale={2.2} />
+    <filter id={`rough-${uid}`} x="-35%" y="-35%" width="170%" height="170%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves={2} seed={3} result="edgeNoise" />
+      <feDisplacementMap in="SourceGraphic" in2="edgeNoise" scale={2.2} result="displaced" />
+
+      <feGaussianBlur in="displaced" stdDeviation="2.4" result="bleedBlur" />
+      <feColorMatrix in="bleedBlur" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0" result="bleed" />
+
+      <feTurbulence type="fractalNoise" baseFrequency="0.12 0.16" numOctaves={3} seed={11} result="grain" />
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.85 0.85 0.85 0 -0.1" result="grainAlpha" />
+      <feComposite in="displaced" in2="grainAlpha" operator="in" result="inked" />
+
+      <feMerge>
+        <feMergeNode in="bleed" />
+        <feMergeNode in="inked" />
+      </feMerge>
     </filter>
   );
 }

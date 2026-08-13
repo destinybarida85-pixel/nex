@@ -258,6 +258,7 @@ export default function CompleteStep({
             tone={document.tone}
             organisation={document.organisation ?? undefined}
             logoUrl={document.logoUrl}
+            watermarkUrl={document.watermarkUrl}
             headerRight={headerStamp}
             footerSlot={footerSlot}
             overlay={overlayStamp}

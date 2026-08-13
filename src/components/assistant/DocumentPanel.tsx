@@ -53,6 +53,7 @@ export default function DocumentPanel({
   // their address and phone on a document they send out.
   const [organisation, setOrganisation] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [showWatermark, setShowWatermark] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [sending, setSending] = useState(false);
@@ -181,6 +182,7 @@ export default function DocumentPanel({
           organisation,
           accentColor,
           logoUrl,
+          watermarkUrl: showWatermark ? logoUrl : null,
           signersRequired,
           paymentLinkId: paymentLinkId || null,
         }),
@@ -279,6 +281,7 @@ export default function DocumentPanel({
               tone={tone}
               organisation={organisation}
               logoUrl={logoUrl}
+              watermarkUrl={showWatermark ? logoUrl : null}
               editable
               onTitleChange={(v) => setDraft((prev) => ({ ...prev, title: v }))}
               onMetaChange={(v) => setDraft((prev) => ({ ...prev, meta: v }))}
@@ -287,7 +290,7 @@ export default function DocumentPanel({
           </div>
         ) : (
           <div className="flex-1 min-w-0 max-w-[620px] print-area">
-            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} layout={layout} font={font} tone={tone} organisation={organisation} logoUrl={logoUrl} />
+            <DocumentPaper title={shown.title} meta={shown.meta} sections={shown.body} accentColor={accentColor} layout={layout} font={font} tone={tone} organisation={organisation} logoUrl={logoUrl} watermarkUrl={showWatermark ? logoUrl : null} />
           </div>
         )}
 
@@ -398,6 +401,13 @@ export default function DocumentPanel({
               </button>
               <input ref={logoInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" className="hidden" onChange={handleLogoFile} />
             </div>
+            {logoUrl && (
+              <label className="radio gap-2 text-[11.5px] pt-1">
+                <input type="checkbox" checked={showWatermark} onChange={(e) => setShowWatermark(e.target.checked)} />
+                <span className="dot" style={{ borderRadius: 5 }} />
+                Watermark this logo behind the page
+              </label>
+            )}
           </div>
 
           {editing ? (

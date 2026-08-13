@@ -8,6 +8,7 @@ export type SignDocument = {
   signerEmail: string;
   sections: SignSection[];
   logoUrl?: string | null;
+  watermarkUrl?: string | null;
   accentColor?: string;
   layout?: DocumentLayout;
   font?: DocumentFont;

@@ -127,6 +127,7 @@ function CertificateArt({
   accentColor?: string;
   style?: CertificateStyle;
 }) {
+  const watermarkUrl = style?.watermarkUrl;
   const d = findDesign(design);
   const accent = accentColor || style?.accentColor || d.accent;
   const accent2 = d.accent2 || accent;
@@ -163,6 +164,25 @@ function CertificateArt({
     >
       {d.guilloche && <Guilloche uid={d.id} color={accent} />}
       <Frame d={d} accent={accent} accent2={accent2} />
+      {watermarkUrl && (
+        <img
+          src={watermarkUrl}
+          alt=""
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "46%",
+            height: "46%",
+            objectFit: "contain",
+            opacity: 0.08,
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        />
+      )}
 
       <div
         className="relative h-full flex flex-col justify-center"

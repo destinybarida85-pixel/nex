@@ -13,6 +13,34 @@ import {
 
 export type DocumentSection = { heading: string; text: string };
 
+// A real letterhead watermark: the tenant's own logo, large and faint,
+// sitting behind the text rather than the small header icon logoUrl already
+// renders. Rendered as each layout's own first child (not a shared outer
+// sibling) because every layout paints its own opaque paper background —
+// placed outside that div, the background would just cover it completely.
+function Watermark({ url }: { url?: string | null }) {
+  if (!url) return null;
+  return (
+    <img
+      src={url}
+      alt=""
+      aria-hidden
+      style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "58%",
+        height: "58%",
+        objectFit: "contain",
+        opacity: 0.07,
+        pointerEvents: "none",
+        userSelect: "none",
+      }}
+    />
+  );
+}
+
 // Stable, module-level component — never redefined during a parent re-render,
 // which matters here: a component type recreated inside another component's
 // render body gets remounted by React on every render (a new function
@@ -73,6 +101,7 @@ export default function DocumentPaper({
   sections,
   accentColor,
   logoUrl,
+  watermarkUrl,
   big = true,
   layout = "classic",
   font = "auto",
@@ -92,6 +121,9 @@ export default function DocumentPaper({
   sections: DocumentSection[];
   accentColor: string;
   logoUrl?: string | null;
+  /** A large, faint copy of the tenant's logo behind the page content —
+   *  distinct from logoUrl's small header badge. Off by default. */
+  watermarkUrl?: string | null;
   big?: boolean;
   layout?: DocumentLayout;
   font?: DocumentFont;
@@ -190,8 +222,10 @@ export default function DocumentPaper({
           boxShadow: "0 1px 2px rgba(0,0,0,0.05), 0 18px 44px -22px rgba(0,0,0,0.28)",
           borderRadius: 10 * f,
           overflow: "hidden",
+          position: "relative",
         }}
       >
+        <Watermark url={watermarkUrl} />
         <div style={{ background: accentColor, padding: `${28 * f}px ${52 * f}px ${24 * f}px` }}>
           <div className="flex items-start justify-between gap-4 flex-wrap" style={{ rowGap: 10 * f }}>
             <div className="flex items-center" style={{ gap: 10 * f, minWidth: 0 }}>
@@ -288,8 +322,10 @@ export default function DocumentPaper({
           boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 14px 36px -20px rgba(0,0,0,0.22)",
           borderRadius: 10 * f,
           overflow: "hidden",
+          position: "relative",
         }}
       >
+        <Watermark url={watermarkUrl} />
         <div className="flex items-start justify-between gap-6 flex-wrap" style={{ rowGap: 14 * f, marginBottom: 18 * f }}>
           <div className="flex items-center" style={{ gap: 11 * f, minWidth: 0 }}>
             {logoUrl ? (
@@ -374,8 +410,11 @@ export default function DocumentPaper({
           padding: `${56 * f}px ${58 * f}px`,
           boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 16px 40px -22px rgba(0,0,0,0.24)",
           borderRadius: 10 * f,
+          overflow: "hidden",
+          position: "relative",
         }}
       >
+        <Watermark url={watermarkUrl} />
         <div className="flex items-center justify-between gap-4 flex-wrap" style={{ marginBottom: 40 * f, rowGap: 10 * f }}>
           <div className="flex items-center" style={{ gap: 9 * f, minWidth: 0 }}>
             {logoUrl && <img src={logoUrl} alt="" style={{ width: 22 * f, height: 22 * f, borderRadius: 5 * f, objectFit: "cover", flexShrink: 0 }} />}
@@ -461,8 +500,9 @@ export default function DocumentPaper({
     content = (
       <div
         className={`w-full ${className}`}
-        style={{ background: paperBg, color: paperInk, padding: `${40 * f}px ${44 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 10 * f }}
+        style={{ background: paperBg, color: paperInk, padding: `${40 * f}px ${44 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 10 * f, overflow: "hidden", position: "relative" }}
       >
+        <Watermark url={watermarkUrl} />
         <div className="flex items-start justify-between gap-4 flex-wrap" style={{ marginBottom: 26 * f, rowGap: 12 * f }}>
           <div className="min-w-0" style={{ flex: "1 1 auto" }}>
             <div className="flex items-center gap-2.5">
@@ -529,8 +569,9 @@ export default function DocumentPaper({
     content = (
       <div
         className={`w-full ${className}`}
-        style={{ background: paperBg, color: paperInk, padding: `${44 * f}px ${46 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 10 * f }}
+        style={{ background: paperBg, color: paperInk, padding: `${44 * f}px ${46 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 10 * f, overflow: "hidden", position: "relative" }}
       >
+        <Watermark url={watermarkUrl} />
         <div className="flex items-start justify-between gap-4 flex-wrap" style={{ marginBottom: 30 * f, rowGap: 12 * f }}>
           <div className="min-w-0" style={{ flex: "1 1 auto" }}>
             <div className="flex items-center gap-2.5" style={{ marginBottom: 8 * f }}>
@@ -562,8 +603,9 @@ export default function DocumentPaper({
     content = (
       <div
         className={`w-full ${className}`}
-        style={{ background: paperBg, color: paperInk, fontFamily: monoStack, padding: `${46 * f}px ${48 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 6 * f }}
+        style={{ background: paperBg, color: paperInk, fontFamily: monoStack, padding: `${46 * f}px ${48 * f}px`, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)", borderRadius: 6 * f, overflow: "hidden", position: "relative" }}
       >
+        <Watermark url={watermarkUrl} />
         <div className="flex items-start justify-between gap-4 flex-wrap" style={{ marginBottom: 46 * f, rowGap: 12 * f }}>
           <div className="flex items-center gap-2">
             {logoUrl ? (
@@ -627,8 +669,11 @@ export default function DocumentPaper({
         padding: `${52 * f}px ${52 * f}px`,
         boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -18px rgba(0,0,0,0.18)",
         borderRadius: 10 * f,
+        overflow: "hidden",
+        position: "relative",
       }}
     >
+      <Watermark url={watermarkUrl} />
       <div className="flex items-start justify-between gap-4 flex-wrap" style={{ marginBottom: 34 * f, rowGap: 14 * f }}>
         <div className="min-w-0" style={{ flex: "1 1 auto" }}>
           <div className="flex items-center gap-2.5" style={{ marginBottom: 12 * f }}>

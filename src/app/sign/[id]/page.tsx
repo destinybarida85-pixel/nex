@@ -30,6 +30,7 @@ type FetchedDoc = {
   organisation: string | null;
   accentColor: string | null;
   logoUrl: string | null;
+  watermarkUrl: string | null;
   status: string;
   createdAt: string;
   signersRequired: number;
@@ -93,6 +94,7 @@ export default function SignByIdPage({ params }: { params: Promise<{ id: string 
     signerEmail: "",
     sections: doc.sections && doc.sections.length > 0 ? doc.sections : [{ heading: "", text: doc.text }],
     logoUrl: doc.logoUrl,
+    watermarkUrl: doc.watermarkUrl,
     accentColor: doc.accentColor || documentAccents[0].color,
     layout: doc.layout || "classic",
     font: doc.font || "auto",
@@ -168,6 +170,7 @@ export default function SignByIdPage({ params }: { params: Promise<{ id: string 
               tone={signDocument.tone}
               organisation={signDocument.organisation ?? undefined}
               logoUrl={signDocument.logoUrl}
+              watermarkUrl={signDocument.watermarkUrl}
               headerRight={headerStamp}
               footerSlot={footerSlot}
               overlay={overlayStamp}

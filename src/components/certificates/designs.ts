@@ -142,4 +142,6 @@ export type CertificateStyle = {
    *  certificate's accent" — but once set, it stays put even if the design or
    *  accent changes later, instead of silently following them. */
   sealColor?: string;
+  /** Large, faint copy of the issuer's logo behind the certificate art. */
+  watermarkUrl?: string | null;
 };

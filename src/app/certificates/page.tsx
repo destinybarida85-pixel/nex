@@ -24,6 +24,8 @@ export default function CertificatesPage() {
   const [live, setLive] = useState(false);
   const [credits, setCredits] = useState(0);
   const [tenantName, setTenantName] = useState("");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [showWatermark, setShowWatermark] = useState(false);
   const [issued, setIssued] = useState<IssuedCertificate[]>([]);
   const [buying, setBuying] = useState(false);
   const [setupMessage, setSetupMessage] = useState("");
@@ -57,6 +59,7 @@ export default function CertificatesPage() {
     stampLabel,
     stampSub,
     sealColor: sealColor || undefined,
+    watermarkUrl: showWatermark ? logoUrl : undefined,
   };
 
   const [aiPrompt, setAiPrompt] = useState("");
@@ -80,6 +83,7 @@ export default function CertificatesPage() {
           setLive(true);
           setCredits(data.credits ?? 0);
           setTenantName(data.tenantName ?? "");
+          setLogoUrl(data.logoUrl ?? null);
           setIssued(data.certificates ?? []);
         }
       })
@@ -387,6 +391,19 @@ export default function CertificatesPage() {
                       <input className="input text-[11.5px]" placeholder="Sub text (optional)" value={stampSub} onChange={(e) => setStampSub(e.target.value.toUpperCase().slice(0, 40))} />
                     </div>
                   </>
+                )}
+              </div>
+
+              <div className="card elev-sm p-[14px_16px] gap-1.5">
+                <label className="radio gap-2 text-[13.5px]" style={{ opacity: logoUrl ? 1 : 0.5, cursor: logoUrl ? "pointer" : "not-allowed" }}>
+                  <input type="checkbox" checked={showWatermark} disabled={!logoUrl} onChange={(e) => setShowWatermark(e.target.checked)} />
+                  <span className="dot" style={{ borderRadius: 5 }} />
+                  Watermark your logo behind the certificate
+                </label>
+                {!logoUrl && (
+                  <div className="text-[11px] text-[var(--color-neutral-500)] pl-6">
+                    Add a logo under <a href="/whitelabel" style={{ color: "var(--color-accent-300)" }}>White-label</a> first.
+                  </div>
                 )}
               </div>
 

@@ -15,7 +15,7 @@ export async function GET() {
 
   const { data: tenant, error: tenantError } = await supabase!
     .from("tenants")
-    .select("certificate_credits, name, brand_color")
+    .select("certificate_credits, name, brand_color, logo_url")
     .eq("id", tenantId)
     .maybeSingle();
   if (isPendingMigration(tenantError)) {
@@ -41,6 +41,7 @@ export async function GET() {
     credits: tenant?.certificate_credits ?? 0,
     tenantName: tenant?.name ?? "",
     brandColor: tenant?.brand_color ?? null,
+    logoUrl: tenant?.logo_url ?? null,
   });
 }
 
