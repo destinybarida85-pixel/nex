@@ -26,7 +26,7 @@ const ANT_SVG = `
 </svg>`.trim();
 
 const BLOCK_SIZE = 12;
-const ANT_COUNT = 7;
+const ANT_COUNT = 11;
 const CARRY_OFFSET_Y = -10;
 
 type Phase = "wander" | "toCenter" | "leaving";
@@ -49,7 +49,18 @@ function rand(min: number, max: number) {
   return min + Math.random() * (max - min);
 }
 
-export default function LiveAntScene({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
+export default function LiveAntScene({
+  className = "",
+  style,
+  structureAnchor = 0.5,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+  /** Vertical position of the build site, 0 (top) to 1 (bottom) of the
+   *  container. Default centers it; push it down when this is used as a
+   *  full-hero background so it doesn't sit behind the headline. */
+  structureAnchor?: number;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
@@ -67,7 +78,7 @@ export default function LiveAntScene({ className = "", style }: { className?: st
     let width = container.clientWidth;
     let height = container.clientHeight;
     const centerX = () => width / 2;
-    const centerY = () => height / 2;
+    const centerY = () => height * structureAnchor;
 
     const ants: Ant[] = [];
     for (let i = 0; i < ANT_COUNT; i++) {
@@ -92,7 +103,12 @@ export default function LiveAntScene({ className = "", style }: { className?: st
         targetX: rand(0, width),
         targetY: rand(0, height),
         phase: "wander",
-        speed: rand(14, 26),
+        // Tuned for a full-hero-sized canvas (~1000-1300px wide), not the
+        // small boxed area this started as — at the old 14-26px/s speed, a
+        // wander leg across a canvas this size could take 20+ seconds,
+        // which meant decision points (and therefore any building at all)
+        // were rare enough to look broken rather than lively.
+        speed: rand(55, 95),
         carrying: false,
         waitUntil: 0,
       });
@@ -100,6 +116,7 @@ export default function LiveAntScene({ className = "", style }: { className?: st
 
     let blocksDelivered = 0;
     const MAX_STACK = 6;
+    let cycleResetAt = 0;
 
     function growStack() {
       if (blocksDelivered >= MAX_STACK) return;
@@ -124,6 +141,30 @@ export default function LiveAntScene({ className = "", style }: { className?: st
         cube.style.opacity = "1";
         cube.style.transform = "translate(-50%, 0) scale(1)";
       });
+
+      // Building never just stops at a finished cube forever — that would
+      // read as a static image again the moment it completes. Hold the
+      // finished structure a beat, then clear it and start the next one, so
+      // there's always a build in progress no matter when someone looks.
+      if (blocksDelivered >= MAX_STACK) {
+        cycleResetAt = performance.now() + 2600;
+      }
+    }
+
+    function maybeResetCycle(now: number) {
+      if (!cycleResetAt || now < cycleResetAt) return;
+      cycleResetAt = 0;
+      Array.from(stack.children).forEach((child, i) => {
+        const el = child as HTMLElement;
+        el.style.transition = "transform 0.4s ease-in, opacity 0.4s ease-in";
+        el.style.transitionDelay = `${i * 40}ms`;
+        el.style.opacity = "0";
+        el.style.transform += " scale(0.3)";
+      });
+      setTimeout(() => {
+        stack.innerHTML = "";
+      }, 500);
+      blocksDelivered = 0;
     }
 
     function pickNewWanderTarget(a: Ant) {
@@ -137,12 +178,15 @@ export default function LiveAntScene({ className = "", style }: { className?: st
     function tick(now: number) {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
+      maybeResetCycle(now);
 
       for (const a of ants) {
-        if (now < a.waitUntil) {
-          raf = requestAnimationFrame(tick);
-          continue;
-        }
+        // Only the single requestAnimationFrame call at the end of tick()
+        // should ever schedule the next frame — this used to also schedule
+        // one here per waiting ant, per frame, on top of that, which
+        // compounded every tick into a runaway stack of overlapping loops
+        // all racing to mutate the same `last`/`ants` state.
+        if (now < a.waitUntil) continue;
 
         const dx = a.targetX - a.x;
         const dy = a.targetY - a.y;
@@ -150,14 +194,16 @@ export default function LiveAntScene({ className = "", style }: { className?: st
 
         if (dist < 4) {
           if (a.phase === "wander") {
-            // Occasionally decide to head to the structure with a "block."
-            if (Math.random() < 0.35 && blocksDelivered < MAX_STACK) {
+            // Biased toward carrying, not aimless wandering — the point is a
+            // team visibly building something together, not ants that
+            // occasionally happen to help.
+            if (Math.random() < 0.65 && blocksDelivered < MAX_STACK) {
               a.phase = "toCenter";
               a.carrying = true;
               a.targetX = centerX() + rand(-14, 14);
               a.targetY = centerY() + rand(6, 20);
             } else {
-              a.waitUntil = now + rand(300, 1400);
+              a.waitUntil = now + rand(150, 600);
               pickNewWanderTarget(a);
             }
           } else if (a.phase === "toCenter") {
@@ -167,7 +213,13 @@ export default function LiveAntScene({ className = "", style }: { className?: st
             a.waitUntil = now + rand(150, 400);
             pickNewWanderTarget(a);
           } else {
+            // "leaving" reached its post-delivery target — hand straight
+            // back to normal wander with its own fresh target, rather than
+            // just flipping the phase and leaving stale coordinates that'd
+            // immediately re-trigger this same branch next frame.
             a.phase = "wander";
+            a.waitUntil = now + rand(150, 600);
+            pickNewWanderTarget(a);
           }
         } else {
           const angle = Math.atan2(dy, dx);
@@ -199,15 +251,24 @@ export default function LiveAntScene({ className = "", style }: { className?: st
       layer.innerHTML = "";
       stack.innerHTML = "";
     };
-  }, []);
+  }, [structureAnchor]);
 
+  const anchorPct = `${structureAnchor * 100}%`;
+
+    // No hardcoded `relative` here: Tailwind resolves conflicting position
+    // utilities (relative vs. absolute) by stylesheet order, not by where
+    // they appear in the className string, so bundling a base "relative"
+    // with a caller-passed "absolute inset-0" silently produced a
+    // position:relative element with height:auto — zero height, since every
+    // child inside is itself absolutely positioned and contributes nothing
+    // to that auto height. The caller supplies whichever position it needs.
   return (
-    <div ref={containerRef} className={`relative overflow-hidden ${className}`} style={style}>
+    <div ref={containerRef} className={`overflow-hidden ${className}`} style={style}>
       <div
         className="absolute rounded-full"
         style={{
           left: "50%",
-          top: "50%",
+          top: anchorPct,
           width: 220,
           height: 220,
           transform: "translate(-50%, -50%)",
@@ -218,7 +279,7 @@ export default function LiveAntScene({ className = "", style }: { className?: st
       <div
         ref={stackRef}
         className="absolute"
-        style={{ left: "50%", bottom: "38%", width: 1, height: 1, pointerEvents: "none" }}
+        style={{ left: "50%", top: anchorPct, width: 1, height: 1, pointerEvents: "none" }}
       />
       <div ref={layerRef} className="absolute inset-0" style={{ pointerEvents: "none" }} />
     </div>
