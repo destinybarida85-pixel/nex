@@ -100,7 +100,7 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
     <div className="flex flex-col gap-4 max-w-[1080px]">
       <div>
         <h3 className="m-0 text-[22px]" style={{ color: "#fff" }}>
-          {greeting()}{fullName ? `, ${fullName.split(" ")[0]}` : ""}
+          {loaded ? greeting() : "Welcome"}{fullName ? `, ${fullName.split(" ")[0]}` : ""}
         </h3>
         <div className="text-[13.5px] mt-1.5" style={{ color: "#a8a8a8" }}>
           {tenantName || "Your business"} — everything below is your real account data.
