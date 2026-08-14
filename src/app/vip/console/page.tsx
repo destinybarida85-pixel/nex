@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import VipSidebar, { type VipSection } from "@/components/vip/VipSidebar";
+import DashboardPanel from "@/components/vip/panels/DashboardPanel";
 import RequestsPanel from "@/components/vip/panels/RequestsPanel";
 import FinancePanel from "@/components/vip/panels/FinancePanel";
 import IntelligencePanel from "@/components/vip/panels/IntelligencePanel";
@@ -30,7 +31,7 @@ export default function VipConsolePage() {
   const [plan, setPlan] = useState<string>("none");
   const [tenantName, setTenantName] = useState("");
   const [upgrading, setUpgrading] = useState(false);
-  const [section, setSection] = useState<VipSection>("requests");
+  const [section, setSection] = useState<VipSection>("dashboard");
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
@@ -92,6 +93,7 @@ export default function VipConsolePage() {
     <div className="flex min-h-screen" style={{ ...vipVars, background: "var(--color-bg)", color: "var(--color-text)" }}>
       <VipSidebar active={section} onSelect={setSection} tenantName={tenantName} />
       <main className="flex-1 min-w-0 p-8">
+        {section === "dashboard" && <DashboardPanel onNavigate={setSection} />}
         {section === "requests" && <RequestsPanel />}
         {section === "finance" && <FinancePanel />}
         {section === "intelligence" && <IntelligencePanel />}
