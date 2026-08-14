@@ -1,6 +1,7 @@
 "use client";
 
-import { IconLogoMark, IconSparkle, IconDocuments, IconShieldCheck, IconGlobe, IconWallet, IconActivity, IconTemplates, IconPerson, IconGrid } from "@/components/icons";
+import { IconLogoMark, IconSparkle, IconDocuments, IconShieldCheck, IconGlobe, IconWallet, IconActivity, IconTemplates, IconPerson, IconGrid, IconSun, IconMoon } from "@/components/icons";
+import { useVipTheme } from "@/components/vip/theme";
 
 export type VipSection = "dashboard" | "requests" | "finance" | "intelligence" | "documents" | "certificates" | "whitelabel" | "integrations" | "account";
 
@@ -25,19 +26,21 @@ export default function VipSidebar({
   onSelect: (s: VipSection) => void;
   tenantName?: string;
 }) {
+  const { theme, tokens, toggleTheme } = useVipTheme();
+
   return (
     <aside
       className="w-[220px] flex-none flex flex-col gap-6 p-4"
-      style={{ background: "#0a0a0a", borderRight: "1px solid rgba(255,255,255,0.14)", minHeight: "100vh" }}
+      style={{ background: tokens.bg, borderRight: `1px solid ${tokens.border}`, minHeight: "100vh" }}
     >
       <div className="flex items-center gap-2.5 px-1">
         <IconLogoMark size={24} />
-        <span style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>Primue</span>
-        <span className="tag text-[9px]" style={{ border: "1px solid #fff", color: "#fff" }}>VIP</span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: tokens.text }}>Primue</span>
+        <span className="tag text-[9px]" style={{ border: `1px solid ${tokens.text}`, color: tokens.text }}>VIP</span>
       </div>
 
       {tenantName && (
-        <div className="px-1 text-[11.5px] truncate" style={{ color: "#6b6b6b" }}>{tenantName}</div>
+        <div className="px-1 text-[11.5px] truncate" style={{ color: tokens.textQuaternary }}>{tenantName}</div>
       )}
 
       <nav className="flex flex-col gap-0.5">
@@ -50,9 +53,9 @@ export default function VipSidebar({
               onClick={() => onSelect(item.id)}
               className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13.5px] text-left cursor-pointer"
               style={{
-                background: isActive ? "rgba(255,255,255,0.08)" : "transparent",
-                color: isActive ? "#fff" : "#8a8a8a",
-                border: isActive ? "1px solid rgba(255,255,255,0.16)" : "1px solid transparent",
+                background: isActive ? tokens.tint2 : "transparent",
+                color: isActive ? tokens.text : tokens.textTertiary,
+                border: `1px solid ${isActive ? tokens.borderActive : "transparent"}`,
               }}
             >
               <Icon size={15} />
@@ -64,7 +67,16 @@ export default function VipSidebar({
 
       <div className="flex-1" />
 
-      <a href="/" className="px-1 text-[11.5px]" style={{ color: "#6b6b6b" }}>← Back to primue.com</a>
+      <button
+        onClick={toggleTheme}
+        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[12.5px] text-left cursor-pointer"
+        style={{ background: "transparent", color: tokens.textTertiary, border: `1px solid ${tokens.border}` }}
+      >
+        {theme === "dark" ? <IconMoon size={14} /> : <IconSun size={14} />}
+        {theme === "dark" ? "Dark mode" : "Light mode"}
+      </button>
+
+      <a href="/" className="px-1 text-[11.5px]" style={{ color: tokens.textQuaternary }}>← Back to primue.com</a>
     </aside>
   );
 }

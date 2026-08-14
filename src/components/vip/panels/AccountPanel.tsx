@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IconCamera, IconCheckCircle } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
+import { useVipTheme } from "@/components/vip/theme";
 
 const PLAN_LABEL: Record<string, string> = {
   none: "No plan",
@@ -12,6 +13,7 @@ const PLAN_LABEL: Record<string, string> = {
 };
 
 export default function AccountPanel() {
+  const { tokens } = useVipTheme();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState("");
@@ -143,41 +145,41 @@ export default function AccountPanel() {
   return (
     <div className="flex flex-col gap-4 max-w-[1080px]">
       <div>
-        <h3 className="m-0 text-[22px]" style={{ color: "#fff" }}>Account</h3>
-        <div className="text-[13.5px] mt-1.5" style={{ color: "#a8a8a8" }}>Your profile, security, and subscription.</div>
+        <h3 className="m-0 text-[22px]" style={{ color: tokens.text }}>Account</h3>
+        <div className="text-[13.5px] mt-1.5" style={{ color: tokens.textSecondary }}>Your profile, security, and subscription.</div>
       </div>
 
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
-        <div className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#6b6b6b" }}>Plan</span>
-          <span className="text-[16px] font-medium" style={{ color: "#fff" }}>{PLAN_LABEL[plan] ?? plan}</span>
+        <div className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>Plan</span>
+          <span className="text-[16px] font-medium" style={{ color: tokens.text }}>{PLAN_LABEL[plan] ?? plan}</span>
         </div>
-        <div className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#6b6b6b" }}>Status</span>
-          <span className="text-[16px] font-medium capitalize" style={{ color: "#fff" }}>{subStatus || "—"}</span>
+        <div className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>Status</span>
+          <span className="text-[16px] font-medium capitalize" style={{ color: tokens.text }}>{subStatus || "—"}</span>
         </div>
-        <div className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#6b6b6b" }}>Member since</span>
-          <span className="text-[16px] font-medium" style={{ color: "#fff" }}>
+        <div className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>Member since</span>
+          <span className="text-[16px] font-medium" style={{ color: tokens.text }}>
             {createdAt ? new Date(createdAt).toLocaleDateString(undefined, { month: "short", year: "numeric" }) : "—"}
           </span>
         </div>
       </div>
 
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
-        <div className="card elev-sm gap-3.5 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <div className="text-[13.5px] font-medium" style={{ color: "#fff" }}>Profile</div>
+        <div className="card elev-sm gap-3.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <div className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Profile</div>
           <div className="flex items-center gap-4">
             <div className="relative">
               <div
                 className="w-16 h-16 rounded-full grid place-items-center text-[16px] font-medium overflow-hidden"
-                style={avatarUrl ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : { background: "#2a2d3d", color: "#fff" }}
+                style={avatarUrl ? { backgroundImage: `url(${avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : { background: tokens.avatarFallbackBg, color: tokens.avatarFallbackText }}
               >
                 {!avatarUrl && initials}
               </div>
               <button
                 className="absolute -bottom-1 -right-1 btn btn-icon"
-                style={{ width: 26, height: 26, background: "#0a0a0a", border: "1px solid #fff" }}
+                style={{ width: 26, height: 26, background: tokens.bg, border: `1px solid ${tokens.text}`, color: tokens.text }}
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
                 aria-label="Upload avatar"
@@ -189,53 +191,53 @@ export default function AccountPanel() {
             <div className="flex-1 flex flex-col gap-2.5">
               <input
                 className="input text-[14px]"
-                style={{ background: "#0a0a0a", color: "#f5f5f5", border: "1px solid rgba(255,255,255,0.14)" }}
+                style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Full name"
               />
-              <input className="input text-[13px]" style={{ background: "#0a0a0a", color: "#6b6b6b", border: "1px solid rgba(255,255,255,0.14)" }} value={email} disabled />
+              <input className="input text-[13px]" style={{ background: tokens.surfaceInset, color: tokens.textQuaternary, border: `1px solid ${tokens.border}` }} value={email} disabled />
             </div>
           </div>
-          {profileError && <div className="text-[12px]" style={{ color: "#ff8a8a" }}>{profileError}</div>}
-          {profileSaved && !profileError && <div className="text-[12px] flex items-center gap-1.5" style={{ color: "#8fd6a8" }}><IconCheckCircle size={12} /> Saved</div>}
-          <button className="btn text-[13px] self-start" style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }} onClick={saveProfile} disabled={savingProfile}>
+          {profileError && <div className="text-[12px]" style={{ color: tokens.danger }}>{profileError}</div>}
+          {profileSaved && !profileError && <div className="text-[12px] flex items-center gap-1.5" style={{ color: tokens.success }}><IconCheckCircle size={12} /> Saved</div>}
+          <button className="btn text-[13px] self-start" style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }} onClick={saveProfile} disabled={savingProfile}>
             {savingProfile ? "Saving…" : "Save"}
           </button>
         </div>
 
         <div className="flex flex-col gap-3.5">
-          <div className="card elev-sm gap-3.5 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-            <div className="text-[13.5px] font-medium" style={{ color: "#fff" }}>Security</div>
+          <div className="card elev-sm gap-3.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <div className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Security</div>
             <div className="field">
-              <label style={{ fontSize: 12, fontWeight: 600, color: "#8a8a8a" }}>New password</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: tokens.textTertiary }}>New password</label>
               <input
                 className="input text-[14px]"
-                style={{ background: "#0a0a0a", color: "#f5f5f5", border: "1px solid rgba(255,255,255,0.14)" }}
+                style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="At least 8 characters"
               />
             </div>
-            {passwordError && <div className="text-[12px]" style={{ color: "#ff8a8a" }}>{passwordError}</div>}
-            {passwordSaved && !passwordError && <div className="text-[12px] flex items-center gap-1.5" style={{ color: "#8fd6a8" }}><IconCheckCircle size={12} /> Password changed</div>}
-            <button className="btn text-[13px] self-start" style={{ border: "1px solid rgba(255,255,255,0.14)", color: "#a8a8a8" }} onClick={changePassword} disabled={changingPassword || !newPassword}>
+            {passwordError && <div className="text-[12px]" style={{ color: tokens.danger }}>{passwordError}</div>}
+            {passwordSaved && !passwordError && <div className="text-[12px] flex items-center gap-1.5" style={{ color: tokens.success }}><IconCheckCircle size={12} /> Password changed</div>}
+            <button className="btn text-[13px] self-start" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }} onClick={changePassword} disabled={changingPassword || !newPassword}>
               {changingPassword ? "Changing…" : "Change password"}
             </button>
           </div>
 
-          <div className="card elev-sm gap-3 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-            <div className="text-[13.5px] font-medium" style={{ color: "#fff" }}>Subscription</div>
+          <div className="card elev-sm gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <div className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Subscription</div>
             <div className="flex items-center gap-2">
-              <span className="tag text-[10px]" style={{ border: "1px solid #fff", color: "#fff" }}>{PLAN_LABEL[plan] ?? plan}</span>
-              {subStatus && <span className="text-[12px]" style={{ color: "#6b6b6b" }}>{subStatus}</span>}
+              <span className="tag text-[10px]" style={{ border: `1px solid ${tokens.text}`, color: tokens.text }}>{PLAN_LABEL[plan] ?? plan}</span>
+              {subStatus && <span className="text-[12px]" style={{ color: tokens.textQuaternary }}>{subStatus}</span>}
             </div>
-            {portalError && <div className="text-[12px]" style={{ color: "#ff8a8a" }}>{portalError}</div>}
-            <button className="btn text-[13px] self-start" style={{ border: "1px solid rgba(255,255,255,0.14)", color: "#a8a8a8" }} onClick={openBillingPortal} disabled={portalLoading}>
+            {portalError && <div className="text-[12px]" style={{ color: tokens.danger }}>{portalError}</div>}
+            <button className="btn text-[13px] self-start" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }} onClick={openBillingPortal} disabled={portalLoading}>
               {portalLoading ? "Opening…" : "Manage billing on Stripe →"}
             </button>
-            <div className="text-[11.5px]" style={{ color: "#6b6b6b" }}>
+            <div className="text-[11.5px]" style={{ color: tokens.textQuaternary }}>
               Opens Stripe&rsquo;s real billing portal — update your card, view invoices, or cancel from there.
             </div>
           </div>

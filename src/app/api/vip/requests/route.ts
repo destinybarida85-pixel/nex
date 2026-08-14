@@ -22,7 +22,7 @@ Respond with ONLY a JSON object, no prose before or after:
   "gaps": "string or null — what's missing/assumed, in one short sentence, or null if nothing is missing"
 }`;
 
-export async function GET() {
+export async function GET(request: Request) {
   if (!isBackendConfigured) return NextResponse.json({ configured: false });
 
   const { error, status, supabase, tenantId } = await requireTenant();
@@ -33,17 +33,28 @@ export async function GET() {
     return NextResponse.json({ configured: true, error: "VIP requests are only available on the VIP plan." }, { status: 403 });
   }
 
-  const { data: requests, error: dbError } = await supabase!
+  // Offset-based paging for the history list — callers that just want a
+  // rough recent-activity count (e.g. the Dashboard stat) can omit these and
+  // get the same default-30 behavior as before.
+  const { searchParams } = new URL(request.url);
+  const offset = Math.max(0, Number(searchParams.get("offset")) || 0);
+  const pageSize = Math.min(50, Math.max(1, Number(searchParams.get("limit")) || 30));
+
+  // Fetch one extra row to know if there's a next page without a separate count query.
+  const { data: rows, error: dbError } = await supabase!
     .from("vip_requests")
     .select("id, input_text, input_source, ai_draft, status, created_at")
     .eq("tenant_id", tenantId)
     .order("created_at", { ascending: false })
-    .limit(30);
+    .range(offset, offset + pageSize);
 
-  if (isPendingMigration(dbError)) return NextResponse.json({ configured: true, requests: [], migrationPending: true });
+  if (isPendingMigration(dbError)) return NextResponse.json({ configured: true, requests: [], hasMore: false, migrationPending: true });
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
 
-  return NextResponse.json({ configured: true, requests });
+  const hasMore = (rows ?? []).length > pageSize;
+  const requests = (rows ?? []).slice(0, pageSize);
+
+  return NextResponse.json({ configured: true, requests, hasMore });
 }
 
 export async function POST(request: Request) {

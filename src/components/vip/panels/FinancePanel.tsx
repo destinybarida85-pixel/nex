@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useVipTheme } from "@/components/vip/theme";
 
 type WalletTx = {
   id: string;
@@ -48,6 +49,7 @@ function Sparkline({ values, color }: { values: number[]; color: string }) {
 }
 
 export default function FinancePanel() {
+  const { tokens } = useVipTheme();
   const [balanceCents, setBalanceCents] = useState(0);
   const [transactions, setTransactions] = useState<WalletTx[]>([]);
   const [links, setLinks] = useState<PaymentLink[]>([]);
@@ -143,48 +145,48 @@ export default function FinancePanel() {
   return (
     <div className="flex flex-col gap-4 max-w-[900px]">
       <div>
-        <h3 className="m-0 text-[22px]" style={{ color: "#fff" }}>Finance</h3>
-        <div className="text-[13.5px] mt-1.5" style={{ color: "#a8a8a8" }}>
+        <h3 className="m-0 text-[22px]" style={{ color: tokens.text }}>Finance</h3>
+        <div className="text-[13.5px] mt-1.5" style={{ color: tokens.textSecondary }}>
           Your real wallet, credits and transaction history — nothing here is estimated.
         </div>
       </div>
 
       {/* Row 1: balance / income / expense — mirrors the reference's three-up top row */}
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.3fr 1fr 1fr" }}>
-        <div className="card elev-sm gap-3 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+        <div className="card elev-sm gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <div className="flex items-center justify-between">
-            <span className="text-[11px] tracking-[.08em] uppercase" style={{ color: "#6b6b6b" }}>My balance</span>
-            <Sparkline values={weeklyNet} color="#fff" />
+            <span className="text-[11px] tracking-[.08em] uppercase" style={{ color: tokens.textQuaternary }}>My balance</span>
+            <Sparkline values={weeklyNet} color={tokens.text} />
           </div>
-          <div className="text-[30px] font-medium" style={{ color: "#fff" }}>{money(balanceCents)}</div>
+          <div className="text-[30px] font-medium" style={{ color: tokens.text }}>{money(balanceCents)}</div>
           <div className="flex gap-2">
-            <a href="/wallet" className="btn text-[12px]" style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }}>Transfer</a>
-            <a href="/wallet" className="btn text-[12px]" style={{ border: "1px solid rgba(255,255,255,0.14)", color: "#a8a8a8" }}>Receive</a>
-            <a href="/payments" className="btn text-[12px]" style={{ border: "1px solid rgba(255,255,255,0.14)", color: "#a8a8a8" }}>Payment link</a>
+            <a href="/wallet" className="btn text-[12px]" style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}>Transfer</a>
+            <a href="/wallet" className="btn text-[12px]" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}>Receive</a>
+            <a href="/payments" className="btn text-[12px]" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}>Payment link</a>
           </div>
         </div>
 
-        <div className="card elev-sm gap-2 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+        <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full grid place-items-center flex-none" style={{ background: "color-mix(in srgb, #8fd6a8 18%, transparent)", color: "#8fd6a8" }}>↓</span>
-            <span className="text-[12.5px]" style={{ color: "#a8a8a8" }}>Income · 30d</span>
+            <span className="w-6 h-6 rounded-full grid place-items-center flex-none" style={{ background: `color-mix(in srgb, ${tokens.success} 18%, transparent)`, color: tokens.success }}>↓</span>
+            <span className="text-[12.5px]" style={{ color: tokens.textSecondary }}>Income · 30d</span>
           </div>
-          <div className="text-[22px] font-medium" style={{ color: "#fff" }}>{money(revenue30)}</div>
+          <div className="text-[22px] font-medium" style={{ color: tokens.text }}>{money(revenue30)}</div>
           {revenueChange !== null && (
-            <span className="tag text-[10px] self-start" style={{ border: `1px solid ${revenueChange >= 0 ? "#8fd6a8" : "#ff8a8a"}`, color: revenueChange >= 0 ? "#8fd6a8" : "#ff8a8a" }}>
+            <span className="tag text-[10px] self-start" style={{ border: `1px solid ${revenueChange >= 0 ? tokens.success : tokens.danger}`, color: revenueChange >= 0 ? tokens.success : tokens.danger }}>
               {revenueChange >= 0 ? "▲" : "▼"} {Math.abs(revenueChange)}% vs prior 30d
             </span>
           )}
         </div>
 
-        <div className="card elev-sm gap-2 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+        <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full grid place-items-center flex-none" style={{ background: "color-mix(in srgb, #ff8a8a 18%, transparent)", color: "#ff8a8a" }}>↑</span>
-            <span className="text-[12.5px]" style={{ color: "#a8a8a8" }}>Expenses · 30d</span>
+            <span className="w-6 h-6 rounded-full grid place-items-center flex-none" style={{ background: `color-mix(in srgb, ${tokens.danger} 18%, transparent)`, color: tokens.danger }}>↑</span>
+            <span className="text-[12.5px]" style={{ color: tokens.textSecondary }}>Expenses · 30d</span>
           </div>
-          <div className="text-[22px] font-medium" style={{ color: "#fff" }}>{money(expense30)}</div>
+          <div className="text-[22px] font-medium" style={{ color: tokens.text }}>{money(expense30)}</div>
           {expenseChange !== null && (
-            <span className="tag text-[10px] self-start" style={{ border: `1px solid ${expenseChange <= 0 ? "#8fd6a8" : "#ff8a8a"}`, color: expenseChange <= 0 ? "#8fd6a8" : "#ff8a8a" }}>
+            <span className="tag text-[10px] self-start" style={{ border: `1px solid ${expenseChange <= 0 ? tokens.success : tokens.danger}`, color: expenseChange <= 0 ? tokens.success : tokens.danger }}>
               {expenseChange >= 0 ? "▲" : "▼"} {Math.abs(expenseChange)}% vs prior 30d
             </span>
           )}
@@ -193,32 +195,32 @@ export default function FinancePanel() {
 
       {/* Row 2: credits (real, replaces the reference's fabricated "goals") + cash flow */}
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "1fr 1.4fr" }}>
-        <div className="card elev-sm gap-3 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <div className="text-[13px] font-medium" style={{ color: "#fff" }}>Credits</div>
+        <div className="card elev-sm gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <div className="text-[13px] font-medium" style={{ color: tokens.text }}>Credits</div>
           {[
             { label: "Certificate credits", value: certCredits, max: CERT_MAX },
             { label: "Stamp credits", value: stampCredits, max: STAMP_MAX },
           ].map((c) => (
             <div key={c.label} className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between text-[12px]" style={{ color: "#a8a8a8" }}>
+              <div className="flex items-center justify-between text-[12px]" style={{ color: tokens.textSecondary }}>
                 <span>{c.label}</span>
                 <span>{c.value ?? "—"}</span>
               </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: tokens.tint1 }}>
                 <div
                   className="h-full rounded-full"
-                  style={{ width: `${c.value ? Math.min(100, (c.value / c.max) * 100) : 0}%`, background: "#fff" }}
+                  style={{ width: `${c.value ? Math.min(100, (c.value / c.max) * 100) : 0}%`, background: tokens.text }}
                 />
               </div>
             </div>
           ))}
-          <a href="/billing" className="text-[11.5px]" style={{ color: "#8a8a8a" }}>Buy more credits →</a>
+          <a href="/billing" className="text-[11.5px]" style={{ color: tokens.textTertiary }}>Buy more credits →</a>
         </div>
 
-        <div className="card elev-sm gap-2 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+        <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-medium" style={{ color: "#fff" }}>Cash flow</span>
-            <span className="text-[11px]" style={{ color: "#6b6b6b" }}>Last 8 weeks</span>
+            <span className="text-[13px] font-medium" style={{ color: tokens.text }}>Cash flow</span>
+            <span className="text-[11px]" style={{ color: tokens.textQuaternary }}>Last 8 weeks</span>
           </div>
           <svg viewBox="0 0 320 90" width="100%" height="90" preserveAspectRatio="none">
             {(() => {
@@ -234,32 +236,32 @@ export default function FinancePanel() {
                     width={w * 0.56}
                     height={h}
                     rx={2}
-                    fill={v >= 0 ? "#fff" : "#6b6b6b"}
+                    fill={v >= 0 ? tokens.text : tokens.textQuaternary}
                   />
                 );
               });
             })()}
-            <line x1="0" y1="45" x2="320" y2="45" stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
+            <line x1="0" y1="45" x2="320" y2="45" stroke={tokens.border} strokeWidth="1" />
           </svg>
         </div>
       </div>
 
       {/* Row 3: billing / today / statement — mirrors the reference's right-hand promo stack, laid horizontally here */}
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
-        <div className="card elev-sm gap-2 p-4" style={{ background: "#fff", color: "#0a0a0a" }}>
+        <div className="card elev-sm gap-2 p-4" style={{ background: tokens.accentBg, color: tokens.accentText }}>
           <div className="text-[12px] font-medium">Manage billing</div>
-          <div className="text-[11px]" style={{ color: "#4a4a4a" }}>Update your card, view invoices, or cancel — real Stripe portal.</div>
-          <button className="btn text-[11.5px] self-start mt-1" style={{ background: "#0a0a0a", color: "#fff", border: "1px solid #0a0a0a" }} onClick={manageBilling} disabled={portalLoading}>
+          <div className="text-[11px]" style={{ color: tokens.accentTextMuted }}>Update your card, view invoices, or cancel — real Stripe portal.</div>
+          <button className="btn text-[11.5px] self-start mt-1" style={{ background: tokens.accentText, color: tokens.accentBg, border: `1px solid ${tokens.accentText}` }} onClick={manageBilling} disabled={portalLoading}>
             {portalLoading ? "Opening…" : "Open →"}
           </button>
         </div>
-        <div className="card elev-sm gap-1 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <div className="text-[11px] tracking-[.08em] uppercase" style={{ color: "#6b6b6b" }}>Received today</div>
-          <div className="text-[20px] font-medium" style={{ color: "#fff" }}>{money(todayReceived)}</div>
+        <div className="card elev-sm gap-1 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <div className="text-[11px] tracking-[.08em] uppercase" style={{ color: tokens.textQuaternary }}>Received today</div>
+          <div className="text-[20px] font-medium" style={{ color: tokens.text }}>{money(todayReceived)}</div>
         </div>
-        <div className="card elev-sm gap-2 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <div className="text-[12px] font-medium" style={{ color: "#fff" }}>Financial report</div>
-          <button className="btn text-[11.5px] self-start" style={{ border: "1px solid rgba(255,255,255,0.14)", color: "#a8a8a8" }} onClick={downloadStatement} disabled={transactions.length === 0}>
+        <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <div className="text-[12px] font-medium" style={{ color: tokens.text }}>Financial report</div>
+          <button className="btn text-[11.5px] self-start" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }} onClick={downloadStatement} disabled={transactions.length === 0}>
             Download CSV →
           </button>
         </div>
@@ -267,12 +269,12 @@ export default function FinancePanel() {
 
       {links.length > 0 && (
         <div>
-          <div className="text-[13px] font-medium mb-2" style={{ color: "#a8a8a8" }}>Payment links</div>
+          <div className="text-[13px] font-medium mb-2" style={{ color: tokens.textSecondary }}>Payment links</div>
           <div className="flex flex-col gap-2">
             {links.slice(0, 3).map((l) => (
-              <div key={l.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-                <span className="text-[13px] flex-1 truncate" style={{ color: "#f5f5f5" }}>{l.title}</span>
-                <span style={{ color: "#fff", fontSize: 13 }}>{money(l.amount_cents, l.currency)}</span>
+              <div key={l.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+                <span className="text-[13px] flex-1 truncate" style={{ color: tokens.text }}>{l.title}</span>
+                <span style={{ color: tokens.text, fontSize: 13 }}>{money(l.amount_cents, l.currency)}</span>
               </div>
             ))}
           </div>
@@ -282,34 +284,34 @@ export default function FinancePanel() {
       {/* Transaction history table — mirrors the reference's table structure */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[13px] font-medium" style={{ color: "#a8a8a8" }}>Transaction history</span>
-          <a href="/wallet" className="text-[11.5px]" style={{ color: "#8a8a8a" }}>View all →</a>
+          <span className="text-[13px] font-medium" style={{ color: tokens.textSecondary }}>Transaction history</span>
+          <a href="/wallet" className="text-[11.5px]" style={{ color: tokens.textTertiary }}>View all →</a>
         </div>
         {loaded && transactions.length === 0 && (
-          <div className="text-[13.5px]" style={{ color: "#6b6b6b" }}>No transactions yet.</div>
+          <div className="text-[13.5px]" style={{ color: tokens.textQuaternary }}>No transactions yet.</div>
         )}
         {transactions.length > 0 && (
-          <div className="overflow-x-auto rounded-lg" style={{ border: "1px solid rgba(255,255,255,0.14)" }}>
+          <div className="overflow-x-auto rounded-lg" style={{ border: `1px solid ${tokens.border}` }}>
             <table className="w-full text-[12.5px]" style={{ borderCollapse: "collapse" }}>
               <thead>
-                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.14)" }}>
+                <tr style={{ borderBottom: `1px solid ${tokens.border}` }}>
                   {["Name", "Type", "Date", "Status", "Amount"].map((h) => (
-                    <th key={h} className="text-left p-2.5" style={{ color: "#6b6b6b", fontWeight: 500 }}>{h}</th>
+                    <th key={h} className="text-left p-2.5" style={{ color: tokens.textQuaternary, fontWeight: 500 }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {transactions.slice(0, 8).map((t) => (
-                  <tr key={t.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                    <td className="p-2.5" style={{ color: "#f5f5f5" }}>{t.counterparty}</td>
-                    <td className="p-2.5" style={{ color: "#a8a8a8" }}>{t.memo || "Wallet transaction"}</td>
-                    <td className="p-2.5" style={{ color: "#a8a8a8" }}>{new Date(t.created_at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</td>
+                  <tr key={t.id} style={{ borderBottom: `1px solid ${tokens.tint3}` }}>
+                    <td className="p-2.5" style={{ color: tokens.text }}>{t.counterparty}</td>
+                    <td className="p-2.5" style={{ color: tokens.textSecondary }}>{t.memo || "Wallet transaction"}</td>
+                    <td className="p-2.5" style={{ color: tokens.textSecondary }}>{new Date(t.created_at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</td>
                     <td className="p-2.5">
-                      <span className="tag text-[9.5px]" style={{ background: t.status === "completed" ? "color-mix(in srgb, #8fd6a8 20%, transparent)" : "rgba(255,255,255,0.1)", color: t.status === "completed" ? "#8fd6a8" : "#a8a8a8" }}>
+                      <span className="tag text-[9.5px]" style={{ background: t.status === "completed" ? `color-mix(in srgb, ${tokens.success} 20%, transparent)` : tokens.tint1, color: t.status === "completed" ? tokens.success : tokens.textSecondary }}>
                         {t.status === "completed" ? "Complete" : t.status}
                       </span>
                     </td>
-                    <td className="p-2.5 text-right" style={{ color: t.direction === "credit" ? "#8fd6a8" : "#f5f5f5", fontWeight: 500 }}>
+                    <td className="p-2.5 text-right" style={{ color: t.direction === "credit" ? tokens.success : tokens.text, fontWeight: 500 }}>
                       {t.direction === "credit" ? "+" : "−"}{money(t.amount_cents)}
                     </td>
                   </tr>
@@ -320,12 +322,12 @@ export default function FinancePanel() {
         )}
       </div>
 
-      <div className="card elev-sm gap-2 p-4" style={{ background: "#161616", border: "1px dashed rgba(255,255,255,0.2)" }}>
+      <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px dashed ${tokens.borderDashed}` }}>
         <div className="flex items-center gap-2">
-          <span className="text-[13.5px] font-medium" style={{ color: "#fff" }}>Crypto</span>
-          <span className="tag text-[9px]" style={{ border: "1px solid #6b6b6b", color: "#6b6b6b" }}>Not connected</span>
+          <span className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Crypto</span>
+          <span className="tag text-[9px]" style={{ border: `1px solid ${tokens.textQuaternary}`, color: tokens.textQuaternary }}>Not connected</span>
         </div>
-        <div className="text-[12.5px]" style={{ color: "#8a8a8a", lineHeight: 1.6 }}>
+        <div className="text-[12.5px]" style={{ color: tokens.textTertiary, lineHeight: 1.6 }}>
           Real crypto payment acceptance runs through NOWPayments and isn&rsquo;t wired in yet — the account owner
           needs to finish that signup before this can accept a real payment.
         </div>

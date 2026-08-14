@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { IconCamera, IconCheckCircle } from "@/components/icons";
+import { useVipTheme } from "@/components/vip/theme";
 
 type TenantData = {
   name: string;
@@ -12,6 +13,8 @@ type TenantData = {
   custom_domain: string | null;
 };
 
+// Brand-color picker options — a fixed palette to choose FROM, unrelated to
+// (and never swapped by) the VIP console's own light/dark theme.
 const SWATCHES = ["#9184d9", "#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
 
 async function uploadImage(file: File): Promise<string> {
@@ -24,6 +27,7 @@ async function uploadImage(file: File): Promise<string> {
 }
 
 export default function WhiteLabelPanel() {
+  const { tokens } = useVipTheme();
   const logoInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -95,76 +99,76 @@ export default function WhiteLabelPanel() {
   return (
     <div className="flex flex-col gap-4 max-w-[1080px]">
       <div>
-        <h3 className="m-0 text-[22px]" style={{ color: "#fff" }}>White-label</h3>
-        <div className="text-[13.5px] mt-1.5" style={{ color: "#a8a8a8" }}>
+        <h3 className="m-0 text-[22px]" style={{ color: tokens.text }}>White-label</h3>
+        <div className="text-[13.5px] mt-1.5" style={{ color: tokens.textSecondary }}>
           Your brand identity across Primue — name, logo, color, and your client-facing site.
         </div>
       </div>
 
       {/* Status row — same stat-tile treatment as Dashboard / Finance / Intelligence */}
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
-        <div className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#6b6b6b" }}>Site status</span>
-          <span className="text-[16px] font-medium" style={{ color: "#fff" }}>{sitePublished ? "Published" : "Not published"}</span>
+        <div className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>Site status</span>
+          <span className="text-[16px] font-medium" style={{ color: tokens.text }}>{sitePublished ? "Published" : "Not published"}</span>
           <span
             className="tag text-[9.5px] self-start"
             style={{
-              border: `1px solid ${sitePublished ? "#8fd6a8" : "#6b6b6b"}`,
-              color: sitePublished ? "#8fd6a8" : "#6b6b6b",
+              border: `1px solid ${sitePublished ? tokens.success : tokens.textQuaternary}`,
+              color: sitePublished ? tokens.success : tokens.textQuaternary,
             }}
           >
             {siteSlug ? `primue.com/site/${siteSlug}` : "Not set up yet"}
           </span>
         </div>
 
-        <div className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#6b6b6b" }}>Custom domain</span>
-          <span className="text-[16px] font-medium truncate" style={{ color: "#fff" }}>{customDomain || "Not set"}</span>
+        <div className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>Custom domain</span>
+          <span className="text-[16px] font-medium truncate" style={{ color: tokens.text }}>{customDomain || "Not set"}</span>
           {customDomain && (
-            <span className="tag text-[9.5px] self-start" style={{ border: "1px solid #d9a05b", color: "#d9a05b" }}>
+            <span className="tag text-[9.5px] self-start" style={{ border: `1px solid ${tokens.warning}`, color: tokens.warning }}>
               Not resolving yet
             </span>
           )}
         </div>
 
-        <div className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#6b6b6b" }}>Brand color</span>
+        <div className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>Brand color</span>
           <div className="flex items-center gap-2">
             <span className="rounded-full flex-none" style={{ width: 16, height: 16, background: brandColor }} />
-            <span className="text-[16px] font-medium font-mono" style={{ color: "#fff" }}>{brandColor}</span>
+            <span className="text-[16px] font-medium font-mono" style={{ color: tokens.text }}>{brandColor}</span>
           </div>
         </div>
       </div>
 
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
         {/* Left: identity form */}
-        <div className="card elev-sm gap-3.5 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <div className="text-[13px] font-medium" style={{ color: "#fff" }}>Identity</div>
+        <div className="card elev-sm gap-3.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <div className="text-[13px] font-medium" style={{ color: tokens.text }}>Identity</div>
 
           <div className="field">
-            <label style={{ fontSize: 12, fontWeight: 600, color: "#8a8a8a" }}>Business name</label>
+            <label style={{ fontSize: 12, fontWeight: 600, color: tokens.textTertiary }}>Business name</label>
             <input
               className="input text-[14px]"
-              style={{ background: "#0a0a0a", color: "#f5f5f5", border: "1px solid rgba(255,255,255,0.14)" }}
+              style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
 
           <div className="field">
-            <label style={{ fontSize: 12, fontWeight: 600, color: "#8a8a8a" }}>Logo</label>
+            <label style={{ fontSize: 12, fontWeight: 600, color: tokens.textTertiary }}>Logo</label>
             <div className="flex items-center gap-3">
               <div
                 className="rounded-lg grid place-items-center flex-none overflow-hidden"
-                style={{ width: 44, height: 44, background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.14)" }}
+                style={{ width: 44, height: 44, background: tokens.surfaceInset, border: `1px solid ${tokens.border}` }}
               >
                 {logoUrl ? <img src={logoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (
-                  <span style={{ color: "#6b6b6b", fontSize: 11 }}>None</span>
+                  <span style={{ color: tokens.textQuaternary, fontSize: 11 }}>None</span>
                 )}
               </div>
               <button
                 className="btn text-[12.5px]"
-                style={{ border: "1px solid rgba(255,255,255,0.14)", color: "#a8a8a8" }}
+                style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}
                 onClick={() => logoInputRef.current?.click()}
                 disabled={uploading}
               >
@@ -176,7 +180,7 @@ export default function WhiteLabelPanel() {
           </div>
 
           <div className="field">
-            <label style={{ fontSize: 12, fontWeight: 600, color: "#8a8a8a" }}>Brand color</label>
+            <label style={{ fontSize: 12, fontWeight: 600, color: tokens.textTertiary }}>Brand color</label>
             <div className="flex items-center gap-2">
               {SWATCHES.map((c) => (
                 <button
@@ -184,24 +188,24 @@ export default function WhiteLabelPanel() {
                   aria-label={`Use ${c}`}
                   onClick={() => setBrandColor(c)}
                   className="rounded-md cursor-pointer"
-                  style={{ width: 24, height: 24, background: c, outline: brandColor === c ? "2px solid #fff" : "none", outlineOffset: 2 }}
+                  style={{ width: 24, height: 24, background: c, outline: brandColor === c ? `2px solid ${tokens.text}` : "none", outlineOffset: 2 }}
                 />
               ))}
-              <label className="rounded-md cursor-pointer grid place-items-center overflow-hidden" style={{ width: 24, height: 24, border: "1px dashed rgba(255,255,255,0.3)" }}>
+              <label className="rounded-md cursor-pointer grid place-items-center overflow-hidden" style={{ width: 24, height: 24, border: `1px dashed ${tokens.borderStrong}` }}>
                 <input type="color" value={brandColor} onChange={(e) => setBrandColor(e.target.value)} className="opacity-0 w-full h-full cursor-pointer" />
               </label>
             </div>
           </div>
 
-          {error && <div className="text-[12px]" style={{ color: "#ff8a8a" }}>{error}</div>}
+          {error && <div className="text-[12px]" style={{ color: tokens.danger }}>{error}</div>}
           {saved && !error && (
-            <div className="text-[12px] flex items-center gap-1.5" style={{ color: "#8fd6a8" }}>
+            <div className="text-[12px] flex items-center gap-1.5" style={{ color: tokens.success }}>
               <IconCheckCircle size={12} /> Saved
             </div>
           )}
           <button
             className="btn text-[13.5px] self-start"
-            style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }}
+            style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}
             onClick={save}
             disabled={saving}
           >
@@ -211,41 +215,41 @@ export default function WhiteLabelPanel() {
 
         {/* Right: site + domain, stacked like Dashboard's right column */}
         <div className="flex flex-col gap-3.5">
-          <div className="card elev-sm gap-2 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-            <div className="text-[13.5px] font-medium" style={{ color: "#fff" }}>Your client-facing site</div>
+          <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <div className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Your client-facing site</div>
             {siteSlug ? (
               <>
-                <div className="text-[12.5px]" style={{ color: "#a8a8a8" }}>
+                <div className="text-[12.5px]" style={{ color: tokens.textSecondary }}>
                   primue.com/site/{siteSlug} — {sitePublished ? "published" : "not published yet"}
                 </div>
                 {sitePublished && (
-                  <a href={`/site/${siteSlug}`} target="_blank" rel="noreferrer" className="text-[12.5px]" style={{ color: "#fff" }}>
+                  <a href={`/site/${siteSlug}`} target="_blank" rel="noreferrer" className="text-[12.5px]" style={{ color: tokens.text }}>
                     View live site →
                   </a>
                 )}
               </>
             ) : (
-              <div className="text-[12.5px]" style={{ color: "#6b6b6b" }}>Not set up yet.</div>
+              <div className="text-[12.5px]" style={{ color: tokens.textQuaternary }}>Not set up yet.</div>
             )}
-            <a href="/whitelabel" className="btn text-[12.5px] self-start mt-1" style={{ border: "1px solid rgba(255,255,255,0.14)", color: "#a8a8a8" }}>
+            <a href="/whitelabel" className="btn text-[12.5px] self-start mt-1" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}>
               Choose template &amp; content →
             </a>
           </div>
 
-          <div className="card elev-sm gap-2 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-            <label style={{ fontSize: 12, fontWeight: 600, color: "#8a8a8a" }}>Connect your own domain</label>
+          <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: tokens.textTertiary }}>Connect your own domain</label>
             <input
               className="input text-[13.5px] font-mono"
-              style={{ background: "#0a0a0a", color: "#f5f5f5", border: "1px solid rgba(255,255,255,0.14)" }}
+              style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
               placeholder="yourbrand.com"
               value={customDomain}
               onChange={(e) => setCustomDomain(e.target.value.toLowerCase())}
             />
-            <div className="text-[11.5px] leading-[1.6]" style={{ color: "#6b6b6b" }}>
+            <div className="text-[11.5px] leading-[1.6]" style={{ color: tokens.textQuaternary }}>
               Saving this reserves the domain on your account — it doesn&rsquo;t make it resolve on its own. You still
               need to add it under this project&rsquo;s Domains in Vercel and point its DNS there. Until then, your site
               stays reachable at the primue.com address above. Already have a full website elsewhere? Use{" "}
-              <span style={{ color: "#a8a8a8" }}>Integrations</span> instead of this field.
+              <span style={{ color: tokens.textSecondary }}>Integrations</span> instead of this field.
             </div>
           </div>
         </div>

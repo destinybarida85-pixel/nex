@@ -475,6 +475,29 @@ export function IconArrowRight({ size, className }: IconProps) {
     </svg>
   );
 }
+export function IconSun({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M12 2.5v2.5M12 19v2.5M4.5 12H2M22 12h-2.5M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8" />
+    </svg>
+  );
+}
+export function IconMoon({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" />
+    </svg>
+  );
+}
+export function IconMic({ size, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <rect x="9" y="2.5" width="6" height="11" rx="3" />
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" />
+    </svg>
+  );
+}
 export function IconLogoMark({ size = 26, className }: IconProps) {
   return (
     <div

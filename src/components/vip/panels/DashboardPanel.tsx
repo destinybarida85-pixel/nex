@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { VipSection } from "@/components/vip/VipSidebar";
+import { useVipTheme } from "@/components/vip/theme";
 
 type WalletTx = {
   id: string;
@@ -34,6 +35,7 @@ function greeting() {
 }
 
 export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSection) => void }) {
+  const { tokens } = useVipTheme();
   const [fullName, setFullName] = useState("");
   const [tenantName, setTenantName] = useState("");
   const [accounts, setAccounts] = useState<WalletAccount[]>([]);
@@ -99,10 +101,10 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
   return (
     <div className="flex flex-col gap-4 max-w-[1080px]">
       <div>
-        <h3 className="m-0 text-[22px]" style={{ color: "#fff" }}>
+        <h3 className="m-0 text-[22px]" style={{ color: tokens.text }}>
           {loaded ? greeting() : "Welcome"}{fullName ? `, ${fullName.split(" ")[0]}` : ""}
         </h3>
-        <div className="text-[13.5px] mt-1.5" style={{ color: "#a8a8a8" }}>
+        <div className="text-[13.5px] mt-1.5" style={{ color: tokens.textSecondary }}>
           {tenantName || "Your business"} — everything below is your real account data.
         </div>
       </div>
@@ -115,9 +117,9 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
           { label: "Spend · 30d", value: money(spend30) },
           { label: "Docs & certs issued", value: String(documents.length + certificates.length) },
         ].map((s) => (
-          <div key={s.label} className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-            <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#6b6b6b" }}>{s.label}</span>
-            <span className="text-[20px] font-medium" style={{ color: "#fff" }}>{s.value}</span>
+          <div key={s.label} className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>{s.label}</span>
+            <span className="text-[20px] font-medium" style={{ color: tokens.text }}>{s.value}</span>
           </div>
         ))}
       </div>
@@ -125,10 +127,10 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
         {/* Left: trend chart + activity */}
         <div className="flex flex-col gap-3.5">
-          <div className="card elev-sm gap-2 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+          <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
             <div className="flex items-center justify-between">
-              <span className="text-[13px] font-medium" style={{ color: "#fff" }}>Balance trend</span>
-              <span className="text-[11px]" style={{ color: "#6b6b6b" }}>Last 12 weeks</span>
+              <span className="text-[13px] font-medium" style={{ color: tokens.text }}>Balance trend</span>
+              <span className="text-[11px]" style={{ color: tokens.textQuaternary }}>Last 12 weeks</span>
             </div>
             <svg viewBox="0 0 480 110" width="100%" height="110" preserveAspectRatio="none">
               {(() => {
@@ -142,42 +144,42 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
                 const areaPath = `${path} L480,110 L0,110 Z`;
                 return (
                   <>
-                    <path d={areaPath} fill="rgba(255,255,255,0.06)" />
-                    <path d={path} fill="none" stroke="#fff" strokeWidth="2" />
-                    <line x1="0" y1="55" x2="480" y2="55" stroke="rgba(255,255,255,0.14)" strokeWidth="1" strokeDasharray="4 4" />
+                    <path d={areaPath} fill={tokens.tint3} />
+                    <path d={path} fill="none" stroke={tokens.text} strokeWidth="2" />
+                    <line x1="0" y1="55" x2="480" y2="55" stroke={tokens.border} strokeWidth="1" strokeDasharray="4 4" />
                   </>
                 );
               })()}
             </svg>
           </div>
 
-          <div className="card elev-sm gap-2 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+          <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
             <div className="flex items-center justify-between">
-              <span className="text-[13px] font-medium" style={{ color: "#fff" }}>Recent transfers</span>
-              <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.("finance"); }} className="text-[11.5px]" style={{ color: "#8a8a8a" }}>
+              <span className="text-[13px] font-medium" style={{ color: tokens.text }}>Recent transfers</span>
+              <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.("finance"); }} className="text-[11.5px]" style={{ color: tokens.textTertiary }}>
                 View finance →
               </a>
             </div>
             {loaded && transactions.length === 0 && (
-              <div className="text-[12.5px]" style={{ color: "#6b6b6b" }}>No transactions yet.</div>
+              <div className="text-[12.5px]" style={{ color: tokens.textQuaternary }}>No transactions yet.</div>
             )}
             <div className="flex flex-col gap-1">
               {transactions.slice(0, 5).map((t) => (
-                <div key={t.id} className="flex items-center gap-3 py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <div key={t.id} className="flex items-center gap-3 py-2" style={{ borderBottom: `1px solid ${tokens.tint3}` }}>
                   <span
                     className="w-7 h-7 rounded-full grid place-items-center flex-none text-[12px]"
                     style={{
-                      background: t.direction === "credit" ? "color-mix(in srgb, #8fd6a8 18%, transparent)" : "rgba(255,255,255,0.08)",
-                      color: t.direction === "credit" ? "#8fd6a8" : "#a8a8a8",
+                      background: t.direction === "credit" ? `color-mix(in srgb, ${tokens.success} 18%, transparent)` : tokens.tint2,
+                      color: t.direction === "credit" ? tokens.success : tokens.textSecondary,
                     }}
                   >
                     {t.direction === "credit" ? "↓" : "↑"}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] truncate" style={{ color: "#f5f5f5" }}>{t.counterparty}</div>
-                    <div className="text-[11px]" style={{ color: "#6b6b6b" }}>{new Date(t.created_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</div>
+                    <div className="text-[13px] truncate" style={{ color: tokens.text }}>{t.counterparty}</div>
+                    <div className="text-[11px]" style={{ color: tokens.textQuaternary }}>{new Date(t.created_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</div>
                   </div>
-                  <span className="text-[13px]" style={{ color: t.direction === "credit" ? "#8fd6a8" : "#f5f5f5" }}>
+                  <span className="text-[13px]" style={{ color: t.direction === "credit" ? tokens.success : tokens.text }}>
                     {t.direction === "credit" ? "+" : "−"}{money(t.amount_cents)}
                   </span>
                 </div>
@@ -188,65 +190,65 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
 
         {/* Right: gauge, profile, account card, security */}
         <div className="flex flex-col gap-3.5">
-          <div className="card elev-sm gap-2 p-5 items-center" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-            <span className="text-[12.5px] self-start" style={{ color: "#a8a8a8" }}>Profit margin · 30d</span>
+          <div className="card elev-sm gap-2 p-5 items-center" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <span className="text-[12.5px] self-start" style={{ color: tokens.textSecondary }}>Profit margin · 30d</span>
             <svg viewBox="0 0 100 100" width="100" height="100">
-              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
+              <circle cx="50" cy="50" r="40" fill="none" stroke={tokens.tint1} strokeWidth="8" />
               <circle
-                cx="50" cy="50" r="40" fill="none" stroke="#fff" strokeWidth="8" strokeLinecap="round"
+                cx="50" cy="50" r="40" fill="none" stroke={tokens.text} strokeWidth="8" strokeLinecap="round"
                 strokeDasharray={`${(gaugePct / 100) * gaugeCirc} ${gaugeCirc}`}
                 transform="rotate(-90 50 50)"
               />
-              <text x="50" y="55" textAnchor="middle" fontSize="20" fill="#fff">{profitMargin}%</text>
+              <text x="50" y="55" textAnchor="middle" fontSize="20" fill={tokens.text}>{profitMargin}%</text>
             </svg>
-            <span className="text-[11px] text-center" style={{ color: "#6b6b6b" }}>
+            <span className="text-[11px] text-center" style={{ color: tokens.textQuaternary }}>
               {earnings30 > 0 ? "Of 30-day earnings kept after expenses" : "No earnings yet this period"}
             </span>
           </div>
 
-          <div className="card elev-sm gap-2.5 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+          <div className="card elev-sm gap-2.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
             <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-full grid place-items-center flex-none text-[15px] font-medium" style={{ background: "rgba(255,255,255,0.1)", color: "#fff" }}>
+              <span className="w-10 h-10 rounded-full grid place-items-center flex-none text-[15px] font-medium" style={{ background: tokens.tint1, color: tokens.text }}>
                 {(fullName || tenantName || "P").charAt(0).toUpperCase()}
               </span>
               <div className="min-w-0">
-                <div className="text-[13.5px] truncate" style={{ color: "#fff" }}>{fullName || "Account owner"}</div>
-                <div className="text-[11.5px] truncate" style={{ color: "#6b6b6b" }}>{tenantName}</div>
+                <div className="text-[13.5px] truncate" style={{ color: tokens.text }}>{fullName || "Account owner"}</div>
+                <div className="text-[11.5px] truncate" style={{ color: tokens.textQuaternary }}>{tenantName}</div>
               </div>
             </div>
-            <div className="flex items-center gap-4 pt-1" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="flex items-center gap-4 pt-1" style={{ borderTop: `1px solid ${tokens.tint2}` }}>
               <div className="flex flex-col">
-                <span className="text-[15px] font-medium" style={{ color: "#fff" }}>{documents.length}</span>
-                <span className="text-[10.5px]" style={{ color: "#6b6b6b" }}>Documents</span>
+                <span className="text-[15px] font-medium" style={{ color: tokens.text }}>{documents.length}</span>
+                <span className="text-[10.5px]" style={{ color: tokens.textQuaternary }}>Documents</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-medium" style={{ color: "#fff" }}>{certificates.length}</span>
-                <span className="text-[10.5px]" style={{ color: "#6b6b6b" }}>Certificates</span>
+                <span className="text-[15px] font-medium" style={{ color: tokens.text }}>{certificates.length}</span>
+                <span className="text-[10.5px]" style={{ color: tokens.textQuaternary }}>Certificates</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-medium" style={{ color: "#fff" }}>{requests.length}</span>
-                <span className="text-[10.5px]" style={{ color: "#6b6b6b" }}>VIP requests</span>
+                <span className="text-[15px] font-medium" style={{ color: tokens.text }}>{requests.length}</span>
+                <span className="text-[10.5px]" style={{ color: tokens.textQuaternary }}>VIP requests</span>
               </div>
             </div>
           </div>
 
           {primaryAccount && (
-            <div className="card elev-sm gap-2 p-5" style={{ background: "#fff", color: "#0a0a0a" }}>
+            <div className="card elev-sm gap-2 p-5" style={{ background: tokens.accentBg, color: tokens.accentText }}>
               <div className="flex items-center justify-between">
-                <span className="text-[11px] tracking-[.08em] uppercase" style={{ color: "#4a4a4a" }}>Your Primue Wallet</span>
-                <span className="text-[10px]" style={{ color: "#4a4a4a" }}>{primaryAccount.label}</span>
+                <span className="text-[11px] tracking-[.08em] uppercase" style={{ color: tokens.accentTextMuted }}>Your Primue Wallet</span>
+                <span className="text-[10px]" style={{ color: tokens.accentTextMuted }}>{primaryAccount.label}</span>
               </div>
               <div className="text-[19px] font-medium tracking-[.04em]">{mask(primaryAccount.account_number)}</div>
-              <div className="flex items-center justify-between text-[11px]" style={{ color: "#4a4a4a" }}>
+              <div className="flex items-center justify-between text-[11px]" style={{ color: tokens.accentTextMuted }}>
                 <span>Routing {mask(primaryAccount.routing_number)}</span>
                 <span>{primaryAccount.currency}</span>
               </div>
             </div>
           )}
 
-          <div className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-            <div className="text-[12.5px] font-medium" style={{ color: "#fff" }}>Security</div>
-            <div className="text-[11.5px]" style={{ color: "#8a8a8a" }}>
+          <div className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <div className="text-[12.5px] font-medium" style={{ color: tokens.text }}>Security</div>
+            <div className="text-[11.5px]" style={{ color: tokens.textTertiary }}>
               {pendingSignatures > 0
                 ? `${pendingSignatures} document${pendingSignatures === 1 ? "" : "s"} waiting on a signature.`
                 : latestActivity
@@ -255,7 +257,7 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
             </div>
             <button
               className="text-[11.5px] self-start"
-              style={{ color: "#a8a8a8", background: "none", border: "none", cursor: "pointer", padding: 0, textDecoration: "underline" }}
+              style={{ color: tokens.textSecondary, background: "none", border: "none", cursor: "pointer", padding: 0, textDecoration: "underline" }}
               onClick={() => onNavigate?.("account")}
             >
               Manage password & security →
