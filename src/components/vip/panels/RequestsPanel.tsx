@@ -130,102 +130,145 @@ export default function RequestsPanel() {
     }).catch(() => {});
   }
 
+  const approved = requests.filter((r) => r.status === "approved").length;
+  const awaitingReview = requests.filter((r) => r.status === "ready").length;
+  const dismissed = requests.filter((r) => r.status === "dismissed").length;
+
   return (
-    <div className="flex flex-col gap-5 max-w-[720px]">
-      <div>
-        <h3 className="m-0 text-[22px]" style={{ color: "#fff" }}>Requests</h3>
-        <div className="text-[13.5px] mt-1.5" style={{ color: "#a8a8a8" }}>
-          Say or type what you need. Primue AI drafts it — ready for you to review and send.
-        </div>
-      </div>
-
-      <div className="card elev-sm gap-3 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-        <textarea
-          className="input text-[14px]"
-          style={{ background: "#0a0a0a", color: "#f5f5f5", border: "1px solid rgba(255,255,255,0.14)", minHeight: 90 }}
-          placeholder="e.g. Reply to Sarah at Northbeam — tell her the invoice is 6 days overdue, keep it friendly but firm."
-          value={inputText}
-          onChange={(e) => { setInputText(e.target.value); setInputSource("text"); }}
-        />
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {speech.supported && (
-            <button
-              className="btn text-[13px]"
-              style={{ border: `1px solid ${speech.listening ? "#fff" : "rgba(255,255,255,0.14)"}`, color: speech.listening ? "#fff" : "#a8a8a8" }}
-              onClick={speech.toggle}
-            >
-              {speech.listening ? "● Listening… tap to stop" : "🎙 Record a voice note"}
-            </button>
-          )}
-          <div className="flex-1" />
-          <button
-            className="btn text-[14px]"
-            style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }}
-            onClick={submit}
-            disabled={submitting || !inputText.trim()}
-          >
-            {submitting ? "Drafting…" : "Send to Primue AI"}
-          </button>
-        </div>
-        {!speech.supported && (
-          <div className="text-[11px]" style={{ color: "#6b6b6b" }}>
-            Voice input isn&rsquo;t supported in this browser — Chrome or Edge works best. Typing works everywhere.
-          </div>
-        )}
-        {submitError && <div className="text-[12px]" style={{ color: "#ff8a8a" }}>{submitError}</div>}
-      </div>
-
-      {latestDraft?.ai_draft && (
-        <div className="card elev-md gap-3 p-5" style={{ background: "#161616", border: "1px solid #fff" }}>
+    <div className="flex flex-col gap-4 max-w-[1080px]">
+      <div className="flex items-center gap-3">
+        <span
+          className="w-11 h-11 rounded-full grid place-items-center flex-none"
+          style={{ background: "#fff", color: "#0a0a0a" }}
+        >
+          <IconSparkle size={18} />
+        </span>
+        <div>
           <div className="flex items-center gap-2">
-            <IconSparkle size={14} />
-            <span className="text-[13px] font-medium" style={{ color: "#fff" }}>{latestDraft.ai_draft.summary}</span>
+            <h3 className="m-0 text-[22px]" style={{ color: "#fff" }}>Teni AI</h3>
+            <span className="tag text-[9px]" style={{ border: "1px solid #fff", color: "#fff" }}>VIP</span>
           </div>
-          {latestDraft.ai_draft.drafts.map((d, i) => (
-            <div key={i} className="rounded-lg p-3" style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.14)" }}>
-              <div className="text-[11px] uppercase tracking-[.08em] mb-1.5" style={{ color: "#8a8a8a" }}>{d.label}</div>
-              <div className="text-[13.5px] whitespace-pre-wrap" style={{ lineHeight: 1.7, color: "#f5f5f5" }}>{d.body}</div>
-            </div>
-          ))}
-          {latestDraft.ai_draft.gaps && (
-            <div className="text-[12px]" style={{ color: "#a8a8a8" }}>Note: {latestDraft.ai_draft.gaps}</div>
-          )}
-          <div className="flex gap-2">
-            <button className="btn text-[13px]" style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }} onClick={() => setStatus(latestDraft.id, "approved")}>
-              <IconCheckCircle size={13} /> Approved — I&rsquo;ll send it
-            </button>
-            <button className="btn text-[13px]" style={{ border: "1px solid rgba(255,255,255,0.14)", color: "#a8a8a8" }} onClick={() => setStatus(latestDraft.id, "dismissed")}>
-              <IconX size={13} /> Not this
-            </button>
+          <div className="text-[13.5px] mt-1" style={{ color: "#a8a8a8" }}>
+            Your AI assistant, built into Primue VIP. Say or type what you need — Teni drafts it, ready to review and send.
           </div>
         </div>
-      )}
+      </div>
 
-      {requests.length > 0 && (
-        <div className="flex flex-col gap-2.5">
-          <div className="text-[13px] font-medium" style={{ color: "#a8a8a8" }}>Your requests</div>
-          {requests.map((r) => (
-            <div key={r.id} className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-              <div className="flex items-center gap-2">
-                <span className="text-[13px] flex-1 truncate" style={{ color: "#f5f5f5" }}>{r.input_text}</span>
-                <span
-                  className="tag text-[9.5px]"
-                  style={{
-                    border: `1px solid ${r.status === "approved" ? "#8fd6a8" : r.status === "error" ? "#ff8a8a" : "rgba(255,255,255,0.14)"}`,
-                    color: r.status === "approved" ? "#8fd6a8" : r.status === "error" ? "#ff8a8a" : "#a8a8a8",
-                  }}
+      <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+        {[
+          { label: "Total requests", value: requests.length },
+          { label: "Approved", value: approved },
+          { label: "Awaiting review", value: awaitingReview },
+          { label: "Dismissed", value: dismissed },
+        ].map((s) => (
+          <div key={s.label} className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+            <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#6b6b6b" }}>{s.label}</span>
+            <span className="text-[20px] font-medium" style={{ color: "#fff" }}>{s.value}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+        <div className="flex flex-col gap-3.5">
+          <div className="card elev-sm gap-3 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+            <textarea
+              className="input text-[14px]"
+              style={{ background: "#0a0a0a", color: "#f5f5f5", border: "1px solid rgba(255,255,255,0.14)", minHeight: 90 }}
+              placeholder="e.g. Reply to Sarah at Northbeam — tell her the invoice is 6 days overdue, keep it friendly but firm."
+              value={inputText}
+              onChange={(e) => { setInputText(e.target.value); setInputSource("text"); }}
+            />
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {speech.supported && (
+                <button
+                  className="btn text-[13px]"
+                  style={{ border: `1px solid ${speech.listening ? "#fff" : "rgba(255,255,255,0.14)"}`, color: speech.listening ? "#fff" : "#a8a8a8" }}
+                  onClick={speech.toggle}
                 >
-                  {r.status}
-                </span>
-              </div>
+                  {speech.listening ? "● Listening… tap to stop" : "🎙 Record a voice note"}
+                </button>
+              )}
+              <div className="flex-1" />
+              <button
+                className="btn text-[14px]"
+                style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }}
+                onClick={submit}
+                disabled={submitting || !inputText.trim()}
+              >
+                {submitting ? "Teni is drafting…" : "Send to Teni →"}
+              </button>
+            </div>
+            {!speech.supported && (
               <div className="text-[11px]" style={{ color: "#6b6b6b" }}>
-                {new Date(r.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
-                {r.input_source === "voice" && " · via voice"}
+                Voice input isn&rsquo;t supported in this browser — Chrome or Edge works best. Typing works everywhere.
+              </div>
+            )}
+            {submitError && <div className="text-[12px]" style={{ color: "#ff8a8a" }}>{submitError}</div>}
+          </div>
+
+          {latestDraft?.ai_draft && (
+            <div className="card elev-md gap-3 p-5" style={{ background: "#161616", border: "1px solid #fff" }}>
+              <div className="flex items-center gap-2">
+                <IconSparkle size={14} />
+                <span className="text-[13px] font-medium" style={{ color: "#fff" }}>{latestDraft.ai_draft.summary}</span>
+              </div>
+              {latestDraft.ai_draft.drafts.map((d, i) => (
+                <div key={i} className="rounded-lg p-3" style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.14)" }}>
+                  <div className="text-[11px] uppercase tracking-[.08em] mb-1.5" style={{ color: "#8a8a8a" }}>{d.label}</div>
+                  <div className="text-[13.5px] whitespace-pre-wrap" style={{ lineHeight: 1.7, color: "#f5f5f5" }}>{d.body}</div>
+                </div>
+              ))}
+              {latestDraft.ai_draft.gaps && (
+                <div className="text-[12px]" style={{ color: "#a8a8a8" }}>Note: {latestDraft.ai_draft.gaps}</div>
+              )}
+              <div className="flex gap-2">
+                <button className="btn text-[13px]" style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }} onClick={() => setStatus(latestDraft.id, "approved")}>
+                  <IconCheckCircle size={13} /> Approved — I&rsquo;ll send it
+                </button>
+                <button className="btn text-[13px]" style={{ border: "1px solid rgba(255,255,255,0.14)", color: "#a8a8a8" }} onClick={() => setStatus(latestDraft.id, "dismissed")}>
+                  <IconX size={13} /> Not this
+                </button>
               </div>
             </div>
-          ))}
+          )}
         </div>
-      )}
+
+        <div className="flex flex-col gap-3.5">
+          <div className="card elev-sm gap-2 p-4" style={{ background: "#161616", border: "1px dashed rgba(255,255,255,0.2)" }}>
+            <div className="text-[12.5px] font-medium" style={{ color: "#fff" }}>What Teni does</div>
+            <div className="text-[11.5px]" style={{ color: "#8a8a8a", lineHeight: 1.6 }}>
+              Teni turns a request into a ready draft — a reply, an invoice follow-up, a task list. It never sends,
+              calls, or pays anyone on its own. You always review and send it yourself.
+            </div>
+          </div>
+
+          {requests.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <div className="text-[13px] font-medium" style={{ color: "#a8a8a8" }}>Your requests</div>
+              {requests.map((r) => (
+                <div key={r.id} className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] flex-1 truncate" style={{ color: "#f5f5f5" }}>{r.input_text}</span>
+                    <span
+                      className="tag text-[9.5px]"
+                      style={{
+                        border: `1px solid ${r.status === "approved" ? "#8fd6a8" : r.status === "error" ? "#ff8a8a" : "rgba(255,255,255,0.14)"}`,
+                        color: r.status === "approved" ? "#8fd6a8" : r.status === "error" ? "#ff8a8a" : "#a8a8a8",
+                      }}
+                    >
+                      {r.status}
+                    </span>
+                  </div>
+                  <div className="text-[11px]" style={{ color: "#6b6b6b" }}>
+                    {new Date(r.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                    {r.input_source === "voice" && " · via voice"}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

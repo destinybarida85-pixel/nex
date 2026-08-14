@@ -96,11 +96,11 @@ export default function Pricing() {
             $249
             <span className="text-[14px]" style={{ color: "#8a8a8a" }}> / mo</span>
           </div>
-          <div className="text-[14px]" style={{ color: "#a8a8a8" }}>You send the word — Primue AI drafts the work.</div>
+          <div className="text-[14px]" style={{ color: "#a8a8a8" }}>You send the word — Teni AI drafts the work.</div>
           <div className="flex flex-col gap-[7px] text-[13.5px] mt-1" style={{ color: "#c8c8c8" }}>
             <span>· Everything in Growth</span>
             <span>· Text or voice — say what you need, any time</span>
-            <span>· Primue AI drafts replies, invoices, follow-ups, task lists</span>
+            <span>· Teni AI drafts replies, invoices, follow-ups, task lists</span>
             <span>· You review and send — nothing goes out on its own</span>
           </div>
           <a href="/vip" className="btn btn-block text-[14px] mt-auto" style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }}>

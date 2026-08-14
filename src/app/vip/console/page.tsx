@@ -77,7 +77,7 @@ export default function VipConsolePage() {
           <div className="flex flex-col gap-1.5 text-[13.5px]" style={{ color: "var(--color-neutral-400)" }}>
             <span>· Everything in Growth</span>
             <span>· Send a request by text or voice, any time</span>
-            <span>· Primue AI drafts the real work</span>
+            <span>· Teni AI drafts the real work</span>
             <span>· You review and send — nothing is dispatched automatically</span>
           </div>
           <button className="btn btn-block text-[14px]" style={{ background: "#fff", color: "#0a0a0a", border: "1px solid #fff" }} onClick={upgrade} disabled={upgrading}>

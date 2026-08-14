@@ -14,7 +14,7 @@ const vipVars = {
 
 export const metadata = {
   title: "Primue VIP — Your private control center",
-  description: "Send a request by text or voice. Primue AI drafts the real work — replies, invoices, follow-ups — ready for you to review and send.",
+  description: "Send a request by text or voice. Teni AI drafts the real work — replies, invoices, follow-ups — ready for you to review and send.",
 };
 
 export default function VipHomePage() {
@@ -52,10 +52,10 @@ export default function VipHomePage() {
           <h1 className="mt-4 tracking-[-0.03em] leading-[1.05]" style={{ fontSize: "clamp(36px,5vw,58px)", fontWeight: 700 }}>
             You run the business.
             <br />
-            Primue AI runs the rest.
+            Teni AI runs the rest.
           </h1>
           <p className="mt-5 max-w-[560px] text-[16px] leading-[1.6]" style={{ color: "var(--color-neutral-400)" }}>
-            Send a request by text or voice, any time. Primue AI drafts the real work — client replies, invoice
+            Send a request by text or voice, any time. Teni AI drafts the real work — client replies, invoice
             follow-ups, task lists — and it lands in your queue, ready to review and send. Nothing goes out without you.
           </p>
           <div className="flex gap-3 mt-7">
@@ -67,7 +67,7 @@ export default function VipHomePage() {
             </a>
           </div>
           <div className="mt-[280px] text-[11px]" style={{ color: "var(--color-neutral-600)" }}>
-            Small actions, continuously, building something bigger — together — the same way Primue AI works in the background.
+            Small actions, continuously, building something bigger — together — the same way Teni AI works in the background.
           </div>
         </section>
       </div>
@@ -77,7 +77,7 @@ export default function VipHomePage() {
           {[
             {
               title: "Say it, don't type it",
-              body: "A real, in-browser voice note or a few typed words — either way, Primue AI understands the request.",
+              body: "A real, in-browser voice note or a few typed words — either way, Teni AI understands the request.",
             },
             {
               title: "Drafted, not decided",
