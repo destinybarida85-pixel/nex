@@ -35,6 +35,15 @@ export type VipTokens = {
   info: string;
   avatarFallbackBg: string;
   avatarFallbackText: string;
+  // Restrained color pops on top of the monochrome base — two consistent
+  // threads, not a full recolor: blue marks financial/data visuals (trend
+  // lines, gauges), yellow marks AI-feature touches (Teni, Intelligence).
+  // `accentColoredIconText` is the fixed dark icon color used on top of
+  // either — both are bright enough that a dark icon reads best regardless
+  // of theme, unlike the inverting accent pair above.
+  accentBlue: string;
+  accentYellow: string;
+  accentColoredIconText: string;
 };
 
 const DARK: VipTokens = {
@@ -61,6 +70,9 @@ const DARK: VipTokens = {
   info: "#d2cefd",
   avatarFallbackBg: "#2a2d3d",
   avatarFallbackText: "#ffffff",
+  accentBlue: "#5b9bf0",
+  accentYellow: "#f4c542",
+  accentColoredIconText: "#0a0a0a",
 };
 
 const LIGHT: VipTokens = {
@@ -87,6 +99,9 @@ const LIGHT: VipTokens = {
   info: "#7a63d4",
   avatarFallbackBg: "#e4e4e8",
   avatarFallbackText: "#2a2d3d",
+  accentBlue: "#2563eb",
+  accentYellow: "#eab308",
+  accentColoredIconText: "#0a0a0a",
 };
 
 export const VIP_PALETTES: Record<VipThemeName, VipTokens> = { dark: DARK, light: LIGHT };

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { VipSection } from "@/components/vip/VipSidebar";
 import { useVipTheme } from "@/components/vip/theme";
+import { useCountUp } from "@/components/vip/useCountUp";
 
 type WalletTx = {
   id: string;
@@ -78,7 +79,6 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
   const spend30 = sum(cur30, "debit");
   const balanceCents = accounts.reduce((s, a) => s + a.balance_cents, 0);
   const profitMargin = earnings30 > 0 ? Math.round(((earnings30 - spend30) / earnings30) * 100) : 0;
-  const gaugePct = Math.max(0, Math.min(100, profitMargin));
 
   const pendingSignatures = documents.filter((d) => d.status === "sent" || d.status === "pending").length;
   const latestActivity = transactions[0];
@@ -98,6 +98,14 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
 
   const primaryAccount = accounts[0];
 
+  // Real values, eased in on load/change — a "live reading" feel, not fake motion.
+  const animatedBalance = useCountUp(balanceCents);
+  const animatedEarnings = useCountUp(earnings30);
+  const animatedSpend = useCountUp(spend30);
+  const animatedDocsCerts = useCountUp(documents.length + certificates.length);
+  const animatedMargin = useCountUp(profitMargin);
+  const tiltAccent = { "--color-accent": tokens.accentBlue } as React.CSSProperties;
+
   return (
     <div className="flex flex-col gap-4 max-w-[1080px]">
       <div>
@@ -112,12 +120,16 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
       {/* Stat row */}
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
         {[
-          { label: "Wallet balance", value: money(balanceCents) },
-          { label: "Earnings · 30d", value: money(earnings30) },
-          { label: "Spend · 30d", value: money(spend30) },
-          { label: "Docs & certs issued", value: String(documents.length + certificates.length) },
+          { label: "Wallet balance", value: money(animatedBalance) },
+          { label: "Earnings · 30d", value: money(animatedEarnings) },
+          { label: "Spend · 30d", value: money(animatedSpend) },
+          { label: "Docs & certs issued", value: String(Math.round(animatedDocsCerts)) },
         ].map((s) => (
-          <div key={s.label} className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <div
+            key={s.label}
+            className="card elev-sm nx-tilt gap-1.5 p-4"
+            style={{ background: tokens.surface, border: `1px solid ${tokens.border}`, ...tiltAccent }}
+          >
             <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>{s.label}</span>
             <span className="text-[20px] font-medium" style={{ color: tokens.text }}>{s.value}</span>
           </div>
@@ -129,7 +141,13 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
         <div className="flex flex-col gap-3.5">
           <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
             <div className="flex items-center justify-between">
-              <span className="text-[13px] font-medium" style={{ color: tokens.text }}>Balance trend</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[13px] font-medium" style={{ color: tokens.text }}>Balance trend</span>
+                <span className="tag text-[9px] flex items-center gap-1.5" style={{ border: `1px solid ${tokens.success}`, color: tokens.success }}>
+                  <span className="vip-live-dot w-1.5 h-1.5 rounded-full" style={{ background: tokens.success }} />
+                  Live
+                </span>
+              </div>
               <span className="text-[11px]" style={{ color: tokens.textQuaternary }}>Last 12 weeks</span>
             </div>
             <svg viewBox="0 0 480 110" width="100%" height="110" preserveAspectRatio="none">
@@ -144,8 +162,8 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
                 const areaPath = `${path} L480,110 L0,110 Z`;
                 return (
                   <>
-                    <path d={areaPath} fill={tokens.tint3} />
-                    <path d={path} fill="none" stroke={tokens.text} strokeWidth="2" />
+                    <path d={areaPath} fill={`color-mix(in srgb, ${tokens.accentBlue} 12%, transparent)`} />
+                    <path d={path} fill="none" stroke={tokens.accentBlue} strokeWidth="2" />
                     <line x1="0" y1="55" x2="480" y2="55" stroke={tokens.border} strokeWidth="1" strokeDasharray="4 4" />
                   </>
                 );
@@ -195,11 +213,11 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
             <svg viewBox="0 0 100 100" width="100" height="100">
               <circle cx="50" cy="50" r="40" fill="none" stroke={tokens.tint1} strokeWidth="8" />
               <circle
-                cx="50" cy="50" r="40" fill="none" stroke={tokens.text} strokeWidth="8" strokeLinecap="round"
-                strokeDasharray={`${(gaugePct / 100) * gaugeCirc} ${gaugeCirc}`}
+                cx="50" cy="50" r="40" fill="none" stroke={tokens.accentBlue} strokeWidth="8" strokeLinecap="round"
+                strokeDasharray={`${(Math.max(0, Math.min(100, animatedMargin)) / 100) * gaugeCirc} ${gaugeCirc}`}
                 transform="rotate(-90 50 50)"
               />
-              <text x="50" y="55" textAnchor="middle" fontSize="20" fill={tokens.text}>{profitMargin}%</text>
+              <text x="50" y="55" textAnchor="middle" fontSize="20" fill={tokens.text}>{Math.round(animatedMargin)}%</text>
             </svg>
             <span className="text-[11px] text-center" style={{ color: tokens.textQuaternary }}>
               {earnings30 > 0 ? "Of 30-day earnings kept after expenses" : "No earnings yet this period"}

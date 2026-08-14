@@ -17,7 +17,13 @@ export default function DocumentsPanel() {
   const [docs, setDocs] = useState<DocRow[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState("");
+  const [created, setCreated] = useState(false);
+
+  function load() {
     fetch("/api/documents")
       .then((r) => r.json())
       .then((data) => {
@@ -25,7 +31,35 @@ export default function DocumentsPanel() {
         setLoaded(true);
       })
       .catch(() => setLoaded(true));
+  }
+
+  useEffect(() => {
+    load();
   }, []);
+
+  async function createDocument() {
+    if (!title.trim() || !text.trim()) return;
+    setCreating(true);
+    setCreateError("");
+    setCreated(false);
+    try {
+      const res = await fetch("/api/documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: title.trim(), text: text.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't create that document.");
+      setTitle("");
+      setText("");
+      setCreated(true);
+      load();
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Couldn't reach the server.");
+    } finally {
+      setCreating(false);
+    }
+  }
 
   const signed = docs.filter((d) => d.status === "signed").length;
   const awaiting = docs.filter((d) => d.status === "sent").length;
@@ -93,11 +127,34 @@ export default function DocumentsPanel() {
         </div>
 
         <div className="flex flex-col gap-3.5">
-          <div className="card elev-sm gap-2 p-5" style={{ background: tokens.accentBg, color: tokens.accentText }}>
-            <div className="text-[12px] font-medium">Draft a new document</div>
-            <div className="text-[11px]" style={{ color: tokens.accentTextMuted }}>Open the full editor on the main dashboard to write, style and send a new one.</div>
-            <a href="/assistant" className="btn text-[11.5px] self-start mt-1" style={{ background: tokens.accentText, color: tokens.accentBg, border: `1px solid ${tokens.accentText}` }}>
-              Open →
+          <div className="card elev-sm gap-2.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <div className="text-[13px] font-medium" style={{ color: tokens.text }}>New document</div>
+            <input
+              className="input text-[13.5px]"
+              style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <textarea
+              className="input text-[13px]"
+              style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}`, minHeight: 90 }}
+              placeholder="Write the document content…"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+            {createError && <div className="text-[12px]" style={{ color: tokens.danger }}>{createError}</div>}
+            {created && !createError && <div className="text-[12px]" style={{ color: tokens.success }}>Created</div>}
+            <button
+              className="btn text-[13px] self-start"
+              style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}
+              onClick={createDocument}
+              disabled={creating || !title.trim() || !text.trim()}
+            >
+              {creating ? "Creating…" : "Create document"}
+            </button>
+            <a href="/assistant" className="text-[11px]" style={{ color: tokens.textQuaternary }}>
+              Need AI drafting, styling or a signature flow? Open the full editor →
             </a>
           </div>
           <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px dashed ${tokens.borderDashed}` }}>

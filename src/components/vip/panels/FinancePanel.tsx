@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useVipTheme } from "@/components/vip/theme";
+import { useCountUp } from "@/components/vip/useCountUp";
 
 type WalletTx = {
   id: string;
@@ -142,6 +143,11 @@ export default function FinancePanel() {
   const CERT_MAX = 10;
   const STAMP_MAX = 10;
 
+  const animatedBalance = useCountUp(balanceCents);
+  const animatedRevenue = useCountUp(revenue30);
+  const animatedExpense = useCountUp(expense30);
+  const tiltAccent = { "--color-accent": tokens.accentBlue } as React.CSSProperties;
+
   return (
     <div className="flex flex-col gap-4 max-w-[900px]">
       <div>
@@ -153,12 +159,18 @@ export default function FinancePanel() {
 
       {/* Row 1: balance / income / expense — mirrors the reference's three-up top row */}
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.3fr 1fr 1fr" }}>
-        <div className="card elev-sm gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+        <div className="card elev-sm nx-tilt gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}`, ...tiltAccent }}>
           <div className="flex items-center justify-between">
-            <span className="text-[11px] tracking-[.08em] uppercase" style={{ color: tokens.textQuaternary }}>My balance</span>
-            <Sparkline values={weeklyNet} color={tokens.text} />
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] tracking-[.08em] uppercase" style={{ color: tokens.textQuaternary }}>My balance</span>
+              <span className="tag text-[9px] flex items-center gap-1" style={{ border: `1px solid ${tokens.success}`, color: tokens.success }}>
+                <span className="vip-live-dot w-1.5 h-1.5 rounded-full" style={{ background: tokens.success }} />
+                Live
+              </span>
+            </div>
+            <Sparkline values={weeklyNet} color={tokens.accentBlue} />
           </div>
-          <div className="text-[30px] font-medium" style={{ color: tokens.text }}>{money(balanceCents)}</div>
+          <div className="text-[30px] font-medium" style={{ color: tokens.text }}>{money(animatedBalance)}</div>
           <div className="flex gap-2">
             <a href="/wallet" className="btn text-[12px]" style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}>Transfer</a>
             <a href="/wallet" className="btn text-[12px]" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}>Receive</a>
@@ -166,12 +178,12 @@ export default function FinancePanel() {
           </div>
         </div>
 
-        <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+        <div className="card elev-sm nx-tilt gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}`, ...tiltAccent }}>
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full grid place-items-center flex-none" style={{ background: `color-mix(in srgb, ${tokens.success} 18%, transparent)`, color: tokens.success }}>↓</span>
             <span className="text-[12.5px]" style={{ color: tokens.textSecondary }}>Income · 30d</span>
           </div>
-          <div className="text-[22px] font-medium" style={{ color: tokens.text }}>{money(revenue30)}</div>
+          <div className="text-[22px] font-medium" style={{ color: tokens.text }}>{money(animatedRevenue)}</div>
           {revenueChange !== null && (
             <span className="tag text-[10px] self-start" style={{ border: `1px solid ${revenueChange >= 0 ? tokens.success : tokens.danger}`, color: revenueChange >= 0 ? tokens.success : tokens.danger }}>
               {revenueChange >= 0 ? "▲" : "▼"} {Math.abs(revenueChange)}% vs prior 30d
@@ -179,12 +191,12 @@ export default function FinancePanel() {
           )}
         </div>
 
-        <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+        <div className="card elev-sm nx-tilt gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}`, ...tiltAccent }}>
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full grid place-items-center flex-none" style={{ background: `color-mix(in srgb, ${tokens.danger} 18%, transparent)`, color: tokens.danger }}>↑</span>
             <span className="text-[12.5px]" style={{ color: tokens.textSecondary }}>Expenses · 30d</span>
           </div>
-          <div className="text-[22px] font-medium" style={{ color: tokens.text }}>{money(expense30)}</div>
+          <div className="text-[22px] font-medium" style={{ color: tokens.text }}>{money(animatedExpense)}</div>
           {expenseChange !== null && (
             <span className="tag text-[10px] self-start" style={{ border: `1px solid ${expenseChange <= 0 ? tokens.success : tokens.danger}`, color: expenseChange <= 0 ? tokens.success : tokens.danger }}>
               {expenseChange >= 0 ? "▲" : "▼"} {Math.abs(expenseChange)}% vs prior 30d
@@ -236,7 +248,7 @@ export default function FinancePanel() {
                     width={w * 0.56}
                     height={h}
                     rx={2}
-                    fill={v >= 0 ? tokens.text : tokens.textQuaternary}
+                    fill={v >= 0 ? tokens.accentBlue : tokens.textQuaternary}
                   />
                 );
               });

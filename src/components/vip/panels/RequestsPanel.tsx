@@ -174,7 +174,7 @@ export default function RequestsPanel() {
       <div className="flex items-center gap-3">
         <span
           className="w-11 h-11 rounded-full grid place-items-center flex-none"
-          style={{ background: tokens.accentBg, color: tokens.accentText }}
+          style={{ background: tokens.accentYellow, color: tokens.accentColoredIconText }}
         >
           <IconSparkle size={18} />
         </span>
@@ -264,7 +264,7 @@ export default function RequestsPanel() {
           {latestDraft?.ai_draft && (
             <div className="card elev-md gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.text}` }}>
               <div className="flex items-center gap-2">
-                <IconSparkle size={14} />
+                <span style={{ color: tokens.accentYellow }}><IconSparkle size={14} /></span>
                 <span className="text-[13px] font-medium" style={{ color: tokens.text }}>{latestDraft.ai_draft.summary}</span>
               </div>
               {latestDraft.ai_draft.drafts.map((d, i) => (

@@ -147,7 +147,7 @@ export default function IntelligencePanel() {
           {recs.map((r, i) => (
             <div key={i} className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full grid place-items-center flex-none" style={{ background: tokens.tint1, color: tokens.text }}>
+                <span className="w-6 h-6 rounded-full grid place-items-center flex-none" style={{ background: tokens.accentYellow, color: tokens.accentColoredIconText }}>
                   <IconSparkle size={12} />
                 </span>
                 <span className="text-[13.5px] font-medium" style={{ color: tokens.text }}>{r.headline}</span>

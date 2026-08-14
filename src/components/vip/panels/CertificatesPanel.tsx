@@ -12,8 +12,16 @@ export default function CertificatesPanel() {
   const [certs, setCerts] = useState<CertRow[]>([]);
   const [credits, setCredits] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [setupRequired, setSetupRequired] = useState(false);
 
-  useEffect(() => {
+  const [recipientName, setRecipientName] = useState("");
+  const [certTitle, setCertTitle] = useState("");
+  const [citation, setCitation] = useState("");
+  const [issuing, setIssuing] = useState(false);
+  const [issueError, setIssueError] = useState("");
+  const [issued, setIssued] = useState(false);
+
+  function load() {
     fetch("/api/certificates")
       .then((r) => r.json())
       .then((data) => {
@@ -21,13 +29,44 @@ export default function CertificatesPanel() {
           setCerts(data.certificates ?? []);
           setCredits(data.credits ?? 0);
         }
+        setSetupRequired(!!data.setupRequired);
         setLoaded(true);
       })
       .catch(() => setLoaded(true));
+  }
+
+  useEffect(() => {
+    load();
   }, []);
+
+  async function issueCertificate() {
+    if (!recipientName.trim() || !certTitle.trim() || !citation.trim()) return;
+    setIssuing(true);
+    setIssueError("");
+    setIssued(false);
+    try {
+      const res = await fetch("/api/certificates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipientName: recipientName.trim(), title: certTitle.trim(), citation: citation.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't issue that certificate.");
+      setRecipientName("");
+      setCertTitle("");
+      setCitation("");
+      setIssued(true);
+      load();
+    } catch (err) {
+      setIssueError(err instanceof Error ? err.message : "Couldn't reach the server.");
+    } finally {
+      setIssuing(false);
+    }
+  }
 
   const uniqueRecipients = new Set(certs.map((c) => c.recipient_name)).size;
   const latest = certs[0];
+  const outOfCredits = credits !== null && credits < 1;
 
   return (
     <div className="flex flex-col gap-4 max-w-[1080px]">
@@ -87,12 +126,51 @@ export default function CertificatesPanel() {
         </div>
 
         <div className="flex flex-col gap-3.5">
-          <div className="card elev-sm gap-2 p-5" style={{ background: tokens.accentBg, color: tokens.accentText }}>
-            <div className="text-[12px] font-medium">Issue a certificate</div>
-            <div className="text-[11px]" style={{ color: tokens.accentTextMuted }}>Pick a design, fill in the recipient and citation — real, verifiable, one credit each.</div>
-            <a href="/certificates" className="btn text-[11.5px] self-start mt-1" style={{ background: tokens.accentText, color: tokens.accentBg, border: `1px solid ${tokens.accentText}` }}>
-              Open →
-            </a>
+          <div className="card elev-sm gap-2.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <div className="text-[13px] font-medium" style={{ color: tokens.text }}>Issue a certificate</div>
+            {setupRequired ? (
+              <div className="text-[12px]" style={{ color: tokens.textTertiary }}>
+                Certificates need one database migration before they work — see the main dashboard for setup.
+              </div>
+            ) : (
+              <>
+                <input
+                  className="input text-[13.5px]"
+                  style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                  placeholder="Recipient name"
+                  value={recipientName}
+                  onChange={(e) => setRecipientName(e.target.value)}
+                />
+                <input
+                  className="input text-[13.5px]"
+                  style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                  placeholder="Certificate title"
+                  value={certTitle}
+                  onChange={(e) => setCertTitle(e.target.value)}
+                />
+                <textarea
+                  className="input text-[13px]"
+                  style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}`, minHeight: 64 }}
+                  placeholder="Citation — what is this for?"
+                  value={citation}
+                  onChange={(e) => setCitation(e.target.value)}
+                />
+                {issueError && <div className="text-[12px]" style={{ color: tokens.danger }}>{issueError}</div>}
+                {issued && !issueError && <div className="text-[12px]" style={{ color: tokens.success }}>Issued</div>}
+                {outOfCredits && !issueError && <div className="text-[12px]" style={{ color: tokens.warning }}>Out of certificate credits.</div>}
+                <button
+                  className="btn text-[13px] self-start"
+                  style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}
+                  onClick={issueCertificate}
+                  disabled={issuing || outOfCredits || !recipientName.trim() || !certTitle.trim() || !citation.trim()}
+                >
+                  {issuing ? "Issuing…" : "Issue certificate"}
+                </button>
+                <a href="/certificates" className="text-[11px]" style={{ color: tokens.textQuaternary }}>
+                  Want a specific design or watermark? Open the full editor →
+                </a>
+              </>
+            )}
           </div>
 
           <div className="card elev-sm gap-2.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
