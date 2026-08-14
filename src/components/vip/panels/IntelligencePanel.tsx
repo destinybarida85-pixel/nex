@@ -12,18 +12,26 @@ type Facts = {
   certificateCreditsRemaining: number | null;
   stampCreditsRemaining: number | null;
 };
+type Stat = { label: string; value: string; sub?: string; badge?: { positive: boolean; text: string } };
 
 function money(cents: number) {
   const abs = Math.abs(cents) / 100;
   return `${cents < 0 ? "−" : ""}$${abs.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
+function pctChange(current: number, previous: number): number | null {
+  if (previous === 0) return null;
+  return Math.round(((current - previous) / Math.abs(previous)) * 100);
+}
+
+const CERT_MAX = 10;
+const STAMP_MAX = 10;
+
 export default function IntelligencePanel() {
   const [loading, setLoading] = useState(true);
   const [recs, setRecs] = useState<Recommendation[]>([]);
   const [facts, setFacts] = useState<Facts | null>(null);
   const [error, setError] = useState("");
-  const [showFacts, setShowFacts] = useState(false);
 
   function load() {
     setLoading(true);
@@ -31,7 +39,7 @@ export default function IntelligencePanel() {
     fetch("/api/vip/intelligence")
       .then((r) => r.json())
       .then((data) => {
-        if (!data.configured || data.error && !data.facts) {
+        if (!data.configured || (data.error && !data.facts)) {
           setError(data.error || "Couldn't load intelligence.");
           return;
         }
@@ -47,8 +55,40 @@ export default function IntelligencePanel() {
     load();
   }, []);
 
+  const cashChange = facts ? pctChange(facts.cashFlow30d.netCents, facts.cashFlow30d.previousPeriodNetCents) : null;
+
+  const stats: Stat[] = facts
+    ? [
+        {
+          label: "Pending signatures",
+          value: String(facts.pendingSignatures.count),
+          sub:
+            facts.pendingSignatures.oldestDays !== null
+              ? `Oldest ${facts.pendingSignatures.oldestDays}d — "${facts.pendingSignatures.oldestTitle}"`
+              : "All caught up",
+        },
+        {
+          label: "Cash flow · 30d",
+          value: money(facts.cashFlow30d.netCents),
+          badge:
+            cashChange !== null
+              ? { positive: cashChange >= 0, text: `${cashChange >= 0 ? "▲" : "▼"} ${Math.abs(cashChange)}% vs prior 30d` }
+              : undefined,
+        },
+        {
+          label: "Wallet activity",
+          value: facts.daysSinceLastWalletActivity !== null ? `${facts.daysSinceLastWalletActivity}d ago` : "No activity yet",
+        },
+        {
+          label: "AI drafts to review",
+          value: String(facts.unreviewedAiDrafts.count),
+          sub: facts.unreviewedAiDrafts.oldestDays !== null ? `Oldest ${facts.unreviewedAiDrafts.oldestDays}d` : "None waiting",
+        },
+      ]
+    : [];
+
   return (
-    <div className="flex flex-col gap-5 max-w-[680px]">
+    <div className="flex flex-col gap-4 max-w-[1080px]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="m-0 text-[22px]" style={{ color: "#fff" }}>Intelligence</h3>
@@ -69,65 +109,84 @@ export default function IntelligencePanel() {
 
       {error && <div className="text-[12.5px]" style={{ color: "#ff8a8a" }}>{error}</div>}
 
-      {!loading && recs.length === 0 && !error && (
-        <div className="card elev-sm gap-1 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-          <div className="flex items-center gap-2">
-            <span style={{ color: "#8fd6a8" }}><IconSparkle size={14} /></span>
-            <span className="text-[13.5px]" style={{ color: "#fff" }}>You&rsquo;re caught up.</span>
-          </div>
-          <div className="text-[12.5px]" style={{ color: "#8a8a8a" }}>
-            Nothing in your account data needs attention right now.
-          </div>
+      {facts && (
+        <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+          {stats.map((s) => (
+            <div key={s.label} className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+              <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: "#6b6b6b" }}>{s.label}</span>
+              <span className="text-[19px] font-medium" style={{ color: "#fff" }}>{s.value}</span>
+              {s.badge && (
+                <span
+                  className="tag text-[9.5px] self-start"
+                  style={{ border: `1px solid ${s.badge.positive ? "#8fd6a8" : "#ff8a8a"}`, color: s.badge.positive ? "#8fd6a8" : "#ff8a8a" }}
+                >
+                  {s.badge.text}
+                </span>
+              )}
+              {s.sub && <span className="text-[10.5px] truncate" style={{ color: "#6b6b6b" }}>{s.sub}</span>}
+            </div>
+          ))}
         </div>
       )}
 
-      <div className="flex flex-col gap-2.5">
-        {recs.map((r, i) => (
-          <div key={i} className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
-            <div className="flex items-center gap-2">
-              <span style={{ color: "#fff" }}><IconSparkle size={13} /></span>
-              <span className="text-[13.5px] font-medium" style={{ color: "#fff" }}>{r.headline}</span>
-            </div>
-            <div className="text-[12.5px]" style={{ color: "#a8a8a8" }}>{r.detail}</div>
-          </div>
-        ))}
-      </div>
-
-      {facts && (
-        <div>
-          <button
-            className="text-[12px]"
-            style={{ color: "#6b6b6b", background: "none", border: "none", cursor: "pointer", padding: 0 }}
-            onClick={() => setShowFacts((v) => !v)}
-          >
-            {showFacts ? "Hide" : "Show"} the real numbers this is based on
-          </button>
-          {showFacts && (
-            <div className="card elev-sm gap-1.5 p-4 mt-2" style={{ background: "#0a0a0a", border: "1px dashed rgba(255,255,255,0.2)" }}>
-              <div className="text-[12px]" style={{ color: "#a8a8a8" }}>
-                Pending signatures: {facts.pendingSignatures.count}
-                {facts.pendingSignatures.oldestDays !== null && ` (oldest ${facts.pendingSignatures.oldestDays}d — "${facts.pendingSignatures.oldestTitle}")`}
+      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+        <div className="flex flex-col gap-2.5">
+          {!loading && recs.length === 0 && !error && (
+            <div className="card elev-sm gap-1 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+              <div className="flex items-center gap-2">
+                <span style={{ color: "#8fd6a8" }}><IconSparkle size={14} /></span>
+                <span className="text-[13.5px]" style={{ color: "#fff" }}>You&rsquo;re caught up.</span>
               </div>
-              <div className="text-[12px]" style={{ color: "#a8a8a8" }}>
-                Cash flow, last 30 days: {money(facts.cashFlow30d.netCents)} (previous 30 days: {money(facts.cashFlow30d.previousPeriodNetCents)})
-              </div>
-              <div className="text-[12px]" style={{ color: "#a8a8a8" }}>
-                Days since last wallet activity: {facts.daysSinceLastWalletActivity ?? "no activity yet"}
-              </div>
-              <div className="text-[12px]" style={{ color: "#a8a8a8" }}>
-                Unreviewed AI drafts: {facts.unreviewedAiDrafts.count}
-                {facts.unreviewedAiDrafts.oldestDays !== null && ` (oldest ${facts.unreviewedAiDrafts.oldestDays}d)`}
-              </div>
-              <div className="text-[12px]" style={{ color: "#a8a8a8" }}>
-                Certificate credits remaining: {facts.certificateCreditsRemaining ?? "—"}
-              </div>
-              <div className="text-[12px]" style={{ color: "#a8a8a8" }}>
-                Stamp credits remaining: {facts.stampCreditsRemaining ?? "—"}
+              <div className="text-[12.5px]" style={{ color: "#8a8a8a" }}>
+                Nothing in your account data needs attention right now.
               </div>
             </div>
           )}
+          {recs.map((r, i) => (
+            <div key={i} className="card elev-sm gap-1.5 p-4" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full grid place-items-center flex-none" style={{ background: "rgba(255,255,255,0.1)", color: "#fff" }}>
+                  <IconSparkle size={12} />
+                </span>
+                <span className="text-[13.5px] font-medium" style={{ color: "#fff" }}>{r.headline}</span>
+              </div>
+              <div className="text-[12.5px]" style={{ color: "#a8a8a8" }}>{r.detail}</div>
+            </div>
+          ))}
         </div>
-      )}
+
+        <div className="flex flex-col gap-3.5">
+          <div className="card elev-sm gap-3 p-5" style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.14)" }}>
+            <div className="text-[13px] font-medium" style={{ color: "#fff" }}>Credits</div>
+            {[
+              { label: "Certificate credits", value: facts?.certificateCreditsRemaining ?? null, max: CERT_MAX },
+              { label: "Stamp credits", value: facts?.stampCreditsRemaining ?? null, max: STAMP_MAX },
+            ].map((c) => (
+              <div key={c.label} className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between text-[12px]" style={{ color: "#a8a8a8" }}>
+                  <span>{c.label}</span>
+                  <span>{c.value ?? "—"}</span>
+                </div>
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${c.value ? Math.min(100, (c.value / c.max) * 100) : 0}%`, background: "#fff" }}
+                  />
+                </div>
+              </div>
+            ))}
+            <a href="/billing" className="text-[11.5px]" style={{ color: "#8a8a8a" }}>Buy more credits →</a>
+          </div>
+
+          <div className="card elev-sm gap-2 p-4" style={{ background: "#161616", border: "1px dashed rgba(255,255,255,0.2)" }}>
+            <div className="text-[12.5px] font-medium" style={{ color: "#fff" }}>How this works</div>
+            <div className="text-[11.5px]" style={{ color: "#8a8a8a", lineHeight: 1.6 }}>
+              Every number above and every recommendation is computed straight from your own signatures, wallet and
+              credits — Primue never invents a market trend or a competitor comparison.
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
