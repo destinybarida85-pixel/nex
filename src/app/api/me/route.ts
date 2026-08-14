@@ -9,7 +9,7 @@ export async function GET() {
   if (error) return NextResponse.json({ configured: true, error }, { status });
 
   const [{ data: profile }, { data: tenant }, { data: userRes }] = await Promise.all([
-    supabase!.from("profiles").select("full_name, avatar_url").eq("id", userId).single(),
+    supabase!.from("profiles").select("full_name, avatar_url, created_at").eq("id", userId).single(),
     supabase!.from("tenants").select("name").eq("id", tenantId).single(),
     supabase!.auth.getUser(),
   ]);
@@ -20,6 +20,7 @@ export async function GET() {
     avatarUrl: profile?.avatar_url || null,
     email: userRes?.user?.email || "",
     tenantName: tenant?.name || "My Business",
+    createdAt: profile?.created_at || null,
   });
 }
 
