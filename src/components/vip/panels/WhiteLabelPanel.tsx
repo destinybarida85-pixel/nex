@@ -10,12 +10,23 @@ type TenantData = {
   brand_color: string;
   site_slug: string | null;
   site_published: boolean;
+  site_template: string | null;
   custom_domain: string | null;
 };
 
 // Brand-color picker options — a fixed palette to choose FROM, unrelated to
 // (and never swapped by) the VIP console's own light/dark theme.
 const SWATCHES = ["#9184d9", "#63c3b2", "#d9a05b", "#7fa3e8", "#c98bd9"];
+
+// The five real templates the public site renderer (/site/[slug]) actually
+// supports — same catalogue as the main /whitelabel builder.
+const TEMPLATES = [
+  { id: "clarity", label: "Clarity" },
+  { id: "ledger", label: "Ledger" },
+  { id: "atrium", label: "Atrium" },
+  { id: "portfolio", label: "Portfolio" },
+  { id: "landing", label: "Landing" },
+];
 
 async function uploadImage(file: File): Promise<string> {
   const form = new FormData();
@@ -34,11 +45,17 @@ export default function WhiteLabelPanel() {
   const [brandColor, setBrandColor] = useState(SWATCHES[0]);
   const [siteSlug, setSiteSlug] = useState<string | null>(null);
   const [sitePublished, setSitePublished] = useState(false);
+  const [siteTemplate, setSiteTemplate] = useState("clarity");
   const [customDomain, setCustomDomain] = useState("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+
+  const [slugInput, setSlugInput] = useState("");
+  const [savingSite, setSavingSite] = useState(false);
+  const [siteSaved, setSiteSaved] = useState(false);
+  const [siteError, setSiteError] = useState("");
 
   useEffect(() => {
     fetch("/api/tenant")
@@ -50,7 +67,9 @@ export default function WhiteLabelPanel() {
         setLogoUrl(t.logo_url ?? null);
         setBrandColor(t.brand_color || SWATCHES[0]);
         setSiteSlug(t.site_slug ?? null);
+        setSlugInput(t.site_slug ?? "");
         setSitePublished(!!t.site_published);
+        setSiteTemplate(t.site_template || "clarity");
         setCustomDomain(t.custom_domain ?? "");
       })
       .catch(() => {});
@@ -93,6 +112,32 @@ export default function WhiteLabelPanel() {
       setError(err instanceof Error ? err.message : "Couldn't reach the server.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function saveSite(publish?: boolean) {
+    setSavingSite(true);
+    setSiteSaved(false);
+    setSiteError("");
+    try {
+      const res = await fetch("/api/tenant", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          siteSlug: slugInput.trim() || undefined,
+          siteTemplate,
+          sitePublished: publish !== undefined ? publish : sitePublished,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't save that.");
+      setSiteSlug(data.tenant?.site_slug ?? slugInput.trim() ?? null);
+      setSitePublished(!!data.tenant?.site_published);
+      setSiteSaved(true);
+    } catch (err) {
+      setSiteError(err instanceof Error ? err.message : "Couldn't reach the server.");
+    } finally {
+      setSavingSite(false);
     }
   }
 
@@ -213,26 +258,78 @@ export default function WhiteLabelPanel() {
           </button>
         </div>
 
-        {/* Right: site + domain, stacked like Dashboard's right column */}
+        {/* Right: site builder + domain, stacked like Dashboard's right column */}
         <div className="flex flex-col gap-3.5">
-          <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+          <div className="card elev-sm gap-2.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
             <div className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Your client-facing site</div>
-            {siteSlug ? (
-              <>
-                <div className="text-[12.5px]" style={{ color: tokens.textSecondary }}>
-                  primue.com/site/{siteSlug} — {sitePublished ? "published" : "not published yet"}
-                </div>
-                {sitePublished && (
-                  <a href={`/site/${siteSlug}`} target="_blank" rel="noreferrer" className="text-[12.5px]" style={{ color: tokens.text }}>
-                    View live site →
-                  </a>
-                )}
-              </>
-            ) : (
-              <div className="text-[12.5px]" style={{ color: tokens.textQuaternary }}>Not set up yet.</div>
+
+            <div className="field">
+              <label style={{ fontSize: 11.5, fontWeight: 600, color: tokens.textTertiary }}>Template</label>
+              <div className="grid gap-1.5" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
+                {TEMPLATES.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setSiteTemplate(t.id)}
+                    className="text-[12px] py-1.5 rounded-md cursor-pointer"
+                    style={{
+                      border: `1px solid ${siteTemplate === t.id ? tokens.text : tokens.border}`,
+                      background: siteTemplate === t.id ? tokens.tint1 : "transparent",
+                      color: siteTemplate === t.id ? tokens.text : tokens.textSecondary,
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="field">
+              <label style={{ fontSize: 11.5, fontWeight: 600, color: tokens.textTertiary }}>Site address</label>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[12px]" style={{ color: tokens.textQuaternary }}>primue.com/site/</span>
+                <input
+                  className="input text-[13px] flex-1"
+                  style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                  placeholder="your-business"
+                  value={slugInput}
+                  onChange={(e) => setSlugInput(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {siteError && <div className="text-[12px]" style={{ color: tokens.danger }}>{siteError}</div>}
+            {siteSaved && !siteError && (
+              <div className="text-[12px] flex items-center gap-1.5" style={{ color: tokens.success }}>
+                <IconCheckCircle size={12} /> Saved
+              </div>
             )}
-            <a href="/whitelabel" className="btn text-[12.5px] self-start mt-1" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}>
-              Choose template &amp; content →
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                className="btn text-[12.5px]"
+                style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}
+                onClick={() => saveSite()}
+                disabled={savingSite || !slugInput.trim()}
+              >
+                {savingSite ? "Saving…" : "Save"}
+              </button>
+              <button
+                className="btn text-[12.5px]"
+                style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}
+                onClick={() => saveSite(!sitePublished)}
+                disabled={savingSite || !slugInput.trim()}
+              >
+                {savingSite ? "Saving…" : sitePublished ? "Unpublish" : "Publish"}
+              </button>
+              {sitePublished && siteSlug && (
+                <a href={`/site/${siteSlug}`} target="_blank" rel="noreferrer" className="text-[12px]" style={{ color: tokens.text }}>
+                  View live site →
+                </a>
+              )}
+            </div>
+
+            <a href="/whitelabel" className="text-[11px]" style={{ color: tokens.textQuaternary }}>
+              Add featured documents, a payment link or a header image → full editor
             </a>
           </div>
 
