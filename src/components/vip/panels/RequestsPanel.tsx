@@ -261,37 +261,57 @@ export default function RequestsPanel() {
             {submitError && <div className="text-[12px] mt-1.5" style={{ color: tokens.danger }}>{submitError}</div>}
           </div>
 
-          {latestDraft?.ai_draft && (
-            <div className="card elev-md gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.text}` }}>
-              <div className="flex items-center gap-2">
-                <span style={{ color: tokens.accentYellow }}><IconSparkle size={14} /></span>
-                <span className="text-[13px] font-medium" style={{ color: tokens.text }}>{latestDraft.ai_draft.summary}</span>
+          {/* Response — always present, not just conditionally rendered once
+              a draft exists, so there's visibly a place for Teni's answer
+              from the moment the panel loads, matching a real chat surface
+              rather than a form that silently reveals a card after submit. */}
+          <div
+            className="card elev-md gap-3 p-5 flex-1"
+            style={{ background: tokens.surface, border: `1px solid ${latestDraft?.ai_draft ? tokens.text : tokens.border}`, minHeight: 240 }}
+          >
+            {submitting ? (
+              <div className="flex-1 flex flex-col items-center justify-center gap-2.5 py-10" style={{ color: tokens.textTertiary }}>
+                <span className="vip-live-dot w-2.5 h-2.5 rounded-full" style={{ background: tokens.accentYellow }} />
+                <span className="text-[13px]">Teni is drafting…</span>
               </div>
-              {latestDraft.ai_draft.drafts.map((d, i) => (
-                <div key={i} className="rounded-lg p-3" style={{ background: tokens.surfaceInset, border: `1px solid ${tokens.border}` }}>
-                  <div className="text-[11px] uppercase tracking-[.08em] mb-1.5" style={{ color: tokens.textTertiary }}>{d.label}</div>
-                  <div className="text-[13.5px] whitespace-pre-wrap" style={{ lineHeight: 1.7, color: tokens.text }}>{d.body}</div>
+            ) : latestDraft?.ai_draft ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <span style={{ color: tokens.accentYellow }}><IconSparkle size={14} /></span>
+                  <span className="text-[13px] font-medium" style={{ color: tokens.text }}>{latestDraft.ai_draft.summary}</span>
                 </div>
-              ))}
-              {latestDraft.ai_draft.gaps && (
-                <div className="text-[12px]" style={{ color: tokens.textSecondary }}>Note: {latestDraft.ai_draft.gaps}</div>
-              )}
-              {latestDraft.status === "ready" ? (
-                <div className="flex gap-2">
-                  <button className="btn text-[13px]" style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }} onClick={() => setStatus(latestDraft.id, "approved")}>
-                    <IconCheckCircle size={13} /> Approved — I&rsquo;ll send it
-                  </button>
-                  <button className="btn text-[13px]" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }} onClick={() => setStatus(latestDraft.id, "dismissed")}>
-                    <IconX size={13} /> Not this
-                  </button>
-                </div>
-              ) : (
-                <div className="text-[12px]" style={{ color: tokens.textTertiary }}>
-                  {latestDraft.status === "approved" ? "Marked approved." : "Dismissed."}
-                </div>
-              )}
-            </div>
-          )}
+                {latestDraft.ai_draft.drafts.map((d, i) => (
+                  <div key={i} className="rounded-lg p-3" style={{ background: tokens.surfaceInset, border: `1px solid ${tokens.border}` }}>
+                    <div className="text-[11px] uppercase tracking-[.08em] mb-1.5" style={{ color: tokens.textTertiary }}>{d.label}</div>
+                    <div className="text-[13.5px] whitespace-pre-wrap" style={{ lineHeight: 1.7, color: tokens.text }}>{d.body}</div>
+                  </div>
+                ))}
+                {latestDraft.ai_draft.gaps && (
+                  <div className="text-[12px]" style={{ color: tokens.textSecondary }}>Note: {latestDraft.ai_draft.gaps}</div>
+                )}
+                {latestDraft.status === "ready" ? (
+                  <div className="flex gap-2">
+                    <button className="btn text-[13px]" style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }} onClick={() => setStatus(latestDraft.id, "approved")}>
+                      <IconCheckCircle size={13} /> Approved — I&rsquo;ll send it
+                    </button>
+                    <button className="btn text-[13px]" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }} onClick={() => setStatus(latestDraft.id, "dismissed")}>
+                      <IconX size={13} /> Not this
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-[12px]" style={{ color: tokens.textTertiary }}>
+                    {latestDraft.status === "approved" ? "Marked approved." : "Dismissed."}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center gap-2 py-10 text-center" style={{ color: tokens.textQuaternary }}>
+                <span style={{ color: tokens.textTertiary }}><IconSparkle size={22} /></span>
+                <span className="text-[13px]" style={{ color: tokens.textTertiary }}>Your response will appear here</span>
+                <span className="text-[11.5px] max-w-[280px]">Send a request above and Teni&rsquo;s draft shows up right here — ready to review and send.</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col gap-3.5">
