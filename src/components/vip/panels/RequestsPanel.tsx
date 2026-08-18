@@ -16,6 +16,7 @@ type VipRequest = {
 };
 
 const PAGE_SIZE = 5;
+const THREAD_SIZE = 20;
 
 // Minimal shape of the (still browser-prefixed, not in lib.dom.d.ts) Web
 // Speech API — just enough to type what's actually used below.
@@ -80,10 +81,16 @@ export default function RequestsPanel() {
   const [inputFocused, setInputFocused] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const [latestDraft, setLatestDraft] = useState<VipRequest | null>(null);
+
+  // The actual chat thread — real past requests (oldest first, like any
+  // message log) plus whatever gets sent this session, appended live.
+  const [conversation, setConversation] = useState<VipRequest[]>([]);
+  const [conversationLoaded, setConversationLoaded] = useState(false);
+  const threadRef = useRef<HTMLDivElement>(null);
 
   // A wider, one-time fetch just to compute the stat row — separate from the
-  // paginated history list below, since a page of 5 can't tell you the total.
+  // paginated history list below, since a page of 5 (or the thread's most
+  // recent 20) can't tell you the total.
   const [statsRequests, setStatsRequests] = useState<VipRequest[]>([]);
 
   const [page, setPage] = useState(0);
@@ -106,6 +113,19 @@ export default function RequestsPanel() {
       .catch(() => {});
   }
 
+  function loadConversation() {
+    fetch(`/api/vip/requests?offset=0&limit=${THREAD_SIZE}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data.configured || data.error) return;
+        // The API returns newest-first (for the paginated side list); a chat
+        // thread reads top-to-bottom oldest-first, like any real message log.
+        setConversation((data.requests ?? []).slice().reverse());
+      })
+      .catch(() => {})
+      .finally(() => setConversationLoaded(true));
+  }
+
   function loadHistory(p: number) {
     setHistoryLoading(true);
     fetch(`/api/vip/requests?offset=${p * PAGE_SIZE}&limit=${PAGE_SIZE}`)
@@ -121,6 +141,7 @@ export default function RequestsPanel() {
 
   useEffect(() => {
     loadStats();
+    loadConversation();
   }, []);
 
   useEffect(() => {
@@ -128,36 +149,52 @@ export default function RequestsPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
+  useEffect(() => {
+    threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight, behavior: "smooth" });
+  }, [conversation.length]);
+
   async function submit() {
     if (!inputText.trim()) return;
+    const text = inputText.trim();
+    const source = inputSource;
+    const tempId = `pending-${Date.now()}`;
+
+    // Optimistic — the "you" bubble and a drafting indicator appear the
+    // instant you hit send, like any real chat, not only once the request
+    // round-trips.
+    setConversation((prev) => [
+      ...prev,
+      { id: tempId, input_text: text, input_source: source, ai_draft: null, status: "drafting", created_at: new Date().toISOString() },
+    ]);
+    setInputText("");
+    setInputSource("text");
     setSubmitting(true);
     setSubmitError("");
-    setLatestDraft(null);
     try {
       const res = await fetch("/api/vip/requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inputText: inputText.trim(), inputSource }),
+        body: JSON.stringify({ inputText: text, inputSource: source }),
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || "Couldn't draft that.");
-      setLatestDraft(data.request);
-      setInputText("");
-      setInputSource("text");
+      setConversation((prev) => prev.map((r) => (r.id === tempId ? data.request : r)));
       loadStats();
       setPage(0);
       loadHistory(0);
     } catch (err) {
+      setConversation((prev) => prev.filter((r) => r.id !== tempId));
       setSubmitError(err instanceof Error ? err.message : "Couldn't reach the server.");
+      setInputText(text);
     } finally {
       setSubmitting(false);
     }
   }
 
   async function setStatus(id: string, status: "approved" | "dismissed") {
+    setConversation((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
     setHistoryRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
     setStatsRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
-    if (latestDraft?.id === id) setLatestDraft((prev) => (prev ? { ...prev, status } : prev));
     await fetch(`/api/vip/requests/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -204,10 +241,90 @@ export default function RequestsPanel() {
       </div>
 
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
-        <div className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-3">
+          {/* The actual chat thread — a scrollable message log, oldest at
+              top, auto-scrolling to the newest exchange, with the composer
+              docked below it like a real chat surface. */}
+          <div
+            ref={threadRef}
+            className="flex flex-col gap-4 overflow-y-auto pr-1"
+            style={{ maxHeight: 480, minHeight: 260 }}
+          >
+            {conversationLoaded && conversation.length === 0 && (
+              <div className="flex-1 flex flex-col items-center justify-center gap-2 py-14 text-center" style={{ color: tokens.textQuaternary }}>
+                <span style={{ color: tokens.textTertiary }}><IconSparkle size={22} /></span>
+                <span className="text-[13px]" style={{ color: tokens.textTertiary }}>Your conversation will appear here</span>
+                <span className="text-[11.5px] max-w-[280px]">Say or type something below and Teni&rsquo;s draft shows up right here — ready to review and send.</span>
+              </div>
+            )}
+
+            {conversation.map((req) => (
+              <div key={req.id} className="flex flex-col gap-2">
+                {/* You */}
+                <div className="flex justify-end">
+                  <div className="rounded-2xl px-4 py-2.5" style={{ background: tokens.accentBg, color: tokens.accentText, maxWidth: "78%" }}>
+                    <div className="text-[13.5px]" style={{ lineHeight: 1.5 }}>{req.input_text}</div>
+                    {req.input_source === "voice" && (
+                      <div className="text-[10px] mt-1" style={{ color: tokens.accentTextMuted }}>via voice</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Teni */}
+                <div className="flex justify-start">
+                  <div
+                    className="rounded-2xl px-4 py-3 flex flex-col gap-2.5"
+                    style={{ background: tokens.surface, border: `1px solid ${tokens.border}`, maxWidth: "92%" }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span style={{ color: tokens.accentYellow }}><IconSparkle size={13} /></span>
+                      <span className="text-[11.5px] font-medium" style={{ color: tokens.textTertiary }}>Teni</span>
+                    </div>
+
+                    {req.ai_draft ? (
+                      <>
+                        <div className="text-[13px] font-medium" style={{ color: tokens.text }}>{req.ai_draft.summary}</div>
+                        {req.ai_draft.drafts.map((d, i) => (
+                          <div key={i} className="rounded-lg p-3" style={{ background: tokens.surfaceInset, border: `1px solid ${tokens.border}` }}>
+                            <div className="text-[11px] uppercase tracking-[.08em] mb-1.5" style={{ color: tokens.textTertiary }}>{d.label}</div>
+                            <div className="text-[13px] whitespace-pre-wrap" style={{ lineHeight: 1.7, color: tokens.text }}>{d.body}</div>
+                          </div>
+                        ))}
+                        {req.ai_draft.gaps && (
+                          <div className="text-[11.5px]" style={{ color: tokens.textSecondary }}>Note: {req.ai_draft.gaps}</div>
+                        )}
+                        {req.status === "ready" ? (
+                          <div className="flex gap-2">
+                            <button className="btn text-[12.5px]" style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }} onClick={() => setStatus(req.id, "approved")}>
+                              <IconCheckCircle size={12} /> Approved — I&rsquo;ll send it
+                            </button>
+                            <button className="btn text-[12.5px]" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }} onClick={() => setStatus(req.id, "dismissed")}>
+                              <IconX size={12} /> Not this
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-[11.5px]" style={{ color: tokens.textTertiary }}>
+                            {req.status === "approved" ? "Marked approved." : req.status === "dismissed" ? "Dismissed." : req.status}
+                          </div>
+                        )}
+                      </>
+                    ) : req.status === "error" ? (
+                      <div className="text-[12.5px]" style={{ color: tokens.danger }}>Couldn&rsquo;t draft that one — try sending it again.</div>
+                    ) : (
+                      <div className="flex items-center gap-2" style={{ color: tokens.textTertiary }}>
+                        <span className="vip-live-dot w-1.5 h-1.5 rounded-full" style={{ background: tokens.accentYellow }} />
+                        <span className="text-[12.5px]">Teni is drafting…</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {/* Composer — a single soft-cornered box with the controls docked
-              at the bottom edge, matching Claude's own chat input rather than
-              a bordered form field with a separate button row. */}
+              at the bottom edge, matching Claude's own chat input, pinned
+              below the thread like a real chat's message bar. */}
           <div
             className="rounded-[26px] p-5"
             style={{ background: tokens.surface, border: `1px solid ${inputFocused ? tokens.text : tokens.border}`, transition: "border-color 120ms ease" }}
@@ -259,58 +376,6 @@ export default function RequestsPanel() {
               </div>
             )}
             {submitError && <div className="text-[12px] mt-1.5" style={{ color: tokens.danger }}>{submitError}</div>}
-          </div>
-
-          {/* Response — always present, not just conditionally rendered once
-              a draft exists, so there's visibly a place for Teni's answer
-              from the moment the panel loads, matching a real chat surface
-              rather than a form that silently reveals a card after submit. */}
-          <div
-            className="card elev-md gap-3 p-5 flex-1"
-            style={{ background: tokens.surface, border: `1px solid ${latestDraft?.ai_draft ? tokens.text : tokens.border}`, minHeight: 240 }}
-          >
-            {submitting ? (
-              <div className="flex-1 flex flex-col items-center justify-center gap-2.5 py-10" style={{ color: tokens.textTertiary }}>
-                <span className="vip-live-dot w-2.5 h-2.5 rounded-full" style={{ background: tokens.accentYellow }} />
-                <span className="text-[13px]">Teni is drafting…</span>
-              </div>
-            ) : latestDraft?.ai_draft ? (
-              <>
-                <div className="flex items-center gap-2">
-                  <span style={{ color: tokens.accentYellow }}><IconSparkle size={14} /></span>
-                  <span className="text-[13px] font-medium" style={{ color: tokens.text }}>{latestDraft.ai_draft.summary}</span>
-                </div>
-                {latestDraft.ai_draft.drafts.map((d, i) => (
-                  <div key={i} className="rounded-lg p-3" style={{ background: tokens.surfaceInset, border: `1px solid ${tokens.border}` }}>
-                    <div className="text-[11px] uppercase tracking-[.08em] mb-1.5" style={{ color: tokens.textTertiary }}>{d.label}</div>
-                    <div className="text-[13.5px] whitespace-pre-wrap" style={{ lineHeight: 1.7, color: tokens.text }}>{d.body}</div>
-                  </div>
-                ))}
-                {latestDraft.ai_draft.gaps && (
-                  <div className="text-[12px]" style={{ color: tokens.textSecondary }}>Note: {latestDraft.ai_draft.gaps}</div>
-                )}
-                {latestDraft.status === "ready" ? (
-                  <div className="flex gap-2">
-                    <button className="btn text-[13px]" style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }} onClick={() => setStatus(latestDraft.id, "approved")}>
-                      <IconCheckCircle size={13} /> Approved — I&rsquo;ll send it
-                    </button>
-                    <button className="btn text-[13px]" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }} onClick={() => setStatus(latestDraft.id, "dismissed")}>
-                      <IconX size={13} /> Not this
-                    </button>
-                  </div>
-                ) : (
-                  <div className="text-[12px]" style={{ color: tokens.textTertiary }}>
-                    {latestDraft.status === "approved" ? "Marked approved." : "Dismissed."}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center gap-2 py-10 text-center" style={{ color: tokens.textQuaternary }}>
-                <span style={{ color: tokens.textTertiary }}><IconSparkle size={22} /></span>
-                <span className="text-[13px]" style={{ color: tokens.textTertiary }}>Your response will appear here</span>
-                <span className="text-[11.5px] max-w-[280px]">Send a request above and Teni&rsquo;s draft shows up right here — ready to review and send.</span>
-              </div>
-            )}
           </div>
         </div>
 
