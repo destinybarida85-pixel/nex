@@ -13,7 +13,13 @@ type WalletTx = {
   memo: string | null;
   created_at: string;
 };
-type PaymentLink = { id: string; title: string; amount_cents: number; currency: string };
+type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url?: string };
+type WalletAccount = { id: string; label: string; account_number: string; routing_number: string; balance_cents: number; currency: string };
+
+function mask(num: string) {
+  if (!num || num.length <= 4) return num;
+  return `•••• ${num.slice(-4)}`;
+}
 
 function money(cents: number, currency = "usd") {
   return (cents / 100).toLocaleString(undefined, { style: "currency", currency: currency.toUpperCase(), maximumFractionDigits: cents % 100 === 0 ? 0 : 2 });
@@ -51,13 +57,40 @@ function Sparkline({ values, color }: { values: number[]; color: string }) {
 
 export default function FinancePanel() {
   const { tokens } = useVipTheme();
-  const [balanceCents, setBalanceCents] = useState(0);
+  const [accounts, setAccounts] = useState<WalletAccount[]>([]);
   const [transactions, setTransactions] = useState<WalletTx[]>([]);
   const [links, setLinks] = useState<PaymentLink[]>([]);
   const [certCredits, setCertCredits] = useState<number | null>(null);
   const [stampCredits, setStampCredits] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+
+  const [activeAction, setActiveAction] = useState<"transfer" | "receive" | "link" | null>(null);
+  const [transferTo, setTransferTo] = useState("");
+  const [transferAmount, setTransferAmount] = useState("");
+  const [transferring, setTransferring] = useState(false);
+  const [transferError, setTransferError] = useState("");
+  const [transferDone, setTransferDone] = useState(false);
+  const [copiedField, setCopiedField] = useState<"account" | "routing" | null>(null);
+  const [linkTitle, setLinkTitle] = useState("");
+  const [linkAmount, setLinkAmount] = useState("");
+  const [linkKind, setLinkKind] = useState<"one_time" | "recurring">("one_time");
+  const [creatingLink, setCreatingLink] = useState(false);
+  const [linkError, setLinkError] = useState("");
+  const [createdLinkUrl, setCreatedLinkUrl] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  function loadWallet() {
+    fetch("/api/wallet")
+      .then((r) => r.json())
+      .then((walletData) => {
+        if (walletData.configured && !walletData.error) {
+          setAccounts(walletData.accounts ?? []);
+          setTransactions(walletData.transactions ?? []);
+        }
+      })
+      .catch(() => {});
+  }
 
   useEffect(() => {
     Promise.all([
@@ -68,9 +101,7 @@ export default function FinancePanel() {
     ])
       .then(([walletData, linksData, tenantData, certData]) => {
         if (walletData.configured && !walletData.error) {
-          type Account = { balance_cents: number };
-          const accounts: Account[] = walletData.accounts ?? [];
-          setBalanceCents(accounts.reduce((sum, a) => sum + a.balance_cents, 0));
+          setAccounts(walletData.accounts ?? []);
           setTransactions(walletData.transactions ?? []);
         }
         if (linksData.configured && !linksData.error) setLinks(linksData.links ?? []);
@@ -80,6 +111,68 @@ export default function FinancePanel() {
       })
       .catch(() => setLoaded(true));
   }, []);
+
+  const balanceCents = accounts.reduce((sum, a) => sum + a.balance_cents, 0);
+  const primaryAccount = accounts[0];
+
+  async function submitTransfer() {
+    if (!primaryAccount || !transferTo.trim() || !transferAmount) return;
+    setTransferring(true);
+    setTransferError("");
+    setTransferDone(false);
+    try {
+      const cents = Math.round(parseFloat(transferAmount) * 100);
+      if (!cents || cents <= 0) throw new Error("Enter a valid amount.");
+      const res = await fetch("/api/wallet/transfer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accountId: primaryAccount.id, counterparty: transferTo.trim(), amountCents: cents }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't send that transfer.");
+      setTransferDone(true);
+      setTransferTo("");
+      setTransferAmount("");
+      loadWallet();
+    } catch (err) {
+      setTransferError(err instanceof Error ? err.message : "Couldn't reach the server.");
+    } finally {
+      setTransferring(false);
+    }
+  }
+
+  function copyToClipboard(text: string, field: "account" | "routing") {
+    navigator.clipboard?.writeText(text).then(() => {
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 1500);
+    });
+  }
+
+  async function createLink() {
+    if (!linkTitle.trim() || !linkAmount) return;
+    setCreatingLink(true);
+    setLinkError("");
+    setCreatedLinkUrl(null);
+    try {
+      const cents = Math.round(parseFloat(linkAmount) * 100);
+      if (!cents || cents < 1) throw new Error("Enter a valid amount.");
+      const res = await fetch("/api/stripe/payment-links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: linkTitle.trim(), amountCents: cents, kind: linkKind, interval: linkKind === "recurring" ? "month" : undefined }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Couldn't create that link.");
+      setCreatedLinkUrl(data.link.url);
+      setLinks((prev) => [data.link, ...prev]);
+      setLinkTitle("");
+      setLinkAmount("");
+    } catch (err) {
+      setLinkError(err instanceof Error ? err.message : "Couldn't reach the server.");
+    } finally {
+      setCreatingLink(false);
+    }
+  }
 
   async function manageBilling() {
     setPortalLoading(true);
@@ -172,10 +265,137 @@ export default function FinancePanel() {
           </div>
           <div className="text-[30px] font-medium" style={{ color: tokens.text }}>{money(animatedBalance)}</div>
           <div className="flex gap-2">
-            <a href="/wallet" className="btn text-[12px]" style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}>Transfer</a>
-            <a href="/wallet" className="btn text-[12px]" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}>Receive</a>
-            <a href="/payments" className="btn text-[12px]" style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}>Payment link</a>
+            <button
+              className="btn text-[12px]"
+              style={{ background: activeAction === "transfer" ? tokens.accentBg : "transparent", color: activeAction === "transfer" ? tokens.accentText : tokens.text, border: `1px solid ${tokens.accentBg}` }}
+              onClick={() => setActiveAction(activeAction === "transfer" ? null : "transfer")}
+              disabled={!primaryAccount}
+            >
+              Transfer
+            </button>
+            <button
+              className="btn text-[12px]"
+              style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary, background: activeAction === "receive" ? tokens.tint1 : "transparent" }}
+              onClick={() => setActiveAction(activeAction === "receive" ? null : "receive")}
+              disabled={!primaryAccount}
+            >
+              Receive
+            </button>
+            <button
+              className="btn text-[12px]"
+              style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary, background: activeAction === "link" ? tokens.tint1 : "transparent" }}
+              onClick={() => setActiveAction(activeAction === "link" ? null : "link")}
+            >
+              Payment link
+            </button>
           </div>
+
+          {activeAction === "transfer" && (
+            <div className="flex flex-col gap-2 pt-1" style={{ borderTop: `1px solid ${tokens.tint2}` }}>
+              <input
+                className="input text-[13px]"
+                style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                placeholder="Send to (name or business)"
+                value={transferTo}
+                onChange={(e) => setTransferTo(e.target.value)}
+              />
+              <input
+                className="input text-[13px]"
+                style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                placeholder="Amount (USD)"
+                inputMode="decimal"
+                value={transferAmount}
+                onChange={(e) => setTransferAmount(e.target.value)}
+              />
+              {transferError && <div className="text-[11.5px]" style={{ color: tokens.danger }}>{transferError}</div>}
+              {transferDone && !transferError && <div className="text-[11.5px]" style={{ color: tokens.success }}>Sent</div>}
+              <button
+                className="btn text-[12px] self-start"
+                style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}
+                onClick={submitTransfer}
+                disabled={transferring || !transferTo.trim() || !transferAmount}
+              >
+                {transferring ? "Sending…" : "Send transfer"}
+              </button>
+            </div>
+          )}
+
+          {activeAction === "receive" && primaryAccount && (
+            <div className="flex flex-col gap-1.5 pt-1" style={{ borderTop: `1px solid ${tokens.tint2}` }}>
+              <div className="text-[11px]" style={{ color: tokens.textQuaternary }}>Share these to get paid into this account.</div>
+              <button
+                className="flex items-center justify-between text-[12.5px] py-1 cursor-pointer"
+                style={{ background: "none", border: "none", color: tokens.text, textAlign: "left" }}
+                onClick={() => copyToClipboard(primaryAccount.account_number, "account")}
+              >
+                <span>Account {mask(primaryAccount.account_number)}</span>
+                <span style={{ color: tokens.textQuaternary }}>{copiedField === "account" ? "Copied" : "Copy"}</span>
+              </button>
+              <button
+                className="flex items-center justify-between text-[12.5px] py-1 cursor-pointer"
+                style={{ background: "none", border: "none", color: tokens.text, textAlign: "left" }}
+                onClick={() => copyToClipboard(primaryAccount.routing_number, "routing")}
+              >
+                <span>Routing {mask(primaryAccount.routing_number)}</span>
+                <span style={{ color: tokens.textQuaternary }}>{copiedField === "routing" ? "Copied" : "Copy"}</span>
+              </button>
+            </div>
+          )}
+
+          {activeAction === "link" && (
+            <div className="flex flex-col gap-2 pt-1" style={{ borderTop: `1px solid ${tokens.tint2}` }}>
+              <input
+                className="input text-[13px]"
+                style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                placeholder="What's this for?"
+                value={linkTitle}
+                onChange={(e) => setLinkTitle(e.target.value)}
+              />
+              <div className="flex gap-2">
+                <input
+                  className="input text-[13px] flex-1"
+                  style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                  placeholder="Amount (USD)"
+                  inputMode="decimal"
+                  value={linkAmount}
+                  onChange={(e) => setLinkAmount(e.target.value)}
+                />
+                <select
+                  className="input text-[12px]"
+                  style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                  value={linkKind}
+                  onChange={(e) => setLinkKind(e.target.value as "one_time" | "recurring")}
+                >
+                  <option value="one_time">One-time</option>
+                  <option value="recurring">Monthly</option>
+                </select>
+              </div>
+              {linkError && <div className="text-[11.5px]" style={{ color: tokens.danger }}>{linkError}</div>}
+              {createdLinkUrl && (
+                <div className="flex items-center gap-2 text-[11.5px]" style={{ color: tokens.success }}>
+                  <span className="truncate">{createdLinkUrl}</span>
+                  <button
+                    style={{ background: "none", border: "none", color: tokens.textSecondary, cursor: "pointer", flex: "none" }}
+                    onClick={() => {
+                      navigator.clipboard?.writeText(createdLinkUrl);
+                      setLinkCopied(true);
+                      setTimeout(() => setLinkCopied(false), 1500);
+                    }}
+                  >
+                    {linkCopied ? "Copied" : "Copy"}
+                  </button>
+                </div>
+              )}
+              <button
+                className="btn text-[12px] self-start"
+                style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}
+                onClick={createLink}
+                disabled={creatingLink || !linkTitle.trim() || !linkAmount}
+              >
+                {creatingLink ? "Creating…" : "Create link"}
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="card elev-sm nx-tilt gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}`, ...tiltAccent }}>
