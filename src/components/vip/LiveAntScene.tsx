@@ -26,7 +26,7 @@ const ANT_SVG = `
 </svg>`.trim();
 
 const BLOCK_SIZE = 12;
-const ANT_COUNT = 11;
+const ANT_COUNT = 14;
 const CARRY_OFFSET_Y = -10;
 
 type Phase = "wander" | "toCenter" | "leaving";
@@ -172,6 +172,23 @@ export default function LiveAntScene({
       a.targetY = rand(height * 0.12, height * 0.94);
     }
 
+    // The post-delivery walk needs to visibly separate from the pile — a
+    // plain pickNewWanderTarget() could legitimately land right back near
+    // center by chance, which reads as the ant reaching the stack and just
+    // lingering there instead of turning around and heading back out.
+    function pickLeavingTarget(a: Ant) {
+      a.targetX = rand(width * 0.06, width * 0.94);
+      a.targetY = rand(height * 0.08, Math.max(height * 0.08 + 20, centerY() - 70));
+    }
+
+    // Face the new target immediately on a phase transition, instead of
+    // holding the old (incoming) angle for one extra frame until the normal
+    // movement branch recomputes it — otherwise an ant that just arrived and
+    // reversed course visibly keeps its old facing for a beat before turning.
+    function faceTarget(a: Ant) {
+      a.angle = (Math.atan2(a.targetY - a.y, a.targetX - a.x) * 180) / Math.PI;
+    }
+
     let last = performance.now();
     let raf = 0;
 
@@ -194,24 +211,27 @@ export default function LiveAntScene({
 
         if (dist < 4) {
           if (a.phase === "wander") {
-            // Biased toward carrying, not aimless wandering — the point is a
-            // team visibly building something together, not ants that
-            // occasionally happen to help.
-            if (Math.random() < 0.65 && blocksDelivered < MAX_STACK) {
+            // Strongly biased toward carrying, not aimless wandering — the
+            // point is a whole team visibly building something together at
+            // once, not the occasional ant that happens to help.
+            if (Math.random() < 0.8 && blocksDelivered < MAX_STACK) {
               a.phase = "toCenter";
               a.carrying = true;
               a.targetX = centerX() + rand(-14, 14);
               a.targetY = centerY() + rand(6, 20);
+              faceTarget(a);
             } else {
               a.waitUntil = now + rand(150, 600);
               pickNewWanderTarget(a);
+              faceTarget(a);
             }
           } else if (a.phase === "toCenter") {
             a.carrying = false;
             growStack();
             a.phase = "leaving";
             a.waitUntil = now + rand(150, 400);
-            pickNewWanderTarget(a);
+            pickLeavingTarget(a);
+            faceTarget(a);
           } else {
             // "leaving" reached its post-delivery target — hand straight
             // back to normal wander with its own fresh target, rather than
@@ -220,6 +240,7 @@ export default function LiveAntScene({
             a.phase = "wander";
             a.waitUntil = now + rand(150, 600);
             pickNewWanderTarget(a);
+            faceTarget(a);
           }
         } else {
           const angle = Math.atan2(dy, dx);

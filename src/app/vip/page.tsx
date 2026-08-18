@@ -78,17 +78,61 @@ export default function VipHomePage() {
             {
               title: "Say it, don't type it",
               body: "A real, in-browser voice note or a few typed words — either way, Teni AI understands the request.",
+              icon: (
+                <>
+                  <path d="M14 18a6 6 0 0 1 6-6h20a6 6 0 0 1 6 6v14a6 6 0 0 1-6 6H28l-7 6v-6h-1a6 6 0 0 1-6-6V18Z" stroke="#9184d9" strokeWidth="2" />
+                  <g stroke="#9184d9" strokeWidth="2" strokeLinecap="round">
+                    <path d="M22 28v-2" />
+                    <path d="M27 28v-6" />
+                    <path d="M32 28v-9" />
+                    <path d="M37 28v-5" />
+                    <path d="M42 28v-2" />
+                  </g>
+                </>
+              ),
             },
             {
               title: "Drafted, not decided",
               body: "Every reply, invoice or follow-up comes back as a ready draft. You always review and send it yourself.",
+              icon: (
+                <>
+                  <path d="M18 12h14l8 8v22a2 2 0 0 1-2 2H18a2 2 0 0 1-2-2V14a2 2 0 0 1 2-2Z" stroke="#9184d9" strokeWidth="2" />
+                  <path d="M32 12v8h8" stroke="#9184d9" strokeWidth="2" />
+                  <g stroke="#9184d9" strokeWidth="1.6" strokeLinecap="round" opacity="0.55">
+                    <path d="M22 30h12" />
+                    <path d="M22 35h16" />
+                    <path d="M22 40h10" />
+                  </g>
+                  <circle cx="41" cy="41" r="8" fill="#0a0a0a" stroke="#9184d9" strokeWidth="2" />
+                  <path d="M38.3 43.7l1-3.4 5.2-5.2a1.5 1.5 0 0 1 2.1 2.1l-5.2 5.2-3.1 1.3Z" stroke="#9184d9" strokeWidth="1.3" fill="none" strokeLinejoin="round" />
+                </>
+              ),
             },
             {
               title: "One queue, everything in it",
               body: "Requests, drafts and decisions live in one place — not scattered across a dozen open tabs.",
+              icon: (
+                <>
+                  <path d="M13 30l6-16h22l6 16" stroke="#9184d9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M13 30v10a2 2 0 0 0 2 2h30a2 2 0 0 0 2-2V30" stroke="#9184d9" strokeWidth="2" strokeLinejoin="round" />
+                  <path d="M13 30h9a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4h9" stroke="#9184d9" strokeWidth="2" strokeLinejoin="round" />
+                </>
+              ),
             },
           ].map((f) => (
             <div key={f.title} className="rounded-xl p-6" style={{ background: "var(--color-surface)", border: "1px solid var(--color-divider)" }}>
+              <div
+                className="rounded-lg mb-4 grid place-items-center"
+                style={{
+                  width: 52,
+                  height: 52,
+                  background: "radial-gradient(circle, color-mix(in srgb, #9184d9 16%, transparent), transparent 72%)",
+                }}
+              >
+                <svg width="40" height="40" viewBox="0 0 56 56" fill="none">
+                  {f.icon}
+                </svg>
+              </div>
               <div className="text-[15px] font-medium mb-2">{f.title}</div>
               <div className="text-[13.5px] leading-[1.7]" style={{ color: "var(--color-neutral-400)" }}>{f.body}</div>
             </div>
