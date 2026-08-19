@@ -23,11 +23,6 @@ function money(cents: number) {
   return (cents / 100).toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
-function mask(num: string) {
-  if (num.length <= 4) return num;
-  return `•••• ${num.slice(-4)}`;
-}
-
 function greeting() {
   const h = new Date().getHours();
   if (h < 12) return "Good morning";
@@ -256,11 +251,18 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
                 <span className="text-[11px] tracking-[.08em] uppercase" style={{ color: tokens.accentTextMuted }}>Your Primue Wallet</span>
                 <span className="text-[10px]" style={{ color: tokens.accentTextMuted }}>{primaryAccount.label}</span>
               </div>
-              <div className="text-[19px] font-medium tracking-[.04em]">{mask(primaryAccount.account_number)}</div>
-              <div className="flex items-center justify-between text-[11px]" style={{ color: tokens.accentTextMuted }}>
-                <span>Routing {mask(primaryAccount.routing_number)}</span>
-                <span>{primaryAccount.currency}</span>
+              <div className="text-[24px] font-medium tracking-[.01em]">{money(primaryAccount.balance_cents)}</div>
+              <div className="text-[11px]" style={{ color: tokens.accentTextMuted }}>
+                Internal ledger balance · {primaryAccount.currency}
               </div>
+              <a
+                href="#"
+                onClick={(e) => { e.preventDefault(); onNavigate?.("finance"); }}
+                className="text-[11px]"
+                style={{ color: tokens.accentTextMuted, textDecoration: "underline" }}
+              >
+                Get paid with a real Stripe payment link →
+              </a>
             </div>
           )}
 

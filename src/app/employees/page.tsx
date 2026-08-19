@@ -89,7 +89,7 @@ export default function EmployeesPage() {
 
   const kpis = [
     { label: "Total employees", value: String(employees.length) },
-    { label: "Open roles", value: "2", metaLabel: "Product, Engineering" },
+    { label: "Open roles", value: live ? "—" : "2", metaLabel: live ? undefined : "Product, Engineering" },
     { label: "Avg tenure", value: live ? "—" : "1.4 yrs", metaLabel: "across team" },
     { label: "Departments", value: String(new Set(employees.map((e) => e.department)).size) },
   ];
@@ -141,7 +141,7 @@ export default function EmployeesPage() {
             ))}
           </div>
 
-          <OrgChart />
+          <OrgChart employees={employees} live={live} />
           <DirectoryTable employees={employees} live={live} />
         </main>
       </div>

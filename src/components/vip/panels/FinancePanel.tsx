@@ -14,12 +14,7 @@ type WalletTx = {
   created_at: string;
 };
 type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url?: string };
-type WalletAccount = { id: string; label: string; account_number: string; routing_number: string; balance_cents: number; currency: string };
-
-function mask(num: string) {
-  if (!num || num.length <= 4) return num;
-  return `•••• ${num.slice(-4)}`;
-}
+type WalletAccount = { id: string; label: string; balance_cents: number; currency: string };
 
 function money(cents: number, currency = "usd") {
   return (cents / 100).toLocaleString(undefined, { style: "currency", currency: currency.toUpperCase(), maximumFractionDigits: cents % 100 === 0 ? 0 : 2 });
@@ -71,7 +66,7 @@ export default function FinancePanel() {
   const [transferring, setTransferring] = useState(false);
   const [transferError, setTransferError] = useState("");
   const [transferDone, setTransferDone] = useState(false);
-  const [copiedField, setCopiedField] = useState<"account" | "routing" | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const [linkTitle, setLinkTitle] = useState("");
   const [linkAmount, setLinkAmount] = useState("");
   const [linkKind, setLinkKind] = useState<"one_time" | "recurring">("one_time");
@@ -141,7 +136,7 @@ export default function FinancePanel() {
     }
   }
 
-  function copyToClipboard(text: string, field: "account" | "routing") {
+  function copyToClipboard(text: string, field: string) {
     navigator.clipboard?.writeText(text).then(() => {
       setCopiedField(field);
       setTimeout(() => setCopiedField(null), 1500);
@@ -277,7 +272,6 @@ export default function FinancePanel() {
               className="btn text-[12px]"
               style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary, background: activeAction === "receive" ? tokens.tint1 : "transparent" }}
               onClick={() => setActiveAction(activeAction === "receive" ? null : "receive")}
-              disabled={!primaryAccount}
             >
               Receive
             </button>
@@ -320,24 +314,33 @@ export default function FinancePanel() {
             </div>
           )}
 
-          {activeAction === "receive" && primaryAccount && (
+          {activeAction === "receive" && (
             <div className="flex flex-col gap-1.5 pt-1" style={{ borderTop: `1px solid ${tokens.tint2}` }}>
-              <div className="text-[11px]" style={{ color: tokens.textQuaternary }}>Share these to get paid into this account.</div>
+              <div className="text-[11px]" style={{ color: tokens.textQuaternary }}>
+                Primue doesn&rsquo;t issue its own account numbers — share a real Stripe payment link to get paid instead.
+              </div>
+              {links.length === 0 && (
+                <div className="text-[12px] py-1" style={{ color: tokens.textTertiary }}>No payment links yet.</div>
+              )}
+              {links.slice(0, 3).map((l) => (
+                <div key={l.id} className="flex items-center justify-between text-[12.5px] py-1">
+                  <span className="truncate pr-2" style={{ color: tokens.text }}>{l.title} · {money(l.amount_cents, l.currency)}</span>
+                  <button
+                    className="flex-none cursor-pointer"
+                    style={{ background: "none", border: "none", color: tokens.textQuaternary }}
+                    onClick={() => l.url && copyToClipboard(l.url, l.id)}
+                    disabled={!l.url}
+                  >
+                    {copiedField === l.id ? "Copied" : "Copy link"}
+                  </button>
+                </div>
+              ))}
               <button
-                className="flex items-center justify-between text-[12.5px] py-1 cursor-pointer"
-                style={{ background: "none", border: "none", color: tokens.text, textAlign: "left" }}
-                onClick={() => copyToClipboard(primaryAccount.account_number, "account")}
+                className="btn text-[12px] self-start mt-1"
+                style={{ background: tokens.accentBg, color: tokens.accentText, border: `1px solid ${tokens.accentBg}` }}
+                onClick={() => setActiveAction("link")}
               >
-                <span>Account {mask(primaryAccount.account_number)}</span>
-                <span style={{ color: tokens.textQuaternary }}>{copiedField === "account" ? "Copied" : "Copy"}</span>
-              </button>
-              <button
-                className="flex items-center justify-between text-[12.5px] py-1 cursor-pointer"
-                style={{ background: "none", border: "none", color: tokens.text, textAlign: "left" }}
-                onClick={() => copyToClipboard(primaryAccount.routing_number, "routing")}
-              >
-                <span>Routing {mask(primaryAccount.routing_number)}</span>
-                <span style={{ color: tokens.textQuaternary }}>{copiedField === "routing" ? "Copied" : "Copy"}</span>
+                Create new link →
               </button>
             </div>
           )}

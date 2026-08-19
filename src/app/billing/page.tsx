@@ -7,6 +7,17 @@ import { IconCheckCircle, IconArrowRight } from "@/components/icons";
 
 type PlanKey = "starter" | "growth";
 
+// Covers every real plan value the tenant row can hold, not just the two
+// self-serve options offered below — VIP and Enterprise are sold elsewhere
+// (the VIP marketing page, sales) but still need to display correctly here
+// once a tenant is actually on one.
+const PLAN_LABEL: Record<string, string> = {
+  starter: "Starter",
+  growth: "Growth",
+  vip: "VIP",
+  enterprise: "Enterprise",
+};
+
 const plans: { key: PlanKey; name: string; price: string; features: string[] }[] = [
   {
     key: "starter",
@@ -100,7 +111,7 @@ export default function BillingPage() {
               <div className="flex items-center gap-2">
                 <IconCheckCircle size={16} className="text-[var(--color-accent)]" />
                 <div className="card-title text-[14.5px]">
-                  You&rsquo;re on the {plan === "growth" ? "Growth" : "Starter"} plan
+                  You&rsquo;re on the {PLAN_LABEL[plan] ?? plan} plan
                 </div>
                 <span className="tag tag-accent text-[9.5px] ml-auto">{status}</span>
               </div>
