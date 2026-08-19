@@ -157,7 +157,7 @@ export default function DocumentsPanel() {
               Need AI drafting, styling or a signature flow? Open the full editor →
             </a>
           </div>
-          <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px dashed ${tokens.borderDashed}` }}>
+          <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
             <div className="text-[12.5px] font-medium" style={{ color: tokens.text }}>Need a client reply drafted instead?</div>
             <div className="text-[11.5px]" style={{ color: tokens.textTertiary, lineHeight: 1.6 }}>
               Use Teni AI from the sidebar — say or type what you need and it comes back as a ready draft.

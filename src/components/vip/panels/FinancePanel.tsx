@@ -554,7 +554,7 @@ export default function FinancePanel() {
         )}
       </div>
 
-      <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px dashed ${tokens.borderDashed}` }}>
+      <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
         <div className="flex items-center gap-2">
           <span className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Crypto</span>
           <span className="tag text-[9px]" style={{ border: `1px solid ${tokens.textQuaternary}`, color: tokens.textQuaternary }}>Not connected</span>

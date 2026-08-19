@@ -380,7 +380,7 @@ export default function RequestsPanel() {
         </div>
 
         <div className="flex flex-col gap-3.5">
-          <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px dashed ${tokens.borderDashed}` }}>
+          <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
             <div className="text-[12.5px] font-medium" style={{ color: tokens.text }}>What Teni does</div>
             <div className="text-[11.5px]" style={{ color: tokens.textTertiary, lineHeight: 1.6 }}>
               Teni turns a request into a ready draft — a reply, an invoice follow-up, a task list. It never sends,

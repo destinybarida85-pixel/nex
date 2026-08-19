@@ -180,7 +180,7 @@ export default function IntelligencePanel() {
             <a href="/billing" className="text-[11.5px]" style={{ color: tokens.textTertiary }}>Buy more credits →</a>
           </div>
 
-          <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px dashed ${tokens.borderDashed}` }}>
+          <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
             <div className="text-[12.5px] font-medium" style={{ color: tokens.text }}>How this works</div>
             <div className="text-[11.5px]" style={{ color: tokens.textTertiary, lineHeight: 1.6 }}>
               Every number above and every recommendation is computed straight from your own signatures, wallet and
