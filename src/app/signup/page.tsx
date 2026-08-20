@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import AuthShell from "@/components/auth/AuthShell";
 import { IconGoogle, IconLogoMark } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
-import { isBackendConfigured } from "@/lib/backendStatus";
+import { isBackendConfigured, isGoogleSignInConfigured } from "@/lib/backendStatus";
 import { formatAuthError } from "@/lib/authError";
 
 export default function SignUpPage() {
@@ -116,21 +116,25 @@ export default function SignUpPage() {
         <div className="text-[16px] text-[var(--color-neutral-500)] mt-2.5">Start free. No card required.</div>
       </div>
 
-      <button
-        className="btn btn-secondary btn-block gap-3"
-        style={{ marginTop: 0, minHeight: 56, fontSize: 16, fontWeight: 600 }}
-        onClick={handleGoogle}
-        disabled={!!loading}
-      >
-        <IconGoogle size={20} />
-        {loading === "google" ? "Connecting to Google…" : "Continue with Google"}
-      </button>
+      {isGoogleSignInConfigured && (
+        <>
+          <button
+            className="btn btn-secondary btn-block gap-3"
+            style={{ marginTop: 0, minHeight: 56, fontSize: 16, fontWeight: 600 }}
+            onClick={handleGoogle}
+            disabled={!!loading}
+          >
+            <IconGoogle size={20} />
+            {loading === "google" ? "Connecting to Google…" : "Continue with Google"}
+          </button>
 
-      <div className="flex items-center gap-3 text-[14px] text-[var(--color-neutral-600)] my-7">
-        <span className="flex-1 h-px bg-[var(--color-divider)]" />
-        or
-        <span className="flex-1 h-px bg-[var(--color-divider)]" />
-      </div>
+          <div className="flex items-center gap-3 text-[14px] text-[var(--color-neutral-600)] my-7">
+            <span className="flex-1 h-px bg-[var(--color-divider)]" />
+            or
+            <span className="flex-1 h-px bg-[var(--color-divider)]" />
+          </div>
+        </>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <div className="field">

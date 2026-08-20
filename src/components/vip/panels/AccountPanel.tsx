@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { IconCamera, IconCheckCircle } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 import { useVipTheme } from "@/components/vip/theme";
@@ -14,7 +15,9 @@ const PLAN_LABEL: Record<string, string> = {
 
 export default function AccountPanel() {
   const { tokens } = useVipTheme();
+  const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [signingOut, setSigningOut] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -140,6 +143,16 @@ export default function AccountPanel() {
     }
   }
 
+  async function handleSignOut() {
+    setSigningOut(true);
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } finally {
+      router.push("/vip/login");
+    }
+  }
+
   const initials = name.trim() ? name.trim().slice(0, 2).toUpperCase() : "?";
 
   return (
@@ -240,6 +253,18 @@ export default function AccountPanel() {
             <div className="text-[11.5px]" style={{ color: tokens.textQuaternary }}>
               Opens Stripe&rsquo;s real billing portal — update your card, view invoices, or cancel from there.
             </div>
+          </div>
+
+          <div className="card elev-sm gap-2.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
+            <div className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Session</div>
+            <button
+              className="btn text-[13px] self-start"
+              style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}
+              onClick={handleSignOut}
+              disabled={signingOut}
+            >
+              {signingOut ? "Signing out…" : "Sign out"}
+            </button>
           </div>
         </div>
       </div>

@@ -1,15 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 import { IconCamera } from "@/components/icons";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { hasSession, checked } = useHasSession();
   const [live, setLive] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -95,6 +99,16 @@ export default function ProfilePage() {
     setTimeout(() => setSaved(false), 1800);
   }
 
+  async function handleSignOut() {
+    setSigningOut(true);
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } finally {
+      router.push("/signin");
+    }
+  }
+
   const initials = name.trim() ? name.trim().slice(0, 2).toUpperCase() : "?";
 
   return (
@@ -169,6 +183,13 @@ export default function ProfilePage() {
             {error && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
             <button className="btn btn-primary text-[13.5px] self-start" onClick={saveProfile} disabled={!live || saving}>
               {saving ? "Saving…" : saved ? "Saved!" : "Save changes"}
+            </button>
+          </div>
+
+          <div className="card elev-sm p-5 gap-2.5">
+            <div className="card-title text-sm">Session</div>
+            <button className="btn btn-secondary text-[13.5px] self-start" onClick={handleSignOut} disabled={signingOut}>
+              {signingOut ? "Signing out…" : "Sign out"}
             </button>
           </div>
         </main>
