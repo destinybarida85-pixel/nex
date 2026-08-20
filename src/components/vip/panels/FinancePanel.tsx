@@ -59,6 +59,7 @@ export default function FinancePanel() {
   const [stampCredits, setStampCredits] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [buyingCredits, setBuyingCredits] = useState<"certificate" | "stamp" | null>(null);
 
   const [activeAction, setActiveAction] = useState<"transfer" | "receive" | "link" | null>(null);
   const [transferTo, setTransferTo] = useState("");
@@ -180,6 +181,21 @@ export default function FinancePanel() {
     } finally {
       setPortalLoading(false);
     }
+  }
+
+  // Same real Stripe Checkout endpoints /certificates and /stamps already
+  // use for this — calling them directly here means buying more credits
+  // never has to leave VIP for a page (/billing) that doesn't even offer it.
+  async function buyCredits(kind: "certificate" | "stamp") {
+    setBuyingCredits(kind);
+    try {
+      const res = await fetch(`/api/billing/${kind}-credits`, { method: "POST" });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      // Non-fatal.
+    }
+    setBuyingCredits(null);
   }
 
   function downloadStatement() {
@@ -433,8 +449,8 @@ export default function FinancePanel() {
         <div className="card elev-sm gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <div className="text-[13px] font-medium" style={{ color: tokens.text }}>Credits</div>
           {[
-            { label: "Certificate credits", value: certCredits, max: CERT_MAX },
-            { label: "Stamp credits", value: stampCredits, max: STAMP_MAX },
+            { kind: "certificate" as const, label: "Certificate credits", value: certCredits, max: CERT_MAX },
+            { kind: "stamp" as const, label: "Stamp credits", value: stampCredits, max: STAMP_MAX },
           ].map((c) => (
             <div key={c.label} className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-[12px]" style={{ color: tokens.textSecondary }}>
@@ -447,9 +463,16 @@ export default function FinancePanel() {
                   style={{ width: `${c.value ? Math.min(100, (c.value / c.max) * 100) : 0}%`, background: tokens.text }}
                 />
               </div>
+              <button
+                onClick={() => buyCredits(c.kind)}
+                disabled={buyingCredits === c.kind}
+                className="self-start text-[11px] cursor-pointer"
+                style={{ background: "none", border: "none", color: tokens.textTertiary, padding: 0 }}
+              >
+                {buyingCredits === c.kind ? "Opening checkout…" : `Buy more ${c.label.toLowerCase()} →`}
+              </button>
             </div>
           ))}
-          <a href="/billing" className="text-[11.5px]" style={{ color: tokens.textTertiary }}>Buy more credits →</a>
         </div>
 
         <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>

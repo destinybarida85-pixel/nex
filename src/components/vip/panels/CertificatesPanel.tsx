@@ -32,6 +32,7 @@ export default function CertificatesPanel() {
   const [issuing, setIssuing] = useState(false);
   const [issueError, setIssueError] = useState("");
   const [issued, setIssued] = useState(false);
+  const [buyingCredits, setBuyingCredits] = useState(false);
 
   // Viewing a saved certificate — fetched the same "anyone with the id can
   // verify" way the public certificate page itself uses, since that's
@@ -73,6 +74,21 @@ export default function CertificatesPanel() {
       })
       .catch(() => {})
       .finally(() => setViewingLoading(false));
+  }
+
+  // Same real Stripe Checkout endpoint /certificates already uses for
+  // this — calling it directly here means buying more credits never has
+  // to leave VIP for a page (/billing) that doesn't even offer it.
+  async function buyCredits() {
+    setBuyingCredits(true);
+    try {
+      const res = await fetch("/api/billing/certificate-credits", { method: "POST" });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      // Non-fatal.
+    }
+    setBuyingCredits(false);
   }
 
   async function issueCertificate() {
@@ -286,7 +302,14 @@ export default function CertificatesPanel() {
                 />
               </div>
             </div>
-            <a href="/billing" className="text-[11.5px]" style={{ color: tokens.textTertiary }}>Buy more credits →</a>
+            <button
+              onClick={buyCredits}
+              disabled={buyingCredits}
+              className="self-start text-[11.5px] cursor-pointer"
+              style={{ background: "none", border: "none", color: tokens.textTertiary, padding: 0 }}
+            >
+              {buyingCredits ? "Opening checkout…" : "Buy more credits →"}
+            </button>
           </div>
         </div>
       </div>

@@ -127,7 +127,7 @@ export default function VipConsolePage() {
           {section === "documents" && <DocumentsPanel />}
           {section === "certificates" && <CertificatesPanel />}
           {section === "whitelabel" && <WhiteLabelPanel />}
-          {section === "integrations" && <IntegrationsPanel />}
+          {section === "integrations" && <IntegrationsPanel onNavigate={setSection} />}
           {section === "account" && <AccountPanel />}
         </main>
       </div>

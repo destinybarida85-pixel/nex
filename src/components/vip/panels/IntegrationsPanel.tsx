@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useVipTheme } from "@/components/vip/theme";
+import type { VipSection } from "@/components/vip/VipSidebar";
 
-export default function IntegrationsPanel() {
+export default function IntegrationsPanel({ onNavigate }: { onNavigate?: (s: VipSection) => void }) {
   const { tokens } = useVipTheme();
   const [url, setUrl] = useState("");
   const [saved, setSaved] = useState<string | null>(null);
@@ -116,8 +117,13 @@ export default function IntegrationsPanel() {
           <div className="text-[12.5px] font-medium" style={{ color: tokens.text }}>How this works</div>
           <div className="text-[11.5px]" style={{ color: tokens.textTertiary, lineHeight: 1.6 }}>
             This just tells Primue where your real site lives — it doesn&rsquo;t change or take over anything on it.
-            Want a Primue-built white-label site instead? That&rsquo;s under{" "}
-            <a href="/whitelabel" style={{ color: tokens.text }}>White-label</a>{" "}on the main dashboard.
+            Want a Primue-built white-label site instead? That&rsquo;s right here in VIP — see{" "}
+            <button
+              onClick={() => onNavigate?.("whitelabel")}
+              style={{ background: "none", border: "none", padding: 0, color: tokens.text, cursor: "pointer", textDecoration: "underline" }}
+            >
+              White-label
+            </button>{" "}in the sidebar.
           </div>
         </div>
       </div>
