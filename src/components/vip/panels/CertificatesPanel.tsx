@@ -2,8 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useVipTheme } from "@/components/vip/theme";
+import CertificatePaper from "@/components/certificates/CertificatePaper";
+import { IconX } from "@/components/icons";
 
 type CertRow = { id: string; recipient_name: string; title: string; issued_at: string };
+type FetchedCert = {
+  design: string;
+  recipientName: string;
+  title: string;
+  citation: string;
+  issuerName: string;
+  issuedAt: string;
+  accentColor: string | null;
+};
 
 const CERT_MAX = 10;
 
@@ -13,6 +24,7 @@ export default function CertificatesPanel() {
   const [credits, setCredits] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [setupRequired, setSetupRequired] = useState(false);
+  const [tenantName, setTenantName] = useState("");
 
   const [recipientName, setRecipientName] = useState("");
   const [certTitle, setCertTitle] = useState("");
@@ -20,6 +32,13 @@ export default function CertificatesPanel() {
   const [issuing, setIssuing] = useState(false);
   const [issueError, setIssueError] = useState("");
   const [issued, setIssued] = useState(false);
+
+  // Viewing a saved certificate — fetched the same "anyone with the id can
+  // verify" way the public certificate page itself uses, since that's
+  // exactly what this preview needs to be honest: what a real viewer sees.
+  const [viewingId, setViewingId] = useState<string | null>(null);
+  const [viewingCert, setViewingCert] = useState<FetchedCert | null>(null);
+  const [viewingLoading, setViewingLoading] = useState(false);
 
   function load() {
     fetch("/api/certificates")
@@ -37,7 +56,24 @@ export default function CertificatesPanel() {
 
   useEffect(() => {
     load();
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((data) => { if (data.configured) setTenantName(data.tenantName || ""); })
+      .catch(() => {});
   }, []);
+
+  function openExisting(id: string) {
+    setViewingId(id);
+    setViewingCert(null);
+    setViewingLoading(true);
+    fetch(`/api/certificates/${id}/public`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.certificate) setViewingCert(data.certificate);
+      })
+      .catch(() => {})
+      .finally(() => setViewingLoading(false));
+  }
 
   async function issueCertificate() {
     if (!recipientName.trim() || !certTitle.trim() || !citation.trim()) return;
@@ -68,6 +104,15 @@ export default function CertificatesPanel() {
   const latest = certs[0];
   const outOfCredits = credits !== null && credits < 1;
 
+  // Pops open the moment there's something real to show — a saved
+  // certificate you clicked, or the one you're actively filling in — and
+  // hides back to the plain list otherwise.
+  const draftPreview =
+    !viewingId && recipientName.trim() && certTitle.trim() && citation.trim()
+      ? { recipientName: recipientName.trim(), title: certTitle.trim(), citation: citation.trim() }
+      : null;
+  const showPreview = !!viewingId || !!draftPreview;
+
   return (
     <div className="flex flex-col gap-4 max-w-[1080px]">
       <div>
@@ -93,35 +138,89 @@ export default function CertificatesPanel() {
 
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[13px] font-medium" style={{ color: tokens.textSecondary }}>All certificates</span>
-          </div>
-          {loaded && certs.length === 0 && (
-            <div className="text-[13.5px]" style={{ color: tokens.textQuaternary }}>No certificates issued yet.</div>
-          )}
-          {certs.length > 0 && (
-            <div className="overflow-x-auto rounded-lg" style={{ border: `1px solid ${tokens.border}` }}>
-              <table className="w-full text-[12.5px]" style={{ borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${tokens.border}` }}>
-                    {["Recipient", "Title", "Date"].map((h) => (
-                      <th key={h} className="text-left p-2.5" style={{ color: tokens.textQuaternary, fontWeight: 500 }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {certs.map((c) => (
-                    <tr key={c.id} style={{ borderBottom: `1px solid ${tokens.tint3}` }}>
-                      <td className="p-2.5" style={{ color: tokens.text }}>{c.recipient_name}</td>
-                      <td className="p-2.5 truncate" style={{ color: tokens.textSecondary, maxWidth: 220 }}>{c.title}</td>
-                      <td className="p-2.5" style={{ color: tokens.textSecondary }}>
-                        {new Date(c.issued_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {showPreview ? (
+            <div className="flex flex-col gap-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-medium" style={{ color: tokens.textSecondary }}>
+                  {viewingId ? "Certificate preview" : "Preview — as you fill it in"}
+                </span>
+                {viewingId && (
+                  <button
+                    onClick={() => { setViewingId(null); setViewingCert(null); }}
+                    className="flex items-center gap-1 text-[11.5px] cursor-pointer"
+                    style={{ background: "transparent", border: "none", color: tokens.textTertiary }}
+                  >
+                    <IconX size={12} /> Back to all certificates
+                  </button>
+                )}
+              </div>
+              <div
+                className="rounded-xl p-4"
+                style={{ background: tokens.surfaceInset, border: `1px solid ${tokens.border}` }}
+              >
+                {viewingId && viewingLoading && (
+                  <div className="text-[12.5px] py-8 text-center" style={{ color: tokens.textQuaternary }}>Loading…</div>
+                )}
+                {viewingId && !viewingLoading && viewingCert && (
+                  <CertificatePaper
+                    design={viewingCert.design}
+                    recipientName={viewingCert.recipientName}
+                    title={viewingCert.title}
+                    citation={viewingCert.citation}
+                    issuerName={viewingCert.issuerName}
+                    issuedAt={viewingCert.issuedAt}
+                    accentColor={viewingCert.accentColor || undefined}
+                  />
+                )}
+                {draftPreview && (
+                  <CertificatePaper
+                    design="ribbon"
+                    recipientName={draftPreview.recipientName}
+                    title={draftPreview.title}
+                    citation={draftPreview.citation}
+                    issuerName={tenantName}
+                    issuedAt={new Date().toISOString()}
+                  />
+                )}
+              </div>
             </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] font-medium" style={{ color: tokens.textSecondary }}>All certificates</span>
+              </div>
+              {loaded && certs.length === 0 && (
+                <div className="text-[13.5px]" style={{ color: tokens.textQuaternary }}>No certificates issued yet.</div>
+              )}
+              {certs.length > 0 && (
+                <div className="overflow-x-auto rounded-lg" style={{ border: `1px solid ${tokens.border}` }}>
+                  <table className="w-full text-[12.5px]" style={{ borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ borderBottom: `1px solid ${tokens.border}` }}>
+                        {["Recipient", "Title", "Date"].map((h) => (
+                          <th key={h} className="text-left p-2.5" style={{ color: tokens.textQuaternary, fontWeight: 500 }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {certs.map((c) => (
+                        <tr
+                          key={c.id}
+                          onClick={() => openExisting(c.id)}
+                          style={{ borderBottom: `1px solid ${tokens.tint3}`, cursor: "pointer" }}
+                        >
+                          <td className="p-2.5" style={{ color: tokens.text }}>{c.recipient_name}</td>
+                          <td className="p-2.5 truncate" style={{ color: tokens.textSecondary, maxWidth: 220 }}>{c.title}</td>
+                          <td className="p-2.5" style={{ color: tokens.textSecondary }}>
+                            {new Date(c.issued_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </div>
 

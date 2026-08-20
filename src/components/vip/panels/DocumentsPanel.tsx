@@ -2,8 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { useVipTheme, type VipTokens } from "@/components/vip/theme";
+import DocumentPaper from "@/components/document/DocumentPaper";
+import { IconX } from "@/components/icons";
 
 type DocRow = { id: string; title: string; status: "draft" | "sent" | "signed" | "void"; created_at: string };
+type FetchedDoc = {
+  title: string;
+  text: string;
+  sections: { heading: string; text: string }[] | null;
+  accentColor: string | null;
+  logoUrl: string | null;
+};
+
+// The same first accent the main editor's own picker defaults to — a
+// document created from this simplified form never sets one explicitly,
+// so this is genuinely what it renders with, not an invented placeholder.
+const DEFAULT_ACCENT = "#33333a";
 
 function statusColor(status: string, tokens: VipTokens) {
   if (status === "signed") return tokens.success;
@@ -23,6 +37,13 @@ export default function DocumentsPanel() {
   const [createError, setCreateError] = useState("");
   const [created, setCreated] = useState(false);
 
+  // Viewing a saved document (fetched via the same "anyone with the id"
+  // read path the white-label site uses — safe here since it's the
+  // tenant looking up their own document's real id from their own list).
+  const [viewingId, setViewingId] = useState<string | null>(null);
+  const [viewingDoc, setViewingDoc] = useState<FetchedDoc | null>(null);
+  const [viewingLoading, setViewingLoading] = useState(false);
+
   function load() {
     fetch("/api/documents")
       .then((r) => r.json())
@@ -36,6 +57,19 @@ export default function DocumentsPanel() {
   useEffect(() => {
     load();
   }, []);
+
+  function openExisting(id: string) {
+    setViewingId(id);
+    setViewingDoc(null);
+    setViewingLoading(true);
+    fetch(`/api/documents/${id}/public`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured && data.document) setViewingDoc(data.document);
+      })
+      .catch(() => {})
+      .finally(() => setViewingLoading(false));
+  }
 
   async function createDocument() {
     if (!title.trim() || !text.trim()) return;
@@ -65,6 +99,12 @@ export default function DocumentsPanel() {
   const awaiting = docs.filter((d) => d.status === "sent").length;
   const drafts = docs.filter((d) => d.status === "draft").length;
 
+  // The preview pops up the moment there's something real to show — either
+  // a saved document you clicked open, or the document you're actively
+  // typing — and hides back to the plain list the rest of the time.
+  const draftPreview = !viewingId && title.trim() && text.trim() ? { title: title.trim(), text: text.trim() } : null;
+  const showPreview = !!viewingId || !!draftPreview;
+
   return (
     <div className="flex flex-col gap-4 max-w-[1080px]">
       <div>
@@ -90,39 +130,89 @@ export default function DocumentsPanel() {
 
       <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[13px] font-medium" style={{ color: tokens.textSecondary }}>All documents</span>
-          </div>
-          {loaded && docs.length === 0 && (
-            <div className="text-[13.5px]" style={{ color: tokens.textQuaternary }}>No documents yet.</div>
-          )}
-          {docs.length > 0 && (
-            <div className="overflow-x-auto rounded-lg" style={{ border: `1px solid ${tokens.border}` }}>
-              <table className="w-full text-[12.5px]" style={{ borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${tokens.border}` }}>
-                    {["Title", "Status", "Date"].map((h) => (
-                      <th key={h} className="text-left p-2.5" style={{ color: tokens.textQuaternary, fontWeight: 500 }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {docs.map((d) => (
-                    <tr key={d.id} style={{ borderBottom: `1px solid ${tokens.tint3}` }}>
-                      <td className="p-2.5 truncate" style={{ color: tokens.text, maxWidth: 260 }}>{d.title}</td>
-                      <td className="p-2.5">
-                        <span className="tag text-[9.5px]" style={{ border: `1px solid ${statusColor(d.status, tokens)}`, color: statusColor(d.status, tokens) }}>
-                          {d.status}
-                        </span>
-                      </td>
-                      <td className="p-2.5" style={{ color: tokens.textSecondary }}>
-                        {new Date(d.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {showPreview ? (
+            <div className="flex flex-col gap-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-medium" style={{ color: tokens.textSecondary }}>
+                  {viewingId ? "Document preview" : "Preview — as you type"}
+                </span>
+                {viewingId && (
+                  <button
+                    onClick={() => { setViewingId(null); setViewingDoc(null); }}
+                    className="flex items-center gap-1 text-[11.5px] cursor-pointer"
+                    style={{ background: "transparent", border: "none", color: tokens.textTertiary }}
+                  >
+                    <IconX size={12} /> Back to all documents
+                  </button>
+                )}
+              </div>
+              <div
+                className="rounded-xl p-4 overflow-y-auto"
+                style={{ background: tokens.surfaceInset, border: `1px solid ${tokens.border}`, maxHeight: 480 }}
+              >
+                {viewingId && viewingLoading && (
+                  <div className="text-[12.5px] py-8 text-center" style={{ color: tokens.textQuaternary }}>Loading…</div>
+                )}
+                {viewingId && !viewingLoading && viewingDoc && (
+                  <DocumentPaper
+                    title={viewingDoc.title}
+                    sections={viewingDoc.sections && viewingDoc.sections.length > 0 ? viewingDoc.sections : [{ heading: "", text: viewingDoc.text }]}
+                    accentColor={viewingDoc.accentColor || DEFAULT_ACCENT}
+                    logoUrl={viewingDoc.logoUrl}
+                    big={false}
+                  />
+                )}
+                {draftPreview && (
+                  <DocumentPaper
+                    title={draftPreview.title}
+                    sections={[{ heading: "", text: draftPreview.text }]}
+                    accentColor={DEFAULT_ACCENT}
+                    big={false}
+                  />
+                )}
+              </div>
             </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] font-medium" style={{ color: tokens.textSecondary }}>All documents</span>
+              </div>
+              {loaded && docs.length === 0 && (
+                <div className="text-[13.5px]" style={{ color: tokens.textQuaternary }}>No documents yet.</div>
+              )}
+              {docs.length > 0 && (
+                <div className="overflow-x-auto rounded-lg" style={{ border: `1px solid ${tokens.border}` }}>
+                  <table className="w-full text-[12.5px]" style={{ borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ borderBottom: `1px solid ${tokens.border}` }}>
+                        {["Title", "Status", "Date"].map((h) => (
+                          <th key={h} className="text-left p-2.5" style={{ color: tokens.textQuaternary, fontWeight: 500 }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {docs.map((d) => (
+                        <tr
+                          key={d.id}
+                          onClick={() => openExisting(d.id)}
+                          style={{ borderBottom: `1px solid ${tokens.tint3}`, cursor: "pointer" }}
+                        >
+                          <td className="p-2.5 truncate" style={{ color: tokens.text, maxWidth: 260 }}>{d.title}</td>
+                          <td className="p-2.5">
+                            <span className="tag text-[9.5px]" style={{ border: `1px solid ${statusColor(d.status, tokens)}`, color: statusColor(d.status, tokens) }}>
+                              {d.status}
+                            </span>
+                          </td>
+                          <td className="p-2.5" style={{ color: tokens.textSecondary }}>
+                            {new Date(d.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </div>
 
