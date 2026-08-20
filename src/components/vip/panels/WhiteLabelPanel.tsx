@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IconCamera, IconCheckCircle } from "@/components/icons";
 import { useVipTheme } from "@/components/vip/theme";
+import { ClaritySite, LedgerSite, AtriumSite, PortfolioSite, LandingSite, type Site } from "@/app/site/[slug]/page";
 
 type TenantData = {
   name: string;
@@ -12,6 +13,7 @@ type TenantData = {
   site_published: boolean;
   site_template: string | null;
   custom_domain: string | null;
+  powered_by_badge: boolean;
 };
 
 // Brand-color picker options — a fixed palette to choose FROM, unrelated to
@@ -47,10 +49,12 @@ export default function WhiteLabelPanel() {
   const [sitePublished, setSitePublished] = useState(false);
   const [siteTemplate, setSiteTemplate] = useState("clarity");
   const [customDomain, setCustomDomain] = useState("");
+  const [poweredBy, setPoweredBy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [loaded, setLoaded] = useState(false);
 
   const [slugInput, setSlugInput] = useState("");
   const [savingSite, setSavingSite] = useState(false);
@@ -71,8 +75,10 @@ export default function WhiteLabelPanel() {
         setSitePublished(!!t.site_published);
         setSiteTemplate(t.site_template || "clarity");
         setCustomDomain(t.custom_domain ?? "");
+        setPoweredBy(!!t.powered_by_badge);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoaded(true));
   }, []);
 
   async function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -140,6 +146,25 @@ export default function WhiteLabelPanel() {
       setSavingSite(false);
     }
   }
+
+  // The real Site shape, built live from current (possibly unsaved) form
+  // state, so this renders the exact same template components the public
+  // /site/[slug] page uses — never a hand-copied mockup that can drift out
+  // of sync with what actually gets published. VIP's simplified builder
+  // doesn't collect featured documents or a payment link (that's the full
+  // editor's job), so those come through honestly empty here too.
+  const previewSite: Site = {
+    name: name || "Your Business",
+    brandColor,
+    logoUrl,
+    headerImageUrl: null,
+    template: (["clarity", "ledger", "atrium", "portfolio", "landing"].includes(siteTemplate) ? siteTemplate : "clarity") as Site["template"],
+    poweredByBadge: poweredBy,
+    documents: [],
+    paymentLink: null,
+  };
+  const PreviewSiteComponent =
+    siteTemplate === "ledger" ? LedgerSite : siteTemplate === "atrium" ? AtriumSite : siteTemplate === "portfolio" ? PortfolioSite : siteTemplate === "landing" ? LandingSite : ClaritySite;
 
   return (
     <div className="flex flex-col gap-4 max-w-[1080px]">
@@ -332,6 +357,39 @@ export default function WhiteLabelPanel() {
               Add featured documents, a payment link or a header image → full editor
             </a>
           </div>
+
+          {/* Pops in the moment there's a real business to show — a quiet
+              loading placeholder fills the same space for the brief window
+              before the tenant's real data arrives, then this replaces it. */}
+          {loaded && name ? (
+            <div className="flex flex-col gap-2">
+              <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>
+                Preview · what your clients will see
+              </span>
+              <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${tokens.border}` }}>
+                <div className="flex items-center gap-1.5 px-3 py-2" style={{ borderBottom: `1px solid ${tokens.border}`, background: tokens.surface }}>
+                  <span className="w-2 h-2 rounded-full" style={{ background: tokens.tint2 }} />
+                  <span className="w-2 h-2 rounded-full" style={{ background: tokens.tint2 }} />
+                  <span className="w-2 h-2 rounded-full" style={{ background: tokens.tint2 }} />
+                  <span className="ml-2.5 font-mono text-[10.5px]" style={{ color: tokens.textQuaternary }}>
+                    primue.com/site/{slugInput || "your-business"}
+                  </span>
+                </div>
+                <div style={{ height: 360, overflow: "hidden", position: "relative" }}>
+                  <div style={{ transform: "scale(0.42)", transformOrigin: "top left", width: "238%", pointerEvents: "none" }}>
+                    <PreviewSiteComponent site={previewSite} />
+                  </div>
+                </div>
+              </div>
+              <span className="text-[10.5px]" style={{ color: tokens.textQuaternary }}>
+                {sitePublished ? "This is live — anyone with the link can see it." : "Updates as you edit. Publish to make it a real, reachable page."}
+              </span>
+            </div>
+          ) : (
+            <div className="rounded-xl grid place-items-center" style={{ height: 200, border: `1px solid ${tokens.border}`, color: tokens.textQuaternary }}>
+              <span className="text-[12px]">Loading preview…</span>
+            </div>
+          )}
 
           <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
             <label style={{ fontSize: 12, fontWeight: 600, color: tokens.textTertiary }}>Connect your own domain</label>
