@@ -189,7 +189,7 @@ export default function PayrollPage() {
           {live && (
             <div className="text-[11px] text-[var(--color-neutral-500)]">
               Running payroll here records a real history entry with real totals from your directory — it doesn&rsquo;t move real money yet. See{" "}
-              <a href="/security" style={{ color: "var(--color-accent-300)" }}>/security</a> for what&rsquo;s live today.
+              <a href="/security" style={{ color: "var(--color-accent-300)" }}>/security</a>{" "}for what&rsquo;s live today.
             </div>
           )}
         </main>

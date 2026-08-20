@@ -320,7 +320,7 @@ export default function CopilotPage() {
               {unavailable && (
                 <div className="self-start text-[13px] px-4 py-2.5 rounded-xl" style={{ color: "var(--color-neutral-500)", border: "1px solid var(--color-divider)" }}>
                   The AI Assistant isn&rsquo;t connected yet — an Anthropic API key needs to be configured. You can still{" "}
-                  <a href="/assistant" style={{ color: "var(--color-accent-300)" }}>go straight to the Document AI</a> and describe what you need directly.
+                  <a href="/assistant" style={{ color: "var(--color-accent-300)" }}>go straight to the Document AI</a>{" "}and describe what you need directly.
                 </div>
               )}
               {hasRecommendation && !thinking && (

@@ -446,7 +446,7 @@ export default function DocumentPanel({
                   {payLinks.length === 0 ? (
                     <span className="text-[10.5px]" style={{ color: "var(--color-neutral-500)" }}>
                       No payment links yet —{" "}
-                      <a href="/payments" style={{ color: "var(--color-accent-300)" }}>create one</a> to attach it here.
+                      <a href="/payments" style={{ color: "var(--color-accent-300)" }}>create one</a>{" "}to attach it here.
                     </span>
                   ) : (
                     <select className="input text-[11.5px]" value={paymentLinkId} onChange={(e) => setPaymentLinkId(e.target.value)}>

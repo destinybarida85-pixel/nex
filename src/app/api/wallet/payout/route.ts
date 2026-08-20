@@ -2,13 +2,25 @@ import { NextResponse } from "next/server";
 import { requireTenant } from "@/lib/requireTenant";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
-// Real available balance comes from Stripe itself, not our internal ledger —
-// Stripe's own settled/pending split is the actual source of truth for what
-// can be paid out right now.
+// The Stripe account behind getStripe() is shared by every tenant on the
+// platform (there's no Stripe Connect yet — see the go-live checklist), so
+// stripe.balance.retrieve() returns the WHOLE platform's balance, not this
+// tenant's share of it. Reporting that raw number here would let any tenant
+// see (and in POST below, withdraw) money that isn't theirs. We cap what's
+// shown/payable at this tenant's own internal ledger balance instead — the
+// same number their Dashboard and Finance panels already show them.
+async function ownLedgerBalanceCents(tenantId: string, supabase: NonNullable<Awaited<ReturnType<typeof requireTenant>>["supabase"]>) {
+  const { data: accounts } = await supabase
+    .from("wallet_accounts")
+    .select("balance_cents")
+    .eq("tenant_id", tenantId);
+  return (accounts ?? []).reduce((sum, a) => sum + a.balance_cents, 0);
+}
+
 export async function GET() {
   if (!isStripeConfigured) return NextResponse.json({ configured: false });
 
-  const { error, status } = await requireTenant();
+  const { error, status, supabase, tenantId } = await requireTenant();
   if (error) return NextResponse.json({ configured: true, error }, { status });
 
   const stripe = getStripe();
@@ -16,7 +28,9 @@ export async function GET() {
   const usdAvailable = balance.available.find((b) => b.currency === "usd")?.amount ?? 0;
   const usdPending = balance.pending.find((b) => b.currency === "usd")?.amount ?? 0;
 
-  return NextResponse.json({ configured: true, availableCents: usdAvailable, pendingCents: usdPending });
+  const ownBalance = await ownLedgerBalanceCents(tenantId!, supabase!);
+
+  return NextResponse.json({ configured: true, availableCents: Math.max(0, Math.min(usdAvailable, ownBalance)), pendingCents: usdPending });
 }
 
 // A real Stripe Payout — moves money from your Stripe balance to your own
@@ -33,6 +47,15 @@ export async function POST(request: Request) {
   const { amountCents } = (await request.json()) as { amountCents?: number };
   if (!amountCents || amountCents < 1) {
     return NextResponse.json({ error: "Enter a valid amount." }, { status: 400 });
+  }
+
+  // getStripe() is one shared platform account today, so nothing upstream of
+  // this stops a tenant from requesting more than their own wallet actually
+  // holds — bound the request server-side to what this tenant's own ledger
+  // says is theirs, the same figure GET reports above.
+  const ownBalance = await ownLedgerBalanceCents(tenantId!, supabase!);
+  if (amountCents > ownBalance) {
+    return NextResponse.json({ error: "That's more than your available balance." }, { status: 400 });
   }
 
   const stripe = getStripe();

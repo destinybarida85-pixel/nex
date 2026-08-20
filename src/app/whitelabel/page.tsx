@@ -453,7 +453,7 @@ export default function WhiteLabelPage() {
                   </select>
                 ) : (
                   <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
-                    No payment links yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create one on the Payments page</a> first, then it&rsquo;ll show up here.
+                    No payment links yet. <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Create one on the Payments page</a>{" "}first, then it&rsquo;ll show up here.
                   </div>
                 )}
               </div>
@@ -508,7 +508,7 @@ export default function WhiteLabelPage() {
                             </select>
                           ) : (
                             <div className="text-[10.5px]" style={{ color: "var(--color-neutral-500)" }}>
-                              No payment links yet — <a href="/payments" style={{ color: "var(--color-accent-300)" }}>create one</a> to price this document.
+                              No payment links yet — <a href="/payments" style={{ color: "var(--color-accent-300)" }}>create one</a>{" "}to price this document.
                             </div>
                           )}
                         </div>
@@ -629,7 +629,7 @@ export default function WhiteLabelPage() {
               {sitePublished ? "This is live — anyone with the link can see it." : "Publish to make this a real, reachable page for your clients."}
             </div>
             <div className="text-[10.5px] text-[var(--color-neutral-500)] leading-[1.6]">
-              <strong className="text-[var(--color-text)]">primue.com/site/{siteSlug}</strong> is your free included web address —
+              <strong className="text-[var(--color-text)]">primue.com/site/{siteSlug}</strong>{" "}is your free included web address —
               it works as soon as you publish, no domain purchase needed. Adding your own domain above is optional, for when
               you want your own brand in the URL bar too.
             </div>

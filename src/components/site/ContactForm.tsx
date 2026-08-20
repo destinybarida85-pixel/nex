@@ -34,7 +34,7 @@ export default function ContactForm() {
       <div className="card elev-sm p-6 gap-2">
         <div className="card-title text-[16px]">Your email client should be opening now.</div>
         <p className="card-body">
-          We prefilled a message to <strong className="text-[var(--color-text)] font-medium">destinybarida85@gmail.com</strong> with what
+          We prefilled a message to <strong className="text-[var(--color-text)] font-medium">destinybarida85@gmail.com</strong>{" "}with what
           you wrote. If nothing opened, email us directly at{" "}
           <a href="mailto:destinybarida85@gmail.com" className="text-[var(--color-accent-300)] no-underline">destinybarida85@gmail.com</a>.
         </p>

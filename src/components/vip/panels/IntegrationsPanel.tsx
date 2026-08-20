@@ -117,7 +117,7 @@ export default function IntegrationsPanel() {
           <div className="text-[11.5px]" style={{ color: tokens.textTertiary, lineHeight: 1.6 }}>
             This just tells Primue where your real site lives — it doesn&rsquo;t change or take over anything on it.
             Want a Primue-built white-label site instead? That&rsquo;s under{" "}
-            <a href="/whitelabel" style={{ color: tokens.text }}>White-label</a> on the main dashboard.
+            <a href="/whitelabel" style={{ color: tokens.text }}>White-label</a>{" "}on the main dashboard.
           </div>
         </div>
       </div>

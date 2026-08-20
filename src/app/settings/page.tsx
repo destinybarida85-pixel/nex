@@ -211,7 +211,7 @@ export default function SettingsPage() {
             </div>
             <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
               Generate a key so your own app or script can read your Primue data. Send it as{" "}
-              <code className="font-mono">Authorization: Bearer &lt;key&gt;</code> to <code className="font-mono">/api/v1/documents</code>.
+              <code className="font-mono">Authorization: Bearer &lt;key&gt;</code>{" "}to <code className="font-mono">/api/v1/documents</code>.
             </div>
 
             {revealedKey && (

@@ -402,7 +402,7 @@ export default function CertificatesPage() {
                 </label>
                 {!logoUrl && (
                   <div className="text-[11px] text-[var(--color-neutral-500)] pl-6">
-                    Add a logo under <a href="/whitelabel" style={{ color: "var(--color-accent-300)" }}>White-label</a> first.
+                    Add a logo under <a href="/whitelabel" style={{ color: "var(--color-accent-300)" }}>White-label</a>{" "}first.
                   </div>
                 )}
               </div>

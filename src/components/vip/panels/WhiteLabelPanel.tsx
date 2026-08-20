@@ -346,7 +346,7 @@ export default function WhiteLabelPanel() {
               Saving this reserves the domain on your account — it doesn&rsquo;t make it resolve on its own. You still
               need to add it under this project&rsquo;s Domains in Vercel and point its DNS there. Until then, your site
               stays reachable at the primue.com address above. Already have a full website elsewhere? Use{" "}
-              <span style={{ color: tokens.textSecondary }}>Integrations</span> instead of this field.
+              <span style={{ color: tokens.textSecondary }}>Integrations</span>{" "}instead of this field.
             </div>
           </div>
         </div>
