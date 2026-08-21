@@ -13,7 +13,7 @@ type WalletTx = {
   memo: string | null;
   created_at: string;
 };
-type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url?: string };
+type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url?: string; provider?: "stripe" | "crypto" };
 type WalletAccount = { id: string; label: string; balance_cents: number; currency: string };
 
 function money(cents: number, currency = "usd") {
@@ -71,10 +71,13 @@ export default function FinancePanel() {
   const [linkTitle, setLinkTitle] = useState("");
   const [linkAmount, setLinkAmount] = useState("");
   const [linkKind, setLinkKind] = useState<"one_time" | "recurring">("one_time");
+  const [linkProvider, setLinkProvider] = useState<"stripe" | "crypto">("stripe");
   const [creatingLink, setCreatingLink] = useState(false);
   const [linkError, setLinkError] = useState("");
   const [createdLinkUrl, setCreatedLinkUrl] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [stripeConfigured, setStripeConfigured] = useState(false);
+  const [cryptoConfigured, setCryptoConfigured] = useState(false);
 
   function loadWallet() {
     fetch("/api/wallet")
@@ -100,7 +103,12 @@ export default function FinancePanel() {
           setAccounts(walletData.accounts ?? []);
           setTransactions(walletData.transactions ?? []);
         }
-        if (linksData.configured && !linksData.error) setLinks(linksData.links ?? []);
+        if (linksData.configured && !linksData.error) {
+          setLinks(linksData.links ?? []);
+          setStripeConfigured(!!linksData.stripeConfigured);
+          setCryptoConfigured(!!linksData.cryptoConfigured);
+          if (!linksData.stripeConfigured && linksData.cryptoConfigured) setLinkProvider("crypto");
+        }
         if (tenantData.configured && tenantData.tenant) setStampCredits(tenantData.tenant.stamp_credits ?? null);
         if (certData.configured && !certData.setupRequired) setCertCredits(certData.credits ?? null);
         setLoaded(true);
@@ -155,7 +163,13 @@ export default function FinancePanel() {
       const res = await fetch("/api/stripe/payment-links", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: linkTitle.trim(), amountCents: cents, kind: linkKind, interval: linkKind === "recurring" ? "month" : undefined }),
+        body: JSON.stringify({
+          title: linkTitle.trim(),
+          amountCents: cents,
+          kind: linkProvider === "crypto" ? "one_time" : linkKind,
+          interval: linkProvider === "stripe" && linkKind === "recurring" ? "month" : undefined,
+          provider: linkProvider,
+        }),
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || "Couldn't create that link.");
@@ -379,15 +393,28 @@ export default function FinancePanel() {
                   value={linkAmount}
                   onChange={(e) => setLinkAmount(e.target.value)}
                 />
-                <select
-                  className="input text-[12px]"
-                  style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
-                  value={linkKind}
-                  onChange={(e) => setLinkKind(e.target.value as "one_time" | "recurring")}
-                >
-                  <option value="one_time">One-time</option>
-                  <option value="recurring">Monthly</option>
-                </select>
+                {stripeConfigured && cryptoConfigured && (
+                  <select
+                    className="input text-[12px]"
+                    style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                    value={linkProvider}
+                    onChange={(e) => setLinkProvider(e.target.value as "stripe" | "crypto")}
+                  >
+                    <option value="stripe">Card</option>
+                    <option value="crypto">Crypto</option>
+                  </select>
+                )}
+                {linkProvider === "stripe" && (
+                  <select
+                    className="input text-[12px]"
+                    style={{ background: tokens.surfaceInset, color: tokens.text, border: `1px solid ${tokens.border}` }}
+                    value={linkKind}
+                    onChange={(e) => setLinkKind(e.target.value as "one_time" | "recurring")}
+                  >
+                    <option value="one_time">One-time</option>
+                    <option value="recurring">Monthly</option>
+                  </select>
+                )}
               </div>
               {linkError && <div className="text-[11.5px]" style={{ color: tokens.danger }}>{linkError}</div>}
               {createdLinkUrl && (
@@ -532,6 +559,9 @@ export default function FinancePanel() {
             {links.slice(0, 3).map((l) => (
               <div key={l.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
                 <span className="text-[13px] flex-1 truncate" style={{ color: tokens.text }}>{l.title}</span>
+                {l.provider === "crypto" && (
+                  <span className="tag text-[9px]" style={{ border: `1px solid ${tokens.textQuaternary}`, color: tokens.textQuaternary }}>Crypto</span>
+                )}
                 <span style={{ color: tokens.text, fontSize: 13 }}>{money(l.amount_cents, l.currency)}</span>
               </div>
             ))}
@@ -583,12 +613,34 @@ export default function FinancePanel() {
       <div className="card elev-sm gap-2 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
         <div className="flex items-center gap-2">
           <span className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Crypto</span>
-          <span className="tag text-[9px]" style={{ border: `1px solid ${tokens.textQuaternary}`, color: tokens.textQuaternary }}>Not connected</span>
+          {cryptoConfigured ? (
+            <span className="tag text-[9px]" style={{ background: `color-mix(in srgb, ${tokens.success} 20%, transparent)`, color: tokens.success }}>Connected</span>
+          ) : (
+            <span className="tag text-[9px]" style={{ border: `1px solid ${tokens.textQuaternary}`, color: tokens.textQuaternary }}>Not connected</span>
+          )}
         </div>
-        <div className="text-[12.5px]" style={{ color: tokens.textTertiary, lineHeight: 1.6 }}>
-          Real crypto payment acceptance runs through NOWPayments and isn&rsquo;t wired in yet — the account owner
-          needs to finish that signup before this can accept a real payment.
-        </div>
+        {cryptoConfigured ? (
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-[12.5px]" style={{ color: tokens.textTertiary, lineHeight: 1.6 }}>
+              Real crypto payment acceptance is live through NOWPayments — create a link above and pick Crypto.
+            </div>
+            <button
+              className="btn text-[11.5px] self-start flex-none"
+              style={{ border: `1px solid ${tokens.border}`, color: tokens.textSecondary }}
+              onClick={() => {
+                setLinkProvider("crypto");
+                setActiveAction("link");
+              }}
+            >
+              New crypto link →
+            </button>
+          </div>
+        ) : (
+          <div className="text-[12.5px]" style={{ color: tokens.textTertiary, lineHeight: 1.6 }}>
+            Real crypto payment acceptance runs through NOWPayments and isn&rsquo;t wired in yet — the account owner
+            needs to finish that signup before this can accept a real payment.
+          </div>
+        )}
       </div>
     </div>
   );

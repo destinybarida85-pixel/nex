@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 
-type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url: string };
+type PaymentLink = { id: string; title: string; amount_cents: number; currency: string; url: string; provider?: "stripe" | "crypto" };
 
 export default function ReceiveModal({ onClose }: { onClose: () => void }) {
   const { hasSession, checked } = useHasSession();
@@ -12,10 +12,13 @@ export default function ReceiveModal({ onClose }: { onClose: () => void }) {
   const [loading, setLoading] = useState(true);
   const [links, setLinks] = useState<PaymentLink[]>([]);
   const [copied, setCopied] = useState<string | null>(null);
+  const [stripeConfigured, setStripeConfigured] = useState(false);
+  const [cryptoConfigured, setCryptoConfigured] = useState(false);
 
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
+  const [provider, setProvider] = useState<"stripe" | "crypto">("stripe");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -29,6 +32,9 @@ export default function ReceiveModal({ onClose }: { onClose: () => void }) {
         if (data.configured) {
           setLive(true);
           setLinks(data.links ?? []);
+          setStripeConfigured(!!data.stripeConfigured);
+          setCryptoConfigured(!!data.cryptoConfigured);
+          if (!data.stripeConfigured && data.cryptoConfigured) setProvider("crypto");
         }
       })
       .catch(() => {})
@@ -51,7 +57,7 @@ export default function ReceiveModal({ onClose }: { onClose: () => void }) {
     const res = await fetch("/api/stripe/payment-links", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: title.trim(), amountCents: cents, kind: "one_time" }),
+      body: JSON.stringify({ title: title.trim(), amountCents: cents, kind: "one_time", provider }),
     });
     const data = await res.json();
     if (!res.ok || data.error) {
@@ -73,14 +79,14 @@ export default function ReceiveModal({ onClose }: { onClose: () => void }) {
             <div className="text-[13.5px] text-[var(--color-neutral-500)]">Loading…</div>
           ) : !live ? (
             <div className="text-[13.5px] text-[var(--color-neutral-500)] leading-[1.6]">
-              Sign in and connect Stripe on the{" "}
+              Sign in and connect Stripe or NOWPayments on the{" "}
               <a href="/payments" style={{ color: "var(--color-accent-300)" }}>Payments page</a>{" "}
               to generate a real, shareable link people can actually pay.
             </div>
           ) : (
             <>
               <div className="text-[13px] text-[var(--color-neutral-500)] leading-[1.6]">
-                Share a link below — anyone who opens it pays through a real Stripe checkout page, and it lands
+                Share a link below — anyone who opens it pays through a real checkout page, and it lands
                 directly in your account.
               </div>
 
@@ -107,7 +113,15 @@ export default function ReceiveModal({ onClose }: { onClose: () => void }) {
               {creating ? (
                 <div className="flex flex-col gap-2 p-3 rounded-lg" style={{ background: "var(--color-surface)" }}>
                   <input className="input text-[13.5px]" placeholder="What's this for?" value={title} onChange={(e) => setTitle(e.target.value)} />
-                  <input className="input text-[13.5px]" placeholder="Amount (USD)" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                  <div className="flex gap-2">
+                    <input className="input text-[13.5px] flex-1" placeholder="Amount (USD)" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                    {stripeConfigured && cryptoConfigured && (
+                      <select className="input text-[13.5px]" style={{ maxWidth: 110 }} value={provider} onChange={(e) => setProvider(e.target.value as "stripe" | "crypto")}>
+                        <option value="stripe">Card</option>
+                        <option value="crypto">Crypto</option>
+                      </select>
+                    )}
+                  </div>
                   {error && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
                   <button className="btn btn-primary text-[13.5px]" onClick={createLink}>Create link</button>
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconPlus, IconCheckCircle } from "@/components/icons";
 import SendInvoice from "./SendInvoice";
 
@@ -22,9 +22,20 @@ export default function CreateInvoice({
   const [amount, setAmount] = useState("");
   const [kind, setKind] = useState<"one_time" | "recurring">("one_time");
   const [interval, setIntervalValue] = useState<"day" | "week" | "month" | "year">("month");
+  const [provider, setProvider] = useState<"stripe" | "crypto">("stripe");
+  const [cryptoConfigured, setCryptoConfigured] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [created, setCreated] = useState<Created | null>(null);
+
+  useEffect(() => {
+    fetch("/api/stripe/payment-links")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured) setCryptoConfigured(!!data.cryptoConfigured);
+      })
+      .catch(() => {});
+  }, []);
 
   function reset() {
     setTitle("");
@@ -52,8 +63,9 @@ export default function CreateInvoice({
         body: JSON.stringify({
           title: title.trim(),
           amountCents: cents,
-          kind,
-          interval: kind === "recurring" ? interval : undefined,
+          kind: provider === "crypto" ? "one_time" : kind,
+          interval: provider === "stripe" && kind === "recurring" ? interval : undefined,
+          provider,
         }),
       });
       const data = await res.json();
@@ -108,16 +120,29 @@ export default function CreateInvoice({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <select
-              className="input text-[13.5px]"
-              style={{ maxWidth: 150 }}
-              value={kind}
-              onChange={(e) => setKind(e.target.value as "one_time" | "recurring")}
-            >
-              <option value="one_time">One-time</option>
-              <option value="recurring">Recurring</option>
-            </select>
-            {kind === "recurring" && (
+            {cryptoConfigured && (
+              <select
+                className="input text-[13.5px]"
+                style={{ maxWidth: 130 }}
+                value={provider}
+                onChange={(e) => setProvider(e.target.value as "stripe" | "crypto")}
+              >
+                <option value="stripe">Card (Stripe)</option>
+                <option value="crypto">Crypto</option>
+              </select>
+            )}
+            {provider === "stripe" && (
+              <select
+                className="input text-[13.5px]"
+                style={{ maxWidth: 150 }}
+                value={kind}
+                onChange={(e) => setKind(e.target.value as "one_time" | "recurring")}
+              >
+                <option value="one_time">One-time</option>
+                <option value="recurring">Recurring</option>
+              </select>
+            )}
+            {provider === "stripe" && kind === "recurring" && (
               <select
                 className="input text-[13.5px]"
                 style={{ maxWidth: 120 }}
@@ -135,7 +160,7 @@ export default function CreateInvoice({
           {preview && (
             <div className="text-[11px]" style={{ color: "var(--color-neutral-500)" }}>
               Your client will be asked to pay <strong style={{ color: "var(--color-text)" }}>{preview}</strong>
-              {kind === "recurring" ? ` every ${interval}` : ""} through Stripe.
+              {provider === "stripe" && kind === "recurring" ? ` every ${interval}` : ""} through {provider === "crypto" ? "a real crypto invoice (NOWPayments)" : "Stripe"}.
             </div>
           )}
 
@@ -150,7 +175,9 @@ export default function CreateInvoice({
             </button>
           </div>
           <div className="text-[10.5px]" style={{ color: "var(--color-neutral-600)" }}>
-            This creates a real Stripe payment link. Money paid through it settles to your own Stripe account.
+            {provider === "crypto"
+              ? "This creates a real NOWPayments crypto invoice. Money paid through it settles to your own NOWPayments account."
+              : "This creates a real Stripe payment link. Money paid through it settles to your own Stripe account."}
           </div>
         </div>
       )}

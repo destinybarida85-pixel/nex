@@ -3,24 +3,7 @@ import Stripe from "stripe";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createNotification } from "@/lib/notify";
-
-type SupabaseAdmin = ReturnType<typeof createAdminClient>;
-
-// Best-effort, tenant-visible record of "something happened to my account" —
-// never allowed to fail the webhook itself, since a logging hiccup here must
-// not risk breaking real billing/credit/suspension logic.
-async function logWebhookEvent(
-  supabase: SupabaseAdmin,
-  tenantId: string | null,
-  eventType: string,
-  detail: string
-) {
-  try {
-    await supabase.from("webhook_events").insert({ tenant_id: tenantId, event_type: eventType, detail });
-  } catch {
-    // Non-fatal — this table may not exist yet on a pre-migration deploy.
-  }
-}
+import { logWebhookEvent } from "@/lib/webhookEvents";
 
 // Stripe calls this directly (no user session), so it verifies the request via
 // the webhook signature instead, and uses the service-role client to write

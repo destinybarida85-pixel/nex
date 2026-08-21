@@ -16,6 +16,7 @@ type PaymentLink = {
   url: string;
   uses_count: number;
   status: string;
+  provider: "stripe" | "crypto";
 };
 
 function formatAmount(cents: number, currency: string) {
@@ -25,6 +26,8 @@ function formatAmount(cents: number, currency: string) {
 export default function StripePaymentLinksSection() {
   const { hasSession, checked } = useHasSession();
   const [live, setLive] = useState(false);
+  const [stripeConfigured, setStripeConfigured] = useState(false);
+  const [cryptoConfigured, setCryptoConfigured] = useState(false);
   const [loading, setLoading] = useState(true);
   const [links, setLinks] = useState<PaymentLink[]>([]);
   const [error, setError] = useState("");
@@ -35,6 +38,7 @@ export default function StripePaymentLinksSection() {
   const [amount, setAmount] = useState("");
   const [kind, setKind] = useState<"one_time" | "recurring">("one_time");
   const [interval, setIntervalValue] = useState<"day" | "week" | "month" | "year">("month");
+  const [provider, setProvider] = useState<"stripe" | "crypto">("stripe");
 
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) {
@@ -47,6 +51,9 @@ export default function StripePaymentLinksSection() {
         if (data.configured) {
           setLive(true);
           setLinks(data.links ?? []);
+          setStripeConfigured(!!data.stripeConfigured);
+          setCryptoConfigured(!!data.cryptoConfigured);
+          if (!data.stripeConfigured && data.cryptoConfigured) setProvider("crypto");
         }
       })
       .catch(() => {
@@ -67,7 +74,13 @@ export default function StripePaymentLinksSection() {
       const res = await fetch("/api/stripe/payment-links", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title.trim(), amountCents: cents, kind, interval: kind === "recurring" ? interval : undefined }),
+        body: JSON.stringify({
+          title: title.trim(),
+          amountCents: cents,
+          kind: provider === "crypto" ? "one_time" : kind,
+          interval: provider === "stripe" && kind === "recurring" ? interval : undefined,
+          provider,
+        }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -137,7 +150,9 @@ export default function StripePaymentLinksSection() {
       <div className="flex items-center gap-2">
         <IconLink size={14} className="text-[var(--color-accent)]" />
         <div className="card-title text-sm">Payment links</div>
-        <span className="tag tag-accent text-[9.5px]">Stripe connected</span>
+        <span className="tag tag-accent text-[9.5px]">
+          {stripeConfigured && cryptoConfigured ? "Stripe + Crypto connected" : cryptoConfigured ? "Crypto connected" : "Stripe connected"}
+        </span>
         <div className="flex-1" />
         <button className="btn btn-secondary text-[13px] gap-1.5" onClick={() => setFormOpen((v) => !v)}>
           <IconPlus size={13} />
@@ -150,11 +165,19 @@ export default function StripePaymentLinksSection() {
           <input className="input text-[13.5px]" placeholder="What's this for? (e.g. Consulting deposit)" value={title} onChange={(e) => setTitle(e.target.value)} />
           <div className="flex gap-2">
             <input className="input text-[13.5px]" placeholder="Amount (USD)" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
-            <select className="input text-[13.5px]" style={{ maxWidth: 130 }} value={kind} onChange={(e) => setKind(e.target.value as "one_time" | "recurring")}>
-              <option value="one_time">One-time</option>
-              <option value="recurring">Recurring</option>
-            </select>
-            {kind === "recurring" && (
+            {stripeConfigured && cryptoConfigured && (
+              <select className="input text-[13.5px]" style={{ maxWidth: 110 }} value={provider} onChange={(e) => setProvider(e.target.value as "stripe" | "crypto")}>
+                <option value="stripe">Card (Stripe)</option>
+                <option value="crypto">Crypto</option>
+              </select>
+            )}
+            {provider === "stripe" && (
+              <select className="input text-[13.5px]" style={{ maxWidth: 130 }} value={kind} onChange={(e) => setKind(e.target.value as "one_time" | "recurring")}>
+                <option value="one_time">One-time</option>
+                <option value="recurring">Recurring</option>
+              </select>
+            )}
+            {provider === "stripe" && kind === "recurring" && (
               <select className="input text-[13.5px]" style={{ maxWidth: 110 }} value={interval} onChange={(e) => setIntervalValue(e.target.value as typeof interval)}>
                 <option value="day">Daily</option>
                 <option value="week">Weekly</option>
@@ -165,7 +188,7 @@ export default function StripePaymentLinksSection() {
           </div>
           {error && <div className="text-[13px]" style={{ color: "var(--color-accent-300)" }}>{error}</div>}
           <button className="btn btn-primary text-[13.5px]" style={{ width: "fit-content" }} onClick={createLink} disabled={creating}>
-            {creating ? "Creating…" : "Create real payment link"}
+            {creating ? "Creating…" : provider === "crypto" ? "Create real crypto invoice" : "Create real payment link"}
           </button>
         </div>
       )}
@@ -177,6 +200,7 @@ export default function StripePaymentLinksSection() {
               <th>Name</th>
               <th>Amount</th>
               <th>Type</th>
+              <th>Provider</th>
               <th>Uses</th>
               <th>Status</th>
               <th>Links</th>
@@ -185,8 +209,8 @@ export default function StripePaymentLinksSection() {
           <tbody>
             {links.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-[var(--color-neutral-500)] py-3">
-                  No payment links yet. Create one above — it&rsquo;ll be a real, live Stripe checkout page.
+                <td colSpan={7} className="text-[var(--color-neutral-500)] py-3">
+                  No payment links yet. Create one above — it&rsquo;ll be a real, live checkout page.
                 </td>
               </tr>
             )}
@@ -198,6 +222,11 @@ export default function StripePaymentLinksSection() {
                   {l.kind === "recurring" ? `/${l.interval}` : ""}
                 </td>
                 <td>{l.kind === "recurring" ? "Recurring" : "One-time"}</td>
+                <td>
+                  <span className={`tag text-[9.5px] ${l.provider === "crypto" ? "tag-accent" : "tag-outline"}`}>
+                    {l.provider === "crypto" ? "Crypto" : "Stripe"}
+                  </span>
+                </td>
                 <td>{l.uses_count}</td>
                 <td>
                   <span className={`tag ${l.status === "active" ? "tag-accent" : "tag-outline"}`}>{l.status}</span>
@@ -219,8 +248,9 @@ export default function StripePaymentLinksSection() {
 
       <div className="flex items-center gap-1.5 text-[10.5px] text-[var(--color-neutral-500)]">
         <IconCheckCircle size={11} />
-        Genuine Stripe checkout links — money settles directly to your Stripe account. &ldquo;Invoice&rdquo; is the
-        branded page to email a client; see <a href="/invoices" style={{ color: "var(--color-accent-300)" }}>Invoices</a>.
+        Genuine checkout links — Stripe links settle to your Stripe account, crypto invoices settle to your
+        NOWPayments account. &ldquo;Invoice&rdquo; is the branded page to email a client; see{" "}
+        <a href="/invoices" style={{ color: "var(--color-accent-300)" }}>Invoices</a>.
       </div>
     </div>
   );
