@@ -36,6 +36,8 @@ export default function WalletPage() {
   const [showReceive, setShowReceive] = useState(false);
   const [showPayout, setShowPayout] = useState(false);
   const [hideBalances, setHideBalances] = useState(false);
+  const [stripeConfigured, setStripeConfigured] = useState(false);
+  const [cryptoConfigured, setCryptoConfigured] = useState(false);
 
   function refetchWallet() {
     fetch("/api/wallet")
@@ -73,6 +75,15 @@ export default function WalletPage() {
   useEffect(() => {
     if (!checked || !isBackendConfigured || !hasSession) return;
     refetchWallet();
+    fetch("/api/stripe/payment-links")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.configured) {
+          setStripeConfigured(!!data.stripeConfigured);
+          setCryptoConfigured(!!data.cryptoConfigured);
+        }
+      })
+      .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked, hasSession]);
 
@@ -255,11 +266,18 @@ export default function WalletPage() {
             <div className="card elev-sm p-5 gap-2.5">
               <div className="flex items-center">
                 <span className="text-[10.5px] tracking-[.08em] uppercase text-[var(--color-neutral-500)]">Get paid</span>
-                <span className="tag tag-accent ml-auto text-[9.5px]">Stripe</span>
+                <span className="tag tag-accent ml-auto text-[9.5px]">
+                  {stripeConfigured && cryptoConfigured ? "Stripe + Crypto" : cryptoConfigured ? "Crypto" : "Stripe"}
+                </span>
               </div>
               <div className="text-[13.5px] text-[var(--color-neutral-300)] leading-[1.6]">
-                Primue doesn&rsquo;t issue its own account numbers &mdash; real payments run through your own Stripe
-                account instead, so nothing here can bounce or mislead anyone.
+                Primue doesn&rsquo;t issue its own account numbers &mdash; real payments run through your own{" "}
+                {stripeConfigured && cryptoConfigured
+                  ? "Stripe or NOWPayments account"
+                  : cryptoConfigured
+                    ? "NOWPayments account"
+                    : "Stripe account"}{" "}
+                instead, so nothing here can bounce or mislead anyone.
               </div>
               <div className="text-[11.5px] text-[var(--color-neutral-500)] leading-[1.6]">
                 Hit &ldquo;Receive&rdquo; to share a real, payable link, or manage all your links on the{" "}
