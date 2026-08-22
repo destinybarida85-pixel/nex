@@ -10,6 +10,7 @@ import GrowthChart from "@/components/analytics/GrowthChart";
 import { useHasSession } from "@/lib/useSession";
 import { isBackendConfigured } from "@/lib/backendStatus";
 import { IconSparkle, IconDownload } from "@/components/icons";
+import { sumByCategory, type ExpenseCategory } from "@/lib/expenseCategories";
 
 const ranges = ["30 days", "Quarter", "Year"];
 const rangeDays: Record<string, number> = { "30 days": 30, Quarter: 90, Year: 365 };
@@ -35,7 +36,7 @@ const kpisByRange: Record<string, { label: string; value: string; meta?: string;
   ],
 };
 
-type WalletTx = { direction: "credit" | "debit"; amount_cents: number; created_at: string; counterparty: string };
+type WalletTx = { direction: "credit" | "debit"; amount_cents: number; created_at: string; counterparty: string; memo: string | null };
 
 export default function AnalyticsPage() {
   const { hasSession, checked } = useHasSession();
@@ -57,11 +58,23 @@ export default function AnalyticsPage() {
   }, [checked, hasSession]);
 
   let kpis = kpisByRange[range];
+  let realCategoryTotals: Record<ExpenseCategory, number> | undefined;
+  let realInsight: string | null = null;
+  let insufficientHistory = false;
   if (live) {
-    const cutoff = Date.now() - rangeDays[range] * 24 * 60 * 60 * 1000;
+    const windowMs = rangeDays[range] * 24 * 60 * 60 * 1000;
+    const cutoff = Date.now() - windowMs;
+    const priorCutoff = cutoff - windowMs;
     const inRange = transactions.filter((t) => new Date(t.created_at).getTime() >= cutoff);
+    const priorRange = transactions.filter((t) => {
+      const ts = new Date(t.created_at).getTime();
+      return ts >= priorCutoff && ts < cutoff;
+    });
+
     const revenueCents = inRange.filter((t) => t.direction === "credit").reduce((s, t) => s + t.amount_cents, 0);
     const expenseCents = inRange.filter((t) => t.direction === "debit").reduce((s, t) => s + t.amount_cents, 0);
+    const priorRevenueCents = priorRange.filter((t) => t.direction === "credit").reduce((s, t) => s + t.amount_cents, 0);
+    const priorExpenseCents = priorRange.filter((t) => t.direction === "debit").reduce((s, t) => s + t.amount_cents, 0);
     const netMargin = revenueCents > 0 ? Math.round(((revenueCents - expenseCents) / revenueCents) * 100) : 0;
     const uniqueCounterparties = new Set(inRange.filter((t) => t.direction === "credit").map((t) => t.counterparty)).size;
     kpis = [
@@ -70,6 +83,38 @@ export default function AnalyticsPage() {
       { label: "Net margin", value: revenueCents > 0 ? `${netMargin}%` : "—", metaLabel: revenueCents > 0 ? "Real" : "No revenue yet" },
       { label: "Paying counterparties", value: String(uniqueCounterparties), metaLabel: `Real, last ${rangeDays[range]}d` },
     ];
+
+    realCategoryTotals = sumByCategory(inRange);
+
+    // A genuine period-over-period comparison needs an actual prior period to
+    // compare against — a brand-new account has nothing there yet, and rather
+    // than fake a comparison against zero, this says so honestly.
+    insufficientHistory = priorRevenueCents === 0 && priorExpenseCents === 0;
+    if (!insufficientHistory) {
+      const revenueGrowthPct = priorRevenueCents > 0 ? ((revenueCents - priorRevenueCents) / priorRevenueCents) * 100 : null;
+      const expenseGrowthPct = priorExpenseCents > 0 ? ((expenseCents - priorExpenseCents) / priorExpenseCents) * 100 : null;
+
+      const priorCategoryTotals = sumByCategory(priorRange);
+      const categoryDeltas = (Object.keys(realCategoryTotals) as ExpenseCategory[])
+        .map((cat) => ({ cat, delta: realCategoryTotals![cat] - priorCategoryTotals[cat] }))
+        .filter((c) => c.delta > 0)
+        .sort((a, b) => b.delta - a.delta);
+      const fastestGrowing = categoryDeltas[0]?.cat ?? null;
+
+      let marginPart = "";
+      if (revenueGrowthPct !== null && expenseGrowthPct !== null) {
+        const marginDelta = revenueGrowthPct - expenseGrowthPct;
+        marginPart = `Revenue growth is ${marginDelta >= 0 ? "outpacing" : "lagging"} expense growth by ${Math.abs(marginDelta).toFixed(1)}pt this ${range.toLowerCase()}, so margins are ${marginDelta >= 0 ? "expanding" : "compressing"}.`;
+      } else if (revenueGrowthPct !== null) {
+        marginPart = `Revenue is ${revenueGrowthPct >= 0 ? "up" : "down"} ${Math.abs(revenueGrowthPct).toFixed(1)}% vs the prior ${range.toLowerCase()}, with no comparable expense activity in the prior period.`;
+      } else if (expenseGrowthPct !== null) {
+        marginPart = `Expenses are ${expenseGrowthPct >= 0 ? "up" : "down"} ${Math.abs(expenseGrowthPct).toFixed(1)}% vs the prior ${range.toLowerCase()}, with no comparable revenue in the prior period.`;
+      }
+      const categoryPart = fastestGrowing
+        ? ` ${fastestGrowing} is the fastest-growing cost line this period.`
+        : "";
+      realInsight = (marginPart + categoryPart).trim() || null;
+    }
   }
 
   function exportReport() {
@@ -132,14 +177,14 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="grid gap-3.5 grid-cols-1 sm:grid-cols-2">
-            <ExpenseBreakdown />
+            <ExpenseBreakdown realTotals={live ? realCategoryTotals : undefined} />
             <GrowthChart />
           </div>
 
           {live && (
             <div className="text-[11px] text-[var(--color-neutral-500)]">
-              The KPI tiles and the revenue chart above are computed from your real wallet transactions. Health score,
-              expense breakdown, and growth below are still illustrative.
+              The KPI tiles, the revenue chart, the expense breakdown, and the AI insight below are computed from
+              your real wallet transactions. Health score and customer growth are still illustrative.
             </div>
           )}
 
@@ -149,7 +194,12 @@ export default function AnalyticsPage() {
           >
             <IconSparkle size={16} className="text-[var(--color-accent)] flex-none" />
             <div className="text-[13.5px] text-[var(--color-neutral-300)]">
-              <strong className="text-[var(--color-text)]">Primue AI insight:</strong>{" "}revenue growth is outpacing expense growth by 4.3pt this {range.toLowerCase()}, so margins are expanding. Software spend is the fastest-growing cost line; consider a vendor consolidation review.
+              <strong className="text-[var(--color-text)]">Primue AI insight{live ? "" : " (example)"}:</strong>{" "}
+              {!live
+                ? "revenue growth is outpacing expense growth by 4.3pt this " + range.toLowerCase() + ", so margins are expanding. Software spend is the fastest-growing cost line; consider a vendor consolidation review."
+                : insufficientHistory
+                  ? `Not enough transaction history yet to compare against a prior ${range.toLowerCase()} — check back once you've had a full ${range.toLowerCase()} of activity on both sides.`
+                  : realInsight ?? "No notable trend to report for this period yet."}
             </div>
           </div>
         </main>
