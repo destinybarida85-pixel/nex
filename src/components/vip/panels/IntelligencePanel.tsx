@@ -128,7 +128,7 @@ export default function IntelligencePanel() {
       {error && <div className="text-[12.5px]" style={{ color: tokens.danger }}>{error}</div>}
 
       {facts && (
-        <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+        <div className="grid gap-3.5 grid-cols-2 sm:grid-cols-4">
           {stats.map((s) => (
             <div key={s.label} className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
               <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>{s.label}</span>
@@ -147,7 +147,7 @@ export default function IntelligencePanel() {
         </div>
       )}
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+      <div className="grid gap-3.5 grid-cols-1 md:grid-cols-[1.6fr_1fr]">
         <div className="flex flex-col gap-2.5">
           {!loading && recs.length === 0 && !error && (
             <div className="card elev-sm gap-1 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>

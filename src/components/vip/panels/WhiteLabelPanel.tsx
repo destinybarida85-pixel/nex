@@ -176,7 +176,7 @@ export default function WhiteLabelPanel() {
       </div>
 
       {/* Status row — same stat-tile treatment as Dashboard / Finance / Intelligence */}
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+      <div className="grid gap-3.5 grid-cols-2 sm:grid-cols-3">
         <div className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>Site status</span>
           <span className="text-[16px] font-medium" style={{ color: tokens.text }}>{sitePublished ? "Published" : "Not published"}</span>
@@ -210,7 +210,7 @@ export default function WhiteLabelPanel() {
         </div>
       </div>
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+      <div className="grid gap-3.5 grid-cols-1 md:grid-cols-[1.6fr_1fr]">
         {/* Left: identity form */}
         <div className="card elev-sm gap-3.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <div className="text-[13px] font-medium" style={{ color: tokens.text }}>Identity</div>

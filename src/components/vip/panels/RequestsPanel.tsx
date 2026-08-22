@@ -239,7 +239,7 @@ export default function RequestsPanel() {
         </div>
       </div>
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+      <div className="grid gap-3.5 grid-cols-2 sm:grid-cols-4">
         {[
           { label: "Total requests", value: statsRequests.length },
           { label: "Approved", value: approved },
@@ -253,7 +253,7 @@ export default function RequestsPanel() {
         ))}
       </div>
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+      <div className="grid gap-3.5 grid-cols-1 md:grid-cols-[1.6fr_1fr]">
         <div className="flex flex-col gap-3">
           {/* The actual chat thread — a scrollable message log, oldest at
               top, auto-scrolling to the newest exchange, with the composer

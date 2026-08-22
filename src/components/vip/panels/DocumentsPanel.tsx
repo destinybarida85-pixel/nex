@@ -114,7 +114,7 @@ export default function DocumentsPanel() {
         </div>
       </div>
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+      <div className="grid gap-3.5 grid-cols-2 sm:grid-cols-4">
         {[
           { label: "Total documents", value: docs.length },
           { label: "Signed", value: signed },
@@ -128,7 +128,7 @@ export default function DocumentsPanel() {
         ))}
       </div>
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+      <div className="grid gap-3.5 grid-cols-1 md:grid-cols-[1.6fr_1fr]">
         <div>
           {showPreview ? (
             <div className="flex flex-col gap-2.5">

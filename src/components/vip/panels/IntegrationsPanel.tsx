@@ -84,7 +84,7 @@ export default function IntegrationsPanel({ onNavigate }: { onNavigate?: (s: Vip
         </div>
       </div>
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+      <div className="grid gap-3.5 grid-cols-1 md:grid-cols-[1.6fr_1fr]">
         <div className="card elev-sm gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <div className="text-[13px] font-medium" style={{ color: tokens.text }}>Connect your website</div>
           <div className="field">

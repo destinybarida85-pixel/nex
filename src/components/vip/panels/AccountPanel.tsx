@@ -162,7 +162,7 @@ export default function AccountPanel() {
         <div className="text-[13.5px] mt-1.5" style={{ color: tokens.textSecondary }}>Your profile, security, and subscription.</div>
       </div>
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+      <div className="grid gap-3.5 grid-cols-2 sm:grid-cols-3">
         <div className="card elev-sm gap-1.5 p-4" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <span className="text-[11px] tracking-[.06em] uppercase" style={{ color: tokens.textQuaternary }}>Plan</span>
           <span className="text-[16px] font-medium" style={{ color: tokens.text }}>{PLAN_LABEL[plan] ?? plan}</span>
@@ -179,7 +179,7 @@ export default function AccountPanel() {
         </div>
       </div>
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+      <div className="grid gap-3.5 grid-cols-1 md:grid-cols-[1.6fr_1fr]">
         <div className="card elev-sm gap-3.5 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <div className="text-[13.5px] font-medium" style={{ color: tokens.text }}>Profile</div>
           <div className="flex items-center gap-4">

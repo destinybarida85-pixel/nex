@@ -117,9 +117,9 @@ export default function VipConsolePage() {
 
   return (
     <VipThemeContext.Provider value={{ theme, tokens, toggleTheme }}>
-      <div className="flex min-h-screen" style={{ background: tokens.bg, color: tokens.text }}>
+      <div className="flex flex-col md:flex-row min-h-screen" style={{ background: tokens.bg, color: tokens.text }}>
         <VipSidebar active={section} onSelect={setSection} tenantName={tenantName} />
-        <main className="flex-1 min-w-0 p-8">
+        <main className="flex-1 min-w-0 p-4 sm:p-8">
           {section === "dashboard" && <DashboardPanel onNavigate={setSection} />}
           {section === "requests" && <RequestsPanel />}
           {section === "finance" && <FinancePanel />}

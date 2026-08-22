@@ -276,7 +276,7 @@ export default function FinancePanel() {
       </div>
 
       {/* Row 1: balance / income / expense — mirrors the reference's three-up top row */}
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.3fr 1fr 1fr" }}>
+      <div className="grid gap-3.5 grid-cols-1 sm:grid-cols-3">
         <div className="card elev-sm nx-tilt gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}`, ...tiltAccent }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -472,7 +472,7 @@ export default function FinancePanel() {
       </div>
 
       {/* Row 2: credits (real, replaces the reference's fabricated "goals") + cash flow */}
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1fr 1.4fr" }}>
+      <div className="grid gap-3.5 grid-cols-1 md:grid-cols-[1fr_1.4fr]">
         <div className="card elev-sm gap-3 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
           <div className="text-[13px] font-medium" style={{ color: tokens.text }}>Credits</div>
           {[

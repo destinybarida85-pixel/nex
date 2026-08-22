@@ -113,7 +113,7 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
       </div>
 
       {/* Stat row */}
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+      <div className="grid gap-3.5 grid-cols-2 sm:grid-cols-4">
         {[
           { label: "Wallet balance", value: money(animatedBalance) },
           { label: "Earnings · 30d", value: money(animatedEarnings) },
@@ -131,7 +131,7 @@ export default function DashboardPanel({ onNavigate }: { onNavigate?: (s: VipSec
         ))}
       </div>
 
-      <div className="grid gap-3.5" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+      <div className="grid gap-3.5 grid-cols-1 md:grid-cols-[1.6fr_1fr]">
         {/* Left: trend chart + activity */}
         <div className="flex flex-col gap-3.5">
           <div className="card elev-sm gap-2 p-5" style={{ background: tokens.surface, border: `1px solid ${tokens.border}` }}>
