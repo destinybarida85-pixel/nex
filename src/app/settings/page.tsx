@@ -24,6 +24,7 @@ export default function SettingsPage() {
   const [inviteRole, setInviteRole] = useState<"member" | "admin">("member");
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState("");
+  const [lastInvite, setLastInvite] = useState<{ email: string; emailSent: boolean } | null>(null);
 
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [newKeyName, setNewKeyName] = useState("");
@@ -121,6 +122,7 @@ export default function SettingsPage() {
       return;
     }
     setInvites((prev) => [{ id: data.invite.id, email: data.invite.email, role: data.invite.role, created_at: data.invite.created_at }, ...prev]);
+    setLastInvite({ email: data.invite.email, emailSent: !!data.emailSent });
     setInviteEmail("");
     setInviting(false);
   }
@@ -197,9 +199,16 @@ export default function SettingsPage() {
               </button>
             </div>
             {inviteError && <div className="text-[11.5px]" style={{ color: "var(--color-accent-300)" }}>{inviteError}</div>}
+            {lastInvite && (
+              <div className="text-[11.5px]" style={{ color: lastInvite.emailSent ? "#63c3b2" : "var(--color-neutral-500)" }}>
+                {lastInvite.emailSent
+                  ? `Invite email sent to ${lastInvite.email}.`
+                  : `Invite created, but the email couldn't be sent — share your signup link with ${lastInvite.email} directly.`}
+              </div>
+            )}
             {live && invites.length > 0 && (
               <div className="text-[11px] text-[var(--color-neutral-500)] leading-[1.6]">
-                No email is sent automatically yet — share your signup link with them directly. When they sign up with the invited email, they&rsquo;ll join this business instead of starting a new one.
+                When they sign up with the invited email, they&rsquo;ll join this business instead of starting a new one.
               </div>
             )}
           </div>
