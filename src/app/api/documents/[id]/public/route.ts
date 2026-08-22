@@ -13,14 +13,34 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const supabase = createAdminClient();
 
-  const WITH_SIGNERS =
-    "id, title, content, status, created_at, signers_required, payment_link_id, payment_links(title, amount_cents, currency, url, status)";
-  const WITHOUT_SIGNERS =
-    "id, title, content, status, created_at, payment_link_id, payment_links(title, amount_cents, currency, url, status)";
+  type PaymentLinkRow = { title: string; amount_cents: number; currency: string; url: string; status: string; provider?: string };
+  type DocRow = {
+    id: string;
+    title: string;
+    content: unknown;
+    status: string;
+    created_at: string;
+    signers_required?: number;
+    payment_link_id: string | null;
+    payment_links: PaymentLinkRow | PaymentLinkRow[] | null;
+  };
 
-  let { data: document, error } = await supabase.from("documents").select(WITH_SIGNERS).eq("id", id).maybeSingle();
+  // provider falls back the same way signers_required already does below —
+  // migration 0029 (payment_links.provider) may not be applied yet on every
+  // deploy, and a missing column must degrade gracefully, not 500.
+  async function fetchWithPaymentFields(paymentFields: string) {
+    const withSigners = `id, title, content, status, created_at, signers_required, payment_link_id, payment_links(${paymentFields})`;
+    const withoutSigners = `id, title, content, status, created_at, payment_link_id, payment_links(${paymentFields})`;
+    let res = await supabase.from("documents").select(withSigners).eq("id", id).maybeSingle();
+    if (isMissingColumn(res.error)) {
+      res = await supabase.from("documents").select(withoutSigners).eq("id", id).maybeSingle();
+    }
+    return res as unknown as { data: DocRow | null; error: { code?: string; message?: string } | null };
+  }
+
+  let { data: document, error } = await fetchWithPaymentFields("title, amount_cents, currency, url, status, provider");
   if (isMissingColumn(error)) {
-    ({ data: document, error } = await supabase.from("documents").select(WITHOUT_SIGNERS).eq("id", id).maybeSingle());
+    ({ data: document, error } = await fetchWithPaymentFields("title, amount_cents, currency, url, status"));
   }
 
   // A malformed id (e.g. a mistyped or partial link) fails at the database
@@ -89,7 +109,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         stamp: s.stamp ?? null,
       })),
       payment: link && link.status === "active"
-        ? { title: link.title, amountCents: link.amount_cents, currency: link.currency, url: link.url }
+        ? { title: link.title, amountCents: link.amount_cents, currency: link.currency, url: link.url, provider: ("provider" in link ? (link.provider as string) : null) || "stripe" }
         : null,
     },
   });

@@ -35,7 +35,7 @@ type FetchedDoc = {
   createdAt: string;
   signersRequired: number;
   signedBy: { name: string; at: string; signatureImage: string | null; stamp: StampRecord | null }[];
-  payment: { title: string; amountCents: number; currency: string; url: string } | null;
+  payment: { title: string; amountCents: number; currency: string; url: string; provider?: "stripe" | "crypto" } | null;
 };
 
 function Shell({ children }: { children: React.ReactNode }) {

@@ -11,6 +11,7 @@ type Invoice = {
   kind: "one_time" | "recurring";
   interval: string | null;
   payUrl: string | null;
+  provider: "stripe" | "crypto";
   issuedAt: string;
   paidAt: string | null;
   from: { name: string; accent: string; logoUrl: string | null; poweredBy: boolean };
@@ -189,7 +190,9 @@ export default function PublicInvoicePage({ params }: { params: Promise<{ id: st
                 </a>
                 <div className="flex items-center justify-center gap-1.5 text-[11px]" style={{ color: "#6b6b76" }}>
                   <IconLock size={11} />
-                  Payment is processed by Stripe. {from.name || "The sender"} never sees your card details.
+                  {invoice.provider === "crypto"
+                    ? `Payment is processed by NOWPayments. ${from.name || "The sender"} never sees your wallet details.`
+                    : `Payment is processed by Stripe. ${from.name || "The sender"} never sees your card details.`}
                 </div>
               </div>
             ) : (

@@ -23,7 +23,7 @@ export type SignatureProof = {
   signatureRecordId?: string | null;
 };
 
-export type SignPayment = { title: string; amountCents: number; currency: string; url: string };
+export type SignPayment = { title: string; amountCents: number; currency: string; url: string; provider?: "stripe" | "crypto" };
 
 // The real, shareable signing flow. Used both by the generic /sign route
 // (a same-tab demo/preview against sessionStorage, no real document behind
@@ -184,7 +184,9 @@ export default function SignFlow({
             Pay securely
           </a>
           <div className="text-[10.5px] text-center" style={{ color: "var(--color-neutral-600)" }}>
-            Processed by Stripe. Your card details are never shared with the sender.
+            {payment.provider === "crypto"
+              ? "Processed by NOWPayments. Your wallet details are never shared with the sender."
+              : "Processed by Stripe. Your card details are never shared with the sender."}
           </div>
         </div>
       )}

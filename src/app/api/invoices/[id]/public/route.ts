@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isBackendConfigured } from "@/lib/backendStatus";
+import { isMissingColumn } from "@/lib/schema";
 
 // Intentionally unauthenticated: this is the "anyone with the link" read path for
 // an invoice you email to a client. The payment link's random UUID is the access
@@ -12,11 +13,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const supabase = createAdminClient();
 
-  const { data: link, error } = await supabase
+  // provider (migration 0029) may not be applied on every deploy yet — fall
+  // back to the pre-migration column list rather than 500ing the page.
+  let { data: link, error } = await supabase
     .from("payment_links")
-    .select("id, title, amount_cents, currency, kind, interval, url, status, created_at, tenant_id")
+    .select("id, title, amount_cents, currency, kind, interval, url, status, created_at, tenant_id, provider")
     .eq("id", id)
     .maybeSingle();
+  if (isMissingColumn(error)) {
+    ({ data: link, error } = await supabase
+      .from("payment_links")
+      .select("id, title, amount_cents, currency, kind, interval, url, status, created_at, tenant_id")
+      .eq("id", id)
+      .maybeSingle());
+  }
 
   // A mistyped or truncated link fails at the database level with an "invalid
   // input syntax for uuid" error rather than a clean "no rows" — without this
@@ -56,6 +66,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       kind: link.kind,
       interval: link.interval,
       payUrl: link.status === "active" ? link.url : null,
+      provider: ("provider" in link ? link.provider : null) || "stripe",
       issuedAt: link.created_at,
       paidAt: payment?.created_at ?? null,
       from: {

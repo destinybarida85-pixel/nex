@@ -3,12 +3,13 @@
 import { use, useEffect, useState } from "react";
 import { IconArrowRight, IconCheckCircle, IconShieldCheck, IconSparkle, IconDocuments } from "@/components/icons";
 
+type SitePaymentLink = { title: string; amountCents: number; currency: string; url: string; provider?: "stripe" | "crypto" };
 export type SiteDoc = {
   id: string;
   title: string;
   text: string;
   status: string;
-  paymentLink: { title: string; amountCents: number; currency: string; url: string } | null;
+  paymentLink: SitePaymentLink | null;
 };
 export type Site = {
   name: string;
@@ -18,8 +19,12 @@ export type Site = {
   template: "clarity" | "ledger" | "atrium" | "portfolio" | "landing";
   poweredByBadge: boolean;
   documents: SiteDoc[];
-  paymentLink: { title: string; amountCents: number; currency: string; url: string } | null;
+  paymentLink: SitePaymentLink | null;
 };
+
+function paymentSecurityLabel(provider: "stripe" | "crypto" | undefined) {
+  return provider === "crypto" ? "Secured crypto payment" : "Secured by Stripe";
+}
 
 const features = [
   { icon: IconShieldCheck, title: "Bank-grade security", copy: "Every account, card, and document is protected end-to-end." },
@@ -127,7 +132,7 @@ function CheckoutCard({ site }: { site: Site }) {
             Pay {priceLabel} now
             <IconArrowRight size={15} />
           </a>
-          <div className="text-[11px]" style={{ color: "#6b6b76" }}>Secured by Stripe</div>
+          <div className="text-[11px]" style={{ color: "#6b6b76" }}>{paymentSecurityLabel(link.provider)}</div>
         </>
       ) : (
         <div className="text-[14px]" style={{ color: "#9a9aa4" }}>No payment set up yet.</div>
@@ -510,7 +515,7 @@ export function LandingSite({ site }: { site: Site }) {
             {site.paymentLink ? site.paymentLink.title : `Pay ${site.name}`}
           </h1>
           <p className="text-[15px] leading-[1.7] max-w-[440px]" style={{ color: "#a3a3ad" }}>
-            A one-time secure payment to {site.name}, processed by Stripe. No account or sign-up needed — just pay and you&rsquo;re done.
+            A one-time secure payment to {site.name}, processed by {site.paymentLink?.provider === "crypto" ? "NOWPayments" : "Stripe"}. No account or sign-up needed — just pay and you&rsquo;re done.
           </p>
 
           {site.documents.length > 0 && (
@@ -546,7 +551,7 @@ export function LandingSite({ site }: { site: Site }) {
                 Pay {priceLabel} now
                 <IconArrowRight size={16} />
               </a>
-              <div className="text-[11px] text-center" style={{ color: "#6b6b76" }}>Secured by Stripe · one click, no account needed</div>
+              <div className="text-[11px] text-center" style={{ color: "#6b6b76" }}>{paymentSecurityLabel(site.paymentLink.provider)} · one click, no account needed</div>
             </div>
           ) : (
             <div className="rounded-2xl p-7 sm:p-8 text-center flex flex-col gap-1.5" style={{ background: "#141418", border: "1px dashed #232329" }}>
