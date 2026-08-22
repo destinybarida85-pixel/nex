@@ -42,12 +42,12 @@ export default function WebhookLog() {
       <div className="flex items-center gap-2">
         <IconActivity size={14} className="text-[var(--color-accent)]" />
         <div className="card-title text-sm">Webhook events</div>
-        {live && <span className="card-meta ml-auto font-mono text-[10.5px]">/api/stripe/webhook</span>}
+        {live && <span className="card-meta ml-auto font-mono text-[10.5px]">Stripe · NOWPayments</span>}
       </div>
       <div className="flex flex-col">
         {live && events.length === 0 && (
           <div className="text-[12.5px] text-[var(--color-neutral-500)] py-2">
-            Nothing yet — this fills in as real Stripe events (subscriptions, credit purchases, payment-link payments) reach your account.
+            Nothing yet — this fills in as real events (subscriptions, credit purchases, Stripe and crypto payment-link payments) reach your account.
           </div>
         )}
         {(live ? events : []).map((w) => (
@@ -59,7 +59,7 @@ export default function WebhookLog() {
         ))}
         {!live && (
           <div className="text-[12.5px] text-[var(--color-neutral-500)] py-2">
-            Real Stripe webhook deliveries for your account will show up here.
+            Real Stripe and NOWPayments webhook deliveries for your account will show up here.
           </div>
         )}
       </div>
