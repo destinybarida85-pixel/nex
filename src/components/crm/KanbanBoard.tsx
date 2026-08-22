@@ -10,7 +10,7 @@ const stageAccent: Record<Stage, boolean> = {
   Won: true,
 };
 
-function DealCard({ deal }: { deal: Deal }) {
+function DealCard({ deal, onMove }: { deal: Deal; onMove: (id: string, stage: Stage) => void }) {
   return (
     <div
       draggable
@@ -26,9 +26,27 @@ function DealCard({ deal }: { deal: Deal }) {
       {deal.notes && (
         <div className="text-[10.5px] text-[var(--color-neutral-500)] line-clamp-2">{deal.notes}</div>
       )}
-      {deal.days > 0 && (
-        <span className="tag tag-neutral text-[9.5px] self-start">{deal.days}d in stage</span>
-      )}
+      <div className="flex items-center justify-between gap-2 mt-0.5">
+        {deal.days > 0 ? (
+          <span className="tag tag-neutral text-[9.5px]">{deal.days}d in stage</span>
+        ) : (
+          <span />
+        )}
+        {/* Drag-and-drop is the HTML5 DnD API, which touch devices don't
+            support at all — this select is the only way to move a deal
+            between stages on a phone, not just a nicety. */}
+        <select
+          className="input text-[10.5px]"
+          style={{ padding: "2px 6px", width: "auto" }}
+          value={deal.stage}
+          onChange={(e) => onMove(deal.id, e.target.value as Stage)}
+          aria-label={`Move ${deal.company} to a different stage`}
+        >
+          {stages.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }
@@ -84,7 +102,7 @@ export default function KanbanBoard({
             </div>
             <div className="flex flex-col gap-2 min-h-[60px]">
               {stageDeals.map((deal) => (
-                <DealCard key={deal.id} deal={deal} />
+                <DealCard key={deal.id} deal={deal} onMove={onDrop} />
               ))}
             </div>
           </div>
